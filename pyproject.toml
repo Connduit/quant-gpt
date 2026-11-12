@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "quant-research-lab"
-version = "0.8.0"
+version = "0.9.0"
 description = "Reproducible market data foundations for quantitative research"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -19,7 +19,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
 ml = ["scikit-learn>=1.6,<2", "lightgbm>=4.6,<5", "xgboost-cpu>=3,<4", "PyYAML>=6,<7", "joblib>=1.4,<2"]
-paper = ["websockets>=15,<17"]
+dashboard = ["fastapi>=0.115,<1", "uvicorn>=0.34,<1", "PyYAML>=6,<7"]
+paper = ["websockets>=15,<17", "PyYAML>=6,<7"]
 futures = ["databento>=0.60,<1"]
 discovery = ["optuna>=4,<6", "mlflow>=3,<4", "psutil>=7,<8"]
 

@@ -226,3 +226,16 @@ Durable orders, one equity/futures account, portfolio risk, model-pinned inferen
 restart reconciliation and local alerts. Current strategies are RESEARCH only;
 no live streaming is verified. See [operation](docs/paper-trading.md) and
 [actual replay results](docs/milestone-8-results.md). Real-money orders are unavailable.
+
+## Research dashboard
+
+```bash
+npm --prefix dashboard ci
+npm --prefix dashboard run build
+uv run --frozen --all-extras quantlab dashboard
+```
+
+Open `http://127.0.0.1:8000`. The dashboard inspects curated research, models,
+validation, backtests, portfolios and journaled paper state. Default local access
+is read-only; confirmed writes require role tokens. See [operation](docs/dashboard.md),
+[verification](docs/milestone-9-results.md), and [screenshot](docs/dashboard-overview.png).

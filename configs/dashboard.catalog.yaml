@@ -1,0 +1,70 @@
+artifacts:
+  - id: verified-equity-data
+    kind: datasets
+    label: Verified equity archive provenance
+    path: docs/market-data-verification-datasets.json
+    mode: ARCHIVAL_REAL_DATA
+    status: LIMITED_ACTION_COVERAGE
+  - id: verified-futures-data
+    kind: datasets
+    label: ESZ13 minute archive provenance
+    path: docs/milestone-7-datasets.json
+    mode: ARCHIVAL_REAL_DATA
+    status: LIMITED_HISTORY
+  - id: equity-discovery
+    kind: discovery
+    label: Equity strategy discovery
+    path: data/discovery/release/reports/study.json
+    mode: ARCHIVAL_RESEARCH
+    status: REJECTED
+  - id: equity-validation
+    kind: validation
+    label: Selection-aware equity validation
+    path: data/statistical/milestone-5-final/validation.json
+    mode: DEVELOPMENT_DIAGNOSTIC
+    status: REJECTED
+  - id: futures-research
+    kind: research
+    label: Futures ML and conventional controls
+    path: data/futures/milestone-7-final/research.json
+    mode: ARCHIVAL_RESEARCH
+    status: REJECTED
+  - id: futures-discovery
+    kind: discovery
+    label: Bounded ES Optuna trials
+    path: data/futures/milestone-7-final/research.json
+    mode: ARCHIVAL_RESEARCH
+    status: REJECTED
+  - id: portfolio-research
+    kind: portfolios
+    label: Shared-account portfolio comparisons
+    path: data/portfolios/milestone-6-release/portfolio.json
+    mode: RESEARCH_BACKTEST
+    status: RESEARCH
+  - id: equal-portfolio-backtest
+    kind: backtests
+    label: Equal-weight portfolio versus SPY
+    path: data/portfolios/milestone-6-release/equal/report.json
+    series_path: data/portfolios/milestone-6-release/equal/equity.csv
+    benchmark_series_path: data/portfolios/milestone-6-release/equal/benchmark_equity.csv
+    mode: DEVELOPMENT_BACKTEST
+    status: REJECTED
+  - id: experimental-quote-model
+    kind: models
+    label: Experimental quote-event ridge model
+    path: data/paper/milestone-8-final/model-analytics.json
+    mode: RESEARCH_ONLY
+    status: UNVALIDATED
+  - id: archival-paper-replay
+    kind: paper
+    label: ES experimental replay and restart
+    path: data/paper/milestone-8-final/report.json
+    database: data/paper/milestone-8-final/account.sqlite
+    mode: EXPERIMENTAL_REPLAY
+    status: HALTED
+  - id: futures-model-folds
+    kind: models
+    label: ES logistic walk-forward diagnostics
+    path: data/futures/milestone-7-final/experiments/attempts/8e4aa3484954b328-1-01e1051b/result.json
+    mode: SEARCH_VALIDATION
+    status: REJECTED

@@ -104,3 +104,11 @@ loss halt remained active across a reconciled restart; duplicate events created
 no extra fills. The installed wheel reconstructed all account metrics exactly.
 No authenticated streaming was verified, no strategies qualify for validated
 paper deployment, and no real-money submission capability exists.
+
+## Milestone 9 verification and scope
+
+[Dashboard operation](dashboard.md) and [actual verification](milestone-9-results.md):
+287 Python tests, five frontend tests and five Chromium browser tests passed.
+The API reads curated actual artifacts and journal-verified paper state. No live
+controls, automatic promotions, raw holdout browsing or arbitrary execution exists.
+External streaming/brokers and real-time paper eligibility remain unverified.

@@ -136,6 +136,9 @@ def parser() -> argparse.ArgumentParser:
         choices=("equal", "fixed", "inverse_volatility", "risk_parity", "volatility_target"),
         required=True,
     )
+    dashboard = commands.add_parser("dashboard", help="Authenticated curated research dashboard")
+    dashboard.add_argument("--host", default="127.0.0.1")
+    dashboard.add_argument("--port", type=int, default=8000)
     paper = commands.add_parser("paper", help="Simulated execution and experimental replay")
     paper_sub = paper.add_subparsers(dest="paper_command", required=True)
     for name in (
@@ -221,6 +224,17 @@ def main(argv: list[str] | None = None) -> int:
         settings = load_settings(args.config)
         configure_logging(settings.log_level)
         store = SnapshotStore(args.data_dir or settings.data_dir)
+        if args.command == "dashboard":
+            import os
+
+            import uvicorn
+
+            from quantlab.web.app import from_environment
+
+            os.environ["QUANTLAB_BIND_HOST"] = args.host
+            app = from_environment()
+            uvicorn.run(app, host=args.host, port=args.port)
+            return 0
         if args.command == "paper":
             from quantlab.paper.cli import execute
 

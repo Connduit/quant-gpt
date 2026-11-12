@@ -2590,7 +2590,7 @@ wheels = [
 
 [[package]]
 name = "quant-research-lab"
-version = "0.8.0"
+version = "0.9.0"
 source = { editable = "." }
 dependencies = [
     { name = "duckdb" },
@@ -2601,6 +2601,11 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+dashboard = [
+    { name = "fastapi" },
+    { name = "pyyaml" },
+    { name = "uvicorn" },
+]
 dev = [
     { name = "pytest" },
     { name = "ruff" },
@@ -2621,6 +2626,7 @@ ml = [
     { name = "xgboost-cpu" },
 ]
 paper = [
+    { name = "pyyaml" },
     { name = "websockets" },
 ]
 
@@ -2629,6 +2635,7 @@ requires-dist = [
     { name = "databento", marker = "extra == 'futures'", specifier = ">=0.60,<1" },
     { name = "duckdb", specifier = ">=1.4,<3" },
     { name = "exchange-calendars", specifier = ">=4.11,<5" },
+    { name = "fastapi", marker = "extra == 'dashboard'", specifier = ">=0.115,<1" },
     { name = "httpx", specifier = ">=0.28,<1" },
     { name = "joblib", marker = "extra == 'ml'", specifier = ">=1.4,<2" },
     { name = "lightgbm", marker = "extra == 'ml'", specifier = ">=4.6,<5" },
@@ -2638,13 +2645,16 @@ requires-dist = [
     { name = "psutil", marker = "extra == 'discovery'", specifier = ">=7,<8" },
     { name = "pyarrow", specifier = ">=20,<27" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
+    { name = "pyyaml", marker = "extra == 'dashboard'", specifier = ">=6,<7" },
     { name = "pyyaml", marker = "extra == 'ml'", specifier = ">=6,<7" },
+    { name = "pyyaml", marker = "extra == 'paper'", specifier = ">=6,<7" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11,<1" },
     { name = "scikit-learn", marker = "extra == 'ml'", specifier = ">=1.6,<2" },
+    { name = "uvicorn", marker = "extra == 'dashboard'", specifier = ">=0.34,<1" },
     { name = "websockets", marker = "extra == 'paper'", specifier = ">=15,<17" },
     { name = "xgboost-cpu", marker = "extra == 'ml'", specifier = ">=3,<4" },
 ]
-provides-extras = ["dev", "ml", "paper", "futures", "discovery"]
+provides-extras = ["dev", "ml", "dashboard", "paper", "futures", "discovery"]
 
 [[package]]
 name = "requests"
