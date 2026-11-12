@@ -84,3 +84,8 @@ for future providers with declared compatible semantics.
 This milestone does not supply dividends, splits, delistings, historical tradable
 universes, sectors, bid/ask or verified execution prices. These gaps must be
 addressed before credible strategy validation.
+
+Milestone 2 adds a separate, sourced action ledger and an explicit CSV import path
+for caller-declared unadjusted prices. It does not change or retroactively certify
+existing vendor snapshots. See [backtesting](backtesting.md) for that contract;
+Stooq's unknown-adjustment snapshots remain unsuitable as execution prices.

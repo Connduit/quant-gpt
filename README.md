@@ -1,12 +1,17 @@
 # Quant Research Lab
 
-Milestone 1: a CPU-compatible, reproducible historical US equities data foundation.
-No strategies, predictions, backtests or trading execution are implemented yet.
+CPU-compatible historical US equities infrastructure and daily event-driven
+backtesting. Milestones 1 and 2 are implemented; ML training and broker execution
+are not implemented.
 
 The [complete project blueprint and roadmap](docs/blueprint.md) preserves the
 original specification, including all core capabilities, market phases and ten
 development milestones. It describes the long-term plan; this README documents
 the current implementation.
+
+The [subsequent development instructions](docs/development-instructions.md) update
+the roadmap to 11 milestones. See [current progress](docs/progress.md), the
+[architecture audit](docs/architecture-audit.md) and [backtesting guide](docs/backtesting.md).
 
 ## Installation
 
@@ -16,7 +21,7 @@ From the checkout root:
 ```bash
 uv sync --frozen --extra dev
 uv run --frozen pytest -q
-uv run --frozen ruff check src tests
+uv run --frozen ruff check src tests examples
 ```
 
 The checked-in `uv.lock` pins dependencies. Use `uv lock` deliberately when updating
@@ -81,6 +86,33 @@ Environment overrides: `QUANTLAB_DATA_DIR`, `QUANTLAB_PROVIDER`,
 and download `--provider` take precedence. Unknown keys and invalid values fail.
 Global options precede subcommands. Neither provider needs API secrets.
 
+## Backtesting demonstration
+
+```bash
+uv run python examples/backtest_demo.py
+```
+
+This loads the existing **synthetic** fixture and runs momentum, mean reversion
+and buy-and-hold, exporting trade logs, equity curves, orders, metrics, provenance
+and benchmark comparisons under `data/backtests/milestone-2-demo`. Use
+`--output data/backtests/another-run` to preserve prior results. No live execution
+or profitability claim is involved.
+
+To run an individual verified snapshot:
+
+```bash
+uv run quantlab --config configs/data.toml backtest SNAPSHOT_ID \
+  --strategy momentum --lookback 2 --shares 10 --initial-cash 10000 \
+  --output data/backtests/my-run
+```
+
+Daily closing signals execute only at a strictly later eligible session open.
+Cash accounting includes commissions, spread/slippage, splits and cash dividends.
+Stooq's unknown-adjustment prices are **rejected as execution inputs**; real runs
+require declared unadjusted CSV data and a complete corporate-action ledger.
+See [backtesting](docs/backtesting.md) for raw-data import, ledger format, metric
+definitions and the hand-calculated accounting checks.
+
 ## Architecture
 
 - `config.py`, `logging.py`: validated TOML settings and UTC JSON logs.
@@ -89,7 +121,10 @@ Global options precede subcommands. Neither provider needs API secrets.
   nonnegative volume, duplicates and XNYS session completeness.
 - `data/ingestion.py`: caching, validation and snapshot publication.
 - `data/storage.py`: immutable CSV/Parquet/manifest snapshots, checksums and DuckDB.
-- `cli.py`: download, inspect and SELECT query commands.
+- `cli.py`: download, CSV import, inspect, SELECT query and backtest commands.
+- `backtesting/`: daily adapter, event replay, opening-print execution costs,
+  corporate actions, decimal portfolio ledger, metrics and report exports.
+- `strategies/`: immutable target signals, available-history contexts and baseline strategies.
 
 See [data design](docs/data-design.md) for timestamp, adjustment and provenance
 contracts, and [architecture](docs/architecture.md) for extension boundaries and

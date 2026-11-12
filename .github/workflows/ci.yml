@@ -9,7 +9,7 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --frozen --extra dev --python 3.12
-      - run: uv run --frozen ruff check src tests
-      - run: uv run --frozen ruff format --check src tests
+      - run: uv run --frozen ruff check src tests examples
+      - run: uv run --frozen ruff format --check src tests examples
       - run: uv run --frozen pytest -q
       - run: uv build

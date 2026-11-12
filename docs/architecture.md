@@ -10,6 +10,13 @@ flowchart LR
     Validation --> Snapshot[Immutable CSV + Parquet + manifest]
     Snapshot --> DuckDB[Verified Arrow / DuckDB SELECT]
     DuckDB --> Results[Inspection / JSON results]
+    Snapshot --> Adapter[Verified daily replay adapter + action ledger]
+    Adapter --> Replay[Chronological event replay]
+    Replay --> Strategy[Available-history strategy context]
+    Strategy --> Targets[Target signals / market orders]
+    Targets --> Execution[Later eligible opening print]
+    Execution --> Ledger[Decimal cash / positions / receivables]
+    Ledger --> Reports[Equity, trades, metrics and benchmark exports]
 ```
 
 Adapters return bytes and provenance. Validation owns normalization and the daily
@@ -25,13 +32,16 @@ calendar edge cases, corruption detection, caching, incremental snapshots,
 configuration, JSON logging and CLI results. They do not claim market-data
 availability or trading performance.
 
-Next implement Milestone 2: event-driven replay, cash/position accounting,
-commissions, spread/slippage, next-eligible-bar fills and deterministic timing
-and accounting tests. Add momentum and mean-reversion examples only after those
-contracts work. Meaningful financial evaluation also needs corporate actions,
-verified execution prices, historical universe/lifecycle data and point-in-time
-controls. No live broker functionality is enabled.
+Milestone 2 now adds a daily-equity replay adapter, event queue, target signals,
+market orders, opening-print cost model, independent decimal cash/position/action
+ledger, baseline strategies and atomic reports. See the [architecture audit](architecture-audit.md)
+for concrete decisions and the [backtesting guide](backtesting.md) for timing,
+corporate-action contracts, numerical checks and limitations. Unadjusted price
+semantics and action completeness are caller assertions, not vendor certification.
+Historical universe/lifecycle data and true point-in-time publication remain missing.
+No live broker functionality is enabled.
 
-Milestone 3 then introduces causal features, forward labels, chronological/purged
-splits and baseline regressions. Optimization, allocation, futures, paper trading,
-dashboard, AI assistance and controlled live execution follow separately.
+Milestone 3 is awaiting user review/instruction. It introduces causal features,
+forward labels, chronological/purged splits and baseline regressions. The updated
+[11-milestone roadmap](progress.md) schedules statistical validation explicitly;
+basic timing safeguards are already implemented in the replay engine.
