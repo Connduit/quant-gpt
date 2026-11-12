@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quant-research-lab"
+version = "0.1.0"
+description = "Reproducible market data foundations for quantitative research"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "duckdb>=1.4,<3",
+  "httpx>=0.28,<1",
+  "polars>=1.30,<3",
+  "pyarrow>=20,<27",
+  "exchange-calendars>=4.11,<5",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
+
+[project.scripts]
+quantlab = "quantlab.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quantlab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

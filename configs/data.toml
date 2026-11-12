@@ -1,0 +1,5 @@
+# Relative paths resolve against this file's directory.
+data_dir = "../data"
+provider = "stooq"
+timeout_seconds = 30
+log_level = "INFO"
