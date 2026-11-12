@@ -14,6 +14,7 @@ services:
       APCA_API_KEY_ID: ${APCA_API_KEY_ID:-}
       APCA_API_SECRET_KEY: ${APCA_API_SECRET_KEY:-}
       DATABENTO_API_KEY: ${DATABENTO_API_KEY:-}
+      QUANTLAB_CREDENTIALS_MASTER_KEY: ${QUANTLAB_CREDENTIALS_MASTER_KEY:-}
       # Data jobs get only their selected provider credentials; broker keys are absent.
     ports: ['127.0.0.1:8000:8000']
     volumes:

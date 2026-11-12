@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./api";
 import { Badge, ErrorBox, JsonView } from "./components";
@@ -315,8 +316,14 @@ export function EquityWorkflows({ page }: { page: string }) {
                     <p key={p.id} className="subtle">
                       {p.configured
                         ? "Server credentials configured; access and entitlements are verified when downloading."
-                        : `Server secrets required: ${p.required_secrets.join(", ")}. Enter keys in environment settings, not here.`}{" "}
-                      Data host: {p.host}.
+                        : `API keys required: ${p.required_secrets.join(", ")}.`}{" "}
+                      Data host: {p.host}.{" "}
+                      <Link
+                        to="/provider-settings"
+                        className="provider-settings-link"
+                      >
+                        Manage API keys
+                      </Link>
                     </p>
                   ))
               )}

@@ -29,13 +29,14 @@ def create_provider(
     raise ValueError("Unsupported historical provider")
 
 
-def provider_status():
+def provider_status(credentials=None):
+    credentials = os.environ if credentials is None else credentials
     return {
         "items": [
             {
                 "id": "alpaca",
                 "configured": bool(
-                    os.getenv("APCA_API_KEY_ID") and os.getenv("APCA_API_SECRET_KEY")
+                    credentials.get("APCA_API_KEY_ID") and credentials.get("APCA_API_SECRET_KEY")
                 ),
                 "required_secrets": ["APCA_API_KEY_ID", "APCA_API_SECRET_KEY"],
                 "host": "data.alpaca.markets",
@@ -43,7 +44,7 @@ def provider_status():
             },
             {
                 "id": "databento",
-                "configured": bool(os.getenv("DATABENTO_API_KEY")),
+                "configured": bool(credentials.get("DATABENTO_API_KEY")),
                 "required_secrets": ["DATABENTO_API_KEY"],
                 "host": "hist.databento.com",
                 "datasets": ["XNAS.ITCH", "DBEQ.BASIC"],

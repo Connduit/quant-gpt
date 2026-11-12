@@ -9,6 +9,7 @@ import {
 import "@testing-library/jest-dom/vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { EquityWorkflows } from "./Workflows";
+import { MemoryRouter } from "react-router-dom";
 
 afterEach(() => {
   cleanup();
@@ -22,7 +23,9 @@ function mount(page: string) {
         new QueryClient({ defaultOptions: { queries: { retry: false } } })
       }
     >
-      <EquityWorkflows page={page} />
+      <MemoryRouter>
+        <EquityWorkflows page={page} />
+      </MemoryRouter>
     </QueryClientProvider>,
   );
 }

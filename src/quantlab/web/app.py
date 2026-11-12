@@ -16,13 +16,13 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, SecretStr
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from quantlab.agent.memory import Memory
-from quantlab.data.providers.factory import provider_status
 from quantlab.paper.store import PaperStore
 from quantlab.web.catalog import KINDS, Catalog
+from quantlab.web.credentials import ProviderKeyStore
 from quantlab.web.jobs import JobManager
 from quantlab.web.workflows import (
     DownloadRequest,
@@ -66,6 +66,24 @@ class Control(BaseModel):
 class JobRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str = Field(min_length=1, max_length=80)
+    confirmed: Literal[True]
+
+
+class AlpacaKeys(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    key_id: SecretStr = Field(min_length=8, max_length=512)
+    secret_key: SecretStr = Field(min_length=8, max_length=512)
+    confirmed: Literal[True]
+
+
+class DatabentoKeys(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    api_key: SecretStr = Field(min_length=8, max_length=512)
+    confirmed: Literal[True]
+
+
+class RemoveKeys(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     confirmed: Literal[True]
 
 
@@ -121,7 +139,10 @@ def create_app(
         for token, role in tokens.items()
     ):
         raise ValueError("Unique role tokens must contain at least 24 characters")
-    jobs = JobManager(Path(state_root) / "jobs", approved_jobs)
+    key_store = ProviderKeyStore(Path(state_root) / "credentials")
+    jobs = JobManager(
+        Path(state_root) / "jobs", approved_jobs, provider_credentials=key_store.credentials
+    )
     library = Path(workflow_library or (Path(state_root) / "library")).resolve()
     audit = Path(state_root) / "api-audit.jsonl"
     audit.parent.mkdir(parents=True, exist_ok=True)
@@ -167,6 +188,16 @@ def create_app(
     def require(assigned, allowed):
         if assigned not in allowed:
             raise HTTPException(403, "Role does not authorize this operation")
+
+    def credential_access(request, assigned):
+        require(assigned, ("operator",))
+        loopback = (
+            request.client
+            and request.client.host in ("127.0.0.1", "::1", "testclient")
+            and request.url.hostname in ("localhost", "127.0.0.1", "::1", "testserver")
+        )
+        if request.url.scheme != "https" and not loopback:
+            raise HTTPException(403, "Provider keys require HTTPS or a loopback connection")
 
     def log(action, assigned, detail):
         with audit.open("a") as f:
@@ -320,7 +351,43 @@ def create_app(
 
     @app.get("/api/v1/workflows/providers")
     def workflow_providers(assigned=access):
-        return provider_status()
+        return key_store.status()
+
+    @app.get("/api/v1/settings/providers")
+    def credential_status(assigned=access):
+        return {**key_store.status(), "editable": assigned == "operator"}
+
+    @app.put("/api/v1/settings/providers/alpaca")
+    def save_alpaca_keys(body: AlpacaKeys, request: Request, assigned=access):
+        credential_access(request, assigned)
+        key_store.save(
+            "alpaca",
+            {
+                "APCA_API_KEY_ID": body.key_id.get_secret_value(),
+                "APCA_API_SECRET_KEY": body.secret_key.get_secret_value(),
+            },
+        )
+        log("provider_keys_saved", assigned, {"provider": "alpaca"})
+        return {"status": "SAVED", "provider": "alpaca"}
+
+    @app.put("/api/v1/settings/providers/databento")
+    def save_databento_key(body: DatabentoKeys, request: Request, assigned=access):
+        credential_access(request, assigned)
+        key_store.save("databento", {"DATABENTO_API_KEY": body.api_key.get_secret_value()})
+        log("provider_keys_saved", assigned, {"provider": "databento"})
+        return {"status": "SAVED", "provider": "databento"}
+
+    @app.delete("/api/v1/settings/providers/{provider}")
+    def remove_provider_keys(
+        provider: Literal["alpaca", "databento"],
+        body: RemoveKeys,
+        request: Request,
+        assigned=access,
+    ):
+        credential_access(request, assigned)
+        key_store.remove(provider)
+        log("provider_keys_removed", assigned, {"provider": provider})
+        return {"status": "REMOVED", "provider": provider}
 
     @app.post("/api/v1/workflows/download", status_code=202)
     def workflow_download(body: DownloadRequest, assigned=access):

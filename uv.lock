@@ -2605,6 +2605,7 @@ agent = [
     { name = "pydantic" },
 ]
 dashboard = [
+    { name = "cryptography" },
     { name = "fastapi" },
     { name = "pyyaml" },
     { name = "uvicorn" },
@@ -2638,6 +2639,7 @@ paper = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cryptography", marker = "extra == 'dashboard'", specifier = ">=44,<51" },
     { name = "databento", marker = "extra == 'futures'", specifier = ">=0.60,<1" },
     { name = "databento", marker = "extra == 'market-data'", specifier = ">=0.60,<1" },
     { name = "duckdb", specifier = ">=1.4,<3" },

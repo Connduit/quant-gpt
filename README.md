@@ -244,6 +244,8 @@ is read-only; confirmed writes require role tokens. See [operation](docs/dashboa
 The Data library now includes historical-download and immutable-snapshot forms.
 Alpaca is the default, with Databento as an explicit alternative. Configure
 [provider secrets and data hosts](docs/market-data-setup.md) before downloading.
+The **API keys** page accepts masked provider keys with operator authorization,
+stores them encrypted and applies changes to new downloads without a restart.
 Machine learning and Discovery include bounded equity research forms, snapshot
 selection, job cancellation and downloadable reports. These require researcher
 access and eligible pre-holdout inputs; Stooq-only snapshots do not satisfy the

@@ -613,3 +613,7 @@ footer span {
 .workflow-report {
   margin-top: 20px;
 }
+.provider-settings-link {
+  color: #9bc4ff;
+  text-decoration: underline;
+}

@@ -16,11 +16,12 @@ from pathlib import Path
 
 
 class JobManager:
-    def __init__(self, root, approved=None):
+    def __init__(self, root, approved=None, provider_credentials=None):
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
         self.path = self.root / "jobs.sqlite"
         self.approved = approved or {}
+        self.provider_credentials = provider_credentials
         self.lock = threading.Lock()
         self.pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="quantlab-jobs")
         self.processes = {}
@@ -172,6 +173,16 @@ class JobManager:
                 elif configuration["payload"]["provider"] == "databento":
                     allowed.add("DATABENTO_API_KEY")
         env = {k: v for k, v in os.environ.items() if k in allowed}
+        if workflow and configuration["workflow"] == "download" and self.provider_credentials:
+            try:
+                env.update(
+                    self.provider_credentials(configuration["payload"].get("provider", "alpaca"))
+                )
+            except (ValueError, OSError):
+                self._status(
+                    identity, "FAILED", "Provider keys unavailable; review provider settings"
+                )
+                return
         env["CUDA_VISIBLE_DEVICES"] = ""
         env["POLARS_MAX_THREADS"] = "1"
         for variable in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):

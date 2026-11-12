@@ -7,8 +7,15 @@ provider/feed fallback occurs.
 
 ## Required environment settings
 
-Enter keys in managed environment **Secrets**, or a protected server environment
-outside Git. Never enter keys in chat, browser forms, source files or job requests.
+Open **API keys** in the dashboard sidebar (or **Manage API keys** in Data library).
+Connect with your operator access token in the top bar, enter the masked Alpaca
+key ID/secret pair or Databento key, and click **Save**. Inputs clear after saving;
+stored values are never fetched back into the website. New download jobs use the
+saved keys immediately without a server restart.
+
+Managed environment **Secrets** or a protected server environment remain supported
+as an alternative. Use only the dedicated settings form for browser entry; do not
+enter provider keys in the dashboard access-token field, reports, chat or source files.
 
 | Provider | Server secret names | HTTPS allowlist host |
 | --- | --- | --- |
@@ -19,10 +26,26 @@ Restrict credential destinations to the corresponding data host. Neither integra
 requires a trading/order host. These are separate from `QUANTLAB_ALPACA_PAPER_*`
 broker credentials. No live-trading permission is enabled.
 
-Apply/publish environment changes and restart the dashboard server so new workers
-inherit them. Use the existing `QUANTLAB_RESEARCHER_TOKEN` through **Connect** to
-submit jobs. `/api/v1/workflows/providers` reports whether key names are configured
-without returning their values; it does not assert verified connectivity or entitlement.
+Apply/publish hosting/network or environment-key changes and restart the dashboard
+server as needed. Website-saved credentials apply to new jobs immediately. Use the
+existing `QUANTLAB_RESEARCHER_TOKEN` through **Connect** to submit jobs; managing
+credentials requires `QUANTLAB_OPERATOR_TOKEN`. Status reports configuration and
+source (dashboard/environment/none) without returning values; it does not verify
+connectivity or entitlement.
+
+**Remove** deletes the website-saved override and restores any environment keys
+for that provider. Saving Alpaca replaces both fields together. Running jobs keep
+their starting keys. HTTPS is required except on loopback connections; saving a key
+does not change hosting firewall rules or start a data download.
+
+Saved keys are Fernet-encrypted under `data/dashboard/credentials/providers.enc`.
+The directory is mode 0700 and files are mode 0600. A private local `master.key`
+is created automatically, so no encryption-key setup is required to use the page.
+For managed deployments, `QUANTLAB_CREDENTIALS_MASTER_KEY` can instead supply a
+Fernet encryption key outside the data volume. Back up the store and its original
+encryption key securely; losing or changing the key prevents decryption. File
+encryption and host filesystem permissions are separate protections, not a claim
+that another process with the same OS account cannot access the files.
 
 Actual checks on 2026-11-12 found all three key names absent and both HTTPS hosts
 denied with proxy `403 Forbidden`. The attached environment still allows only
@@ -101,9 +124,15 @@ Databento also documents retroactive Nasdaq instrument-ID and coverage changes
 effective October 31, 2026. Pin export versions and revalidate identity mappings
 after refreshes: [Nasdaq history changes](https://databento.com/blog/nasdaq-historical-data-changes-2026-09).
 
-Verification on 2026-11-12: **346 Python tests passed, 11 skipped**, **10 frontend
-tests passed**, **4 Chromium workflow tests passed**, production build and Ruff
+Verification on 2026-11-12: **355 Python tests passed, 11 skipped**, **13 frontend
+tests passed**, **6 Chromium workflow tests passed**, production build and Ruff
 passed. Tests cover pagination, raw/feed selection, half-day regular-session
 aggregation, cost/coverage refusal, cache separation and selected-provider-only
 worker credentials. Provider responses in tests are mocked; these checks do not
 establish real account entitlements or certify historical data completeness.
+
+Credential settings tests also cover encrypted files and permissions, persistence,
+operator-only mutations, HTTPS enforcement, validation-error redaction, removal,
+environment fallback and immediate worker injection. A separate real-browser check
+saved dummy keys through the actual backend, reloaded the page to verify empty
+inputs, and removed them. No real API keys or paid downloads were used.

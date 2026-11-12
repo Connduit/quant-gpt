@@ -13,6 +13,10 @@ Select Alpaca/SIP or IEX, or Databento/dataset and estimated cost cap. See
 The reserved equity holdout keeps end dates
 at or before 2018-12-31.
 
+Add or replace provider credentials through **API keys** in the sidebar, using an
+operator token. The Data library's **Manage API keys** link opens the same page.
+Saved keys are encrypted on the server and apply immediately to new jobs.
+
 Follow **Equity workflow jobs**. Open **View report** for per-symbol outcomes and
 download its JSON report. Partial downloads retain successful snapshots and report
 failed symbols. **Historical snapshot library** shows dates, counts, provider,

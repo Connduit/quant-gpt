@@ -31,9 +31,11 @@ import {
 import { Badge, Metric, Curve, JsonView, Table, ErrorBox } from "./components";
 import "./style.css";
 import { EquityWorkflows } from "./Workflows";
+import { ProviderSettings } from "./ProviderSettings";
 const pages: [string, string, React.ElementType][] = [
   ["", "Overview", Activity],
   ["datasets", "Data library", Database],
+  ["provider-settings", "API keys", LockKeyhole],
   ["research", "Research", FlaskConical],
   ["models", "Machine learning", BrainCircuit],
   ["discovery", "Discovery", ChartNoAxesCombined],
@@ -131,6 +133,7 @@ export function App() {
           <Routes>
             <Route path="/" element={<Overview />} />
             <Route path="/system" element={<System />} />
+            <Route path="/provider-settings" element={<ProviderSettings />} />
             <Route path="/:kind" element={<Artifacts />} />
           </Routes>
         </main>
