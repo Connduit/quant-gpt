@@ -1,0 +1,26 @@
+{
+  "credentials_configured": {
+    "APCA_API_KEY_ID": false,
+    "APCA_API_SECRET_KEY": false,
+    "DATABENTO_API_KEY": false
+  },
+  "network": {
+    "data.alpaca.markets": {
+      "error_type": "ProxyError",
+      "error": "403 Forbidden"
+    },
+    "hist.databento.com": {
+      "error_type": "ProxyError",
+      "error": "403 Forbidden"
+    }
+  },
+  "checked_at_utc": "2026-11-12T13:28:36.949798+00:00",
+  "network_policy": {
+    "custom_allowed_hosts": [
+      "stooq.com"
+    ],
+    "state": "enforced",
+    "observations_current": true
+  },
+  "paid_data_requested": false
+}

@@ -36,6 +36,15 @@ function mockApi() {
   vi.stubGlobal(
     "fetch",
     vi.fn(async (input: string) => {
+      if (input.includes("/workflows/snapshots") || input.endsWith("/jobs")) {
+        return new Response(
+          JSON.stringify({ items: [], errors: [], approved: [] }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }
       const data = input.includes("/health")
         ? {
             status: "LIMITED",

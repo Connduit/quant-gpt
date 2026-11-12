@@ -1,0 +1,12 @@
+{
+  "probe": "curl --max-time 30 -sS -D headers URL -o body",
+  "url": "https://stooq.com/q/d/l/?s=aapl.us&d1=20180102&d2=20180110&i=d",
+  "status": 200,
+  "content_type": "text/html; charset=utf-8",
+  "body_bytes": 796,
+  "body_sha256": "99ddf98f2195e5d0eded3793dc6884638e69788fc682f4e6a3b001dd9ec1a7a6",
+  "javascript_verification": true,
+  "response_date": "Thu, 12 Nov 2026 12:39:51 GMT",
+  "tls_verification": true,
+  "csv_valid": false
+}

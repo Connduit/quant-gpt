@@ -10,8 +10,6 @@ import polars as pl
 from quantlab.config import load_settings
 from quantlab.data.ingestion import ingest
 from quantlab.data.providers.base import DataRequest
-from quantlab.data.providers.fixture import FixtureProvider
-from quantlab.data.providers.stooq import StooqProvider
 from quantlab.data.storage import SnapshotStore
 from quantlab.logging import configure_logging
 
@@ -25,7 +23,17 @@ def parser() -> argparse.ArgumentParser:
     download.add_argument("symbol")
     download.add_argument("--start", type=date.fromisoformat, required=True)
     download.add_argument("--end", type=date.fromisoformat, required=True)
-    download.add_argument("--provider", choices=["stooq", "fixture", "lean"])
+    download.add_argument("--provider", choices=["alpaca", "databento", "stooq", "fixture", "lean"])
+    download.add_argument("--alpaca-feed", choices=["sip", "iex"], default="sip")
+    download.add_argument(
+        "--databento-dataset", choices=["XNAS.ITCH", "DBEQ.BASIC"], default="XNAS.ITCH"
+    )
+    download.add_argument(
+        "--maximum-download-cost",
+        type=float,
+        default=0,
+        help="Databento estimated USD cost cap; zero by default",
+    )
     download.add_argument("--refresh", action="store_true", help="Fetch a new vendor revision")
     download.add_argument("--extend", help="Append new sessions to this parent snapshot")
     imported = commands.add_parser(
@@ -332,14 +340,14 @@ def main(argv: list[str] | None = None) -> int:
                 refresh, extend = True, None
             else:
                 provider_name = args.provider or settings.provider
-                from quantlab.data.providers.lean import LeanProvider
+                from quantlab.data.providers.factory import create_provider
 
-                provider = (
-                    LeanProvider(timeout=settings.timeout_seconds)
-                    if provider_name == "lean"
-                    else FixtureProvider()
-                    if provider_name == "fixture"
-                    else StooqProvider(settings.timeout_seconds)
+                provider = create_provider(
+                    provider_name,
+                    timeout=settings.timeout_seconds,
+                    alpaca_feed=args.alpaca_feed,
+                    databento_dataset=args.databento_dataset,
+                    maximum_download_cost=args.maximum_download_cost,
                 )
                 refresh, extend = args.refresh, args.extend
             request = DataRequest(args.symbol, args.start, args.end)

@@ -2621,6 +2621,9 @@ discovery = [
 futures = [
     { name = "databento" },
 ]
+market-data = [
+    { name = "databento" },
+]
 ml = [
     { name = "joblib" },
     { name = "lightgbm" },
@@ -2636,6 +2639,7 @@ paper = [
 [package.metadata]
 requires-dist = [
     { name = "databento", marker = "extra == 'futures'", specifier = ">=0.60,<1" },
+    { name = "databento", marker = "extra == 'market-data'", specifier = ">=0.60,<1" },
     { name = "duckdb", specifier = ">=1.4,<3" },
     { name = "exchange-calendars", specifier = ">=4.11,<5" },
     { name = "fastapi", marker = "extra == 'dashboard'", specifier = ">=0.115,<1" },
@@ -2658,7 +2662,7 @@ requires-dist = [
     { name = "websockets", marker = "extra == 'paper'", specifier = ">=15,<17" },
     { name = "xgboost-cpu", marker = "extra == 'ml'", specifier = ">=3,<4" },
 ]
-provides-extras = ["dev", "ml", "agent", "dashboard", "paper", "futures", "discovery"]
+provides-extras = ["market-data", "dev", "ml", "agent", "dashboard", "paper", "futures", "discovery"]
 
 [[package]]
 name = "requests"

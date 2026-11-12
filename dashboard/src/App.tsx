@@ -30,6 +30,7 @@ import {
 } from "./api";
 import { Badge, Metric, Curve, JsonView, Table, ErrorBox } from "./components";
 import "./style.css";
+import { EquityWorkflows } from "./Workflows";
 const pages: [string, string, React.ElementType][] = [
   ["", "Overview", Activity],
   ["datasets", "Data library", Database],
@@ -363,6 +364,9 @@ function Artifacts() {
         </div>
       )}
       {kind === "live" && <LiveReadiness />}
+      {["datasets", "research", "models", "discovery"].includes(kind) && (
+        <EquityWorkflows key={kind} page={kind} />
+      )}
       <section className="panel">
         <div className="panel-title">
           <h3>Saved {title.toLowerCase()}</h3>

@@ -18,3 +18,4 @@ __pycache__/
 /deploy/*.env
 /deploy/operator-execution.yaml
 .env.*
+/work/

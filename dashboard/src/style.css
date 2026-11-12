@@ -560,3 +560,56 @@ footer span {
     gap: 15px;
   }
 }
+/* Historical acquisition and equity research forms. */
+.equity-workflow form {
+  padding: 0 20px 20px;
+}
+.workflow-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin: 18px 0;
+}
+.workflow-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+}
+.workflow-fields input,
+.workflow-fields select {
+  width: 100%;
+  min-width: 0;
+}
+.workflow-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin: 10px 0;
+}
+.workflow-check input {
+  width: 16px;
+  min-width: 0;
+  padding: 0;
+}
+.workflow-models {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.equity-workflow fieldset {
+  border: 1px solid #293649;
+  border-radius: 8px;
+  padding: 10px 16px;
+}
+.snapshot-id {
+  display: block;
+  font-size: 11px;
+  opacity: 0.75;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+.workflow-report {
+  margin-top: 20px;
+}

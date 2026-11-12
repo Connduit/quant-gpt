@@ -58,39 +58,35 @@ immutable revision; old snapshots remain unchanged. JSON logs go to stderr and
 JSON results to stdout. Failures return a nonzero exit code without publishing
 partial snapshots.
 
-## Free historical equities
+## Historical equities
 
-The adapter uses [Stooq's daily CSV endpoint](https://stooq.com/q/d/?s=spy.us),
-which requires no paid subscription or API key:
+Alpaca is the default provider; Databento is available with an explicit dataset
+and estimated download-cost cap. Configure [server secrets and data-host access](docs/market-data-setup.md),
+then use the Data library dashboard forms, or optionally:
 
 ```bash
 uv run quantlab --config configs/data.toml download SPY \
-  --provider stooq --start 2024-01-02 --end 2024-01-08
+  --provider alpaca --alpaca-feed sip --start 2018-12-03 --end 2018-12-31
 ```
 
-Use local US tickers such as `SPY` or `AAPL`; the adapter adds the vendor's `.us`
-suffix. Dates are inclusive and must precede today's UTC date. Only daily US
-equities with XNYS-compatible sessions are supported. Check current vendor usage
-and redistribution terms before using or sharing downloads. Rate limits,
-unavailable symbols, CAPTCHA responses and source changes produce errors,
-never a silent fixture fallback. There are no automatic retries.
-
-**Cloud access:** Stooq remains blocked by the enforced proxy allowlist. The
-working `lean` fallback has verified real HTTPS downloads and immutable snapshots
-for SPY and seven stocks. See [connectivity evidence, integration tests and data
-limitations](docs/market-data-verification.md). Offline tests need no network.
+Raw minute data is aggregated over regular XNYS sessions, then validated and saved
+as immutable daily snapshots. Feed/dataset variants have separate cache identities.
+Databento checks coverage and estimated cost before each stream; its default cap
+is zero. Stooq/LEAN remain explicit legacy CLI options for reproducibility, with
+no automatic fallback. Current cloud probes found missing keys and blocked data
+hosts; live provider access is not yet verified. Offline tests need no network.
 
 ## Configuration
 
 `--config configs/data.toml` is explicit; configuration files are not auto-loaded.
-Defaults: `./data`, provider `stooq`, 30-second timeout and `INFO` logging.
+Defaults: `./data`, provider `alpaca`, 30-second timeout and `INFO` logging.
 TOML paths resolve relative to the configuration file.
 
 Environment overrides: `QUANTLAB_DATA_DIR`, `QUANTLAB_PROVIDER`,
 `QUANTLAB_TIMEOUT_SECONDS`, `QUANTLAB_LOG_LEVEL`. Environment paths and CLI
 `--data-dir` paths resolve relative to the current directory. CLI `--data-dir`
 and download `--provider` take precedence. Unknown keys and invalid values fail.
-Global options precede subcommands. Neither provider needs API secrets.
+Global options precede subcommands. Alpaca and Databento require server-side keys.
 
 ## Backtesting demonstration
 
@@ -244,6 +240,14 @@ Open `http://127.0.0.1:8000`. The dashboard inspects curated research, models,
 validation, backtests, portfolios and journaled paper state. Default local access
 is read-only; confirmed writes require role tokens. See [operation](docs/dashboard.md),
 [verification](docs/milestone-9-results.md), and [screenshot](docs/dashboard-overview.png).
+
+The Data library now includes historical-download and immutable-snapshot forms.
+Alpaca is the default, with Databento as an explicit alternative. Configure
+[provider secrets and data hosts](docs/market-data-setup.md) before downloading.
+Machine learning and Discovery include bounded equity research forms, snapshot
+selection, job cancellation and downloadable reports. These require researcher
+access and eligible pre-holdout inputs; Stooq-only snapshots do not satisfy the
+raw-price/action/PIT research gate. See [guided workflows](docs/dashboard-workflows.md).
 
 ## Bounded research agent
 

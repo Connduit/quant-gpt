@@ -1,5 +1,9 @@
 # Dashboard operation
 
+The [guided historical-data and equity workflows](dashboard-workflows.md) add
+download/snapshot forms, ML training, bounded discovery, cancellation and job reports.
+They retain researcher authorization, data eligibility and holdout protections.
+
 The [full request](milestone-9-instructions.md) and [architecture plan](dashboard-architecture.md)
 are saved. The dashboard uses React/TypeScript/Vite, React Router, TanStack Query,
 Recharts and a FastAPI v1 API. Its [browser screenshot](dashboard-overview.png)

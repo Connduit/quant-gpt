@@ -38,6 +38,16 @@ class SnapshotStore:
                 raise ValueError(f"Snapshot checksum mismatch: {filename}")
         return metadata
 
+    def prefix_manifest(self, snapshot_id: str, cutoff) -> dict:
+        """Check identity and declared prefix bounds without opening either price payload."""
+        directory = self._path(snapshot_id)
+        metadata = json.loads((directory / "manifest.json").read_text())
+        if digest(json.dumps(metadata, sort_keys=True).encode()) != snapshot_id:
+            raise ValueError("Prefix manifest checksum mismatch")
+        if metadata["request"]["end"] >= str(cutoff):
+            raise ValueError("Prefix-only research cannot open a holdout archive")
+        return metadata
+
     def find_cached(self, provider: str, request: DataRequest) -> str | None:
         candidates = []
         for path in self.root.glob("*/manifest.json"):

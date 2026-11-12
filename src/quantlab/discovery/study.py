@@ -123,7 +123,7 @@ def run_batch(config_path: Path, root: Path, parameter_sets: list[dict]):
     return results
 
 
-def run_study(config_path: Path, root: Path, resume=False):
+def run_study(config_path: Path, root: Path, resume=False, *, prefix_only=False):
     config = load_study(config_path)
     root = root.resolve()
     root.mkdir(parents=True, exist_ok=True)
@@ -132,13 +132,13 @@ def run_study(config_path: Path, root: Path, resume=False):
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
             raise ValueError("Another study controller is active in this registry") from exc
-        return _run(config, config_path, root, resume)
+        return _run(config, config_path, root, resume, prefix_only=prefix_only)
 
 
-def _run(config, config_path, root, resume):
+def _run(config, config_path, root, resume, *, prefix_only=False):
     started = time.monotonic()
     engine = ExperimentEngine(root, config.name, config.resources)
-    base = prepare(config, root)
+    base = prepare(config, root, prefix_only=prefix_only)
     policy = {
         "config": asdict(config),
         "data": {k: v for k, v in base.items() if k != "git_commit"},

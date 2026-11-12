@@ -1,5 +1,9 @@
 # Phase 12 initial research campaign
 
+Continuation: [Phase 12A connectivity and provider evaluation](phase12a-results.md)
+records the updated allowlist, fresh Stooq failures, missing local retained data,
+and the documented Norgate limitations. The original audit below is historical.
+
 **P12-EQ-001 is BLOCKED_DATA. No new model was fitted, no strategy trial was run,
 and no candidate was promoted.** The current data passes engineering checks but
 cannot meet the scientific data requirements in the [full request](instructions.md).

@@ -23,11 +23,15 @@ from quantlab.research.config import Experiment, load_experiment
 from quantlab.strategies.ranking import RankingStrategy
 
 
-def run_experiment(config_path: Path, output: Path) -> dict:
+def run_experiment(config_path: Path, output: Path, *, prefix_only=False) -> dict:
     config = load_experiment(config_path)
     if output.exists():
         raise ValueError("Research output exists; use a new directory")
     store = SnapshotStore(config.data_dir)
+    if prefix_only:
+        for entry in config.snapshots.values():
+            sid = entry["snapshot_id"] if isinstance(entry, dict) else entry
+            store.prefix_manifest(sid, config.holdout_start)
     feeds = {}
     for symbol, entry in config.snapshots.items():
         actions = None
@@ -52,6 +56,7 @@ def run_experiment(config_path: Path, output: Path) -> dict:
         config.horizon,
         config.features,
         config.sectors,
+        prefix_only=prefix_only,
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = Path(tempfile.mkdtemp(prefix=".pending-research-", dir=output.parent))

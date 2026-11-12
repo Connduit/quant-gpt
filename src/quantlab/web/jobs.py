@@ -1,6 +1,7 @@
 """Fixed, administrator-approved research jobs outside request handlers."""
 
 import hashlib
+import json
 import os
 import signal
 import sqlite3
@@ -66,6 +67,53 @@ class JobManager:
         self.pool.submit(self._run, identity, name)
         return identity
 
+    def submit_workflow(self, workflow, payload, library, workspace):
+        """Persist a typed request before enqueueing; callers supply no command/path arguments."""
+        from quantlab.web.workflows import DownloadRequest, ResearchRequest
+
+        if workflow not in ("download", "training", "discovery"):
+            raise ValueError("Unsupported dashboard workflow")
+        model = DownloadRequest if workflow == "download" else ResearchRequest
+        checked = model.model_validate(payload)
+        if workflow != "download" and checked.workflow != workflow:
+            raise ValueError("Workflow does not match request")
+        name = f"{workflow}-{uuid.uuid4().hex}"
+        directory = self.root / "requests"
+        directory.mkdir(exist_ok=True)
+        path = directory / f"{name}.json"
+        path.write_text(
+            json.dumps(
+                {
+                    "workflow": workflow,
+                    "payload": checked.model_dump(mode="json"),
+                    "library": str(Path(library).resolve()),
+                }
+            )
+        )
+        self.approved[name] = {
+            "arguments": ["dashboard-workflow"],
+            "configuration": str(path),
+            "configuration_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "workspace": str(workspace),
+            "wall_seconds": 1200,
+        }
+        try:
+            return self.submit(name)
+        except BaseException:
+            self.approved.pop(name, None)
+            path.unlink(missing_ok=True)
+            raise
+
+    def result(self, identity):
+        if not any(row["id"] == identity for row in self.rows()):
+            raise KeyError(identity)
+        path = self.root / identity / "artifacts" / "result.json"
+        if not path.exists():
+            return None
+        if path.stat().st_size > 20 * 1024**2:
+            raise ValueError("Job report exceeds size budget")
+        return json.loads(path.read_text())
+
     def _status(self, identity, status, detail=""):
         with self.connection() as db:
             db.execute("UPDATE jobs SET status=?,detail=? WHERE id=?", (status, detail, identity))
@@ -84,7 +132,12 @@ class JobManager:
             self._status(identity, "FAILED", "Invalid administrator job arguments")
             return
         # Allow only reviewed CLI workflows; no shell and no user-selected command.
-        if args[:2] not in (["futures", "research"], ["validate", "run"], ["agent", "run"]):
+        workflow = args == ["dashboard-workflow"]
+        if not workflow and args[:2] not in (
+            ["futures", "research"],
+            ["validate", "run"],
+            ["agent", "run"],
+        ):
             self._status(identity, "FAILED", "Unsupported approved workflow")
             return
         with self.connection() as db:
@@ -111,13 +164,32 @@ class JobManager:
         }
         if args[:2] == ["agent", "run"] and "--scripted-engineering" not in args:
             allowed.add("QUANTLAB_LLM_API_KEY")
+        if workflow:
+            configuration = json.loads(Path(specification["configuration"]).read_text())
+            if configuration["workflow"] == "download":
+                if configuration["payload"].get("provider", "alpaca") == "alpaca":
+                    allowed.update(("APCA_API_KEY_ID", "APCA_API_SECRET_KEY"))
+                elif configuration["payload"]["provider"] == "databento":
+                    allowed.add("DATABENTO_API_KEY")
         env = {k: v for k, v in os.environ.items() if k in allowed}
         env["CUDA_VISIBLE_DEVICES"] = ""
         env["POLARS_MAX_THREADS"] = "1"
+        for variable in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
+            env[variable] = "1"
         try:
             with (output / "worker.log").open("w") as log:
                 command = [sys.executable, "-m", "quantlab", *args]
-                if args[:2] != ["agent", "run"]:
+                if workflow:
+                    command = [
+                        sys.executable,
+                        "-m",
+                        "quantlab.web.workflow_worker",
+                        "--spec",
+                        specification["configuration"],
+                        "--output",
+                        str(output / "artifacts"),
+                    ]
+                elif args[:2] != ["agent", "run"]:
                     command.extend(["--output", str(output / "artifacts")])
                 process = subprocess.Popen(
                     command,
@@ -147,10 +219,21 @@ class JobManager:
                             self._status(identity, "FAILED", "Outer wall-time budget exhausted")
                         return
                     time.sleep(0.1)
+                with self.connection() as db:
+                    state = db.execute("SELECT status FROM jobs WHERE id=?", (identity,)).fetchone()
+                if state and state[0] == "CANCELLED":
+                    return
+                result = self.result(identity) if workflow else None
                 self._status(
                     identity,
-                    "COMPLETED" if process.returncode == 0 else "FAILED",
-                    f"exit={process.returncode}",
+                    result["status"]
+                    if result
+                    else "COMPLETED"
+                    if process.returncode == 0
+                    else "FAILED",
+                    str(result.get("reason", result.get("note", "")))[:1000]
+                    if result
+                    else f"exit={process.returncode}",
                 )
         except (OSError, ValueError) as exc:
             self._status(identity, "FAILED", type(exc).__name__)

@@ -34,16 +34,23 @@ def load_feeds(config, directory):
     return feeds
 
 
-def prepare(config, root: Path) -> dict:
+def prepare(config, root: Path, *, prefix_only=False) -> dict:
     experiment = load_experiment(config.experiment)
     version = code_version()
+    if prefix_only:
+        # This path must never open an original archive containing protected rows.
+        for value in experiment.snapshots.values():
+            sid = value["snapshot_id"] if isinstance(value, dict) else value
+            SnapshotStore(experiment.data_dir).prefix_manifest(sid, experiment.holdout_start)
     source_feeds = load_feeds(experiment, config.experiment.parent)
     cutoff = experiment.holdout_start
-    if any(
+    if not prefix_only and any(
         not d.bars[0].session_date < cutoff <= d.bars[-1].session_date
         for d in source_feeds.values()
     ):
         raise ValueError("A real reserved holdout range is required in every original input")
+    if prefix_only and any(d.bars[-1].session_date >= cutoff for d in source_feeds.values()):
+        raise ValueError("Protected rows found in a declared development prefix")
     identity = {
         "sources": {s: d.snapshot_id for s, d in source_feeds.items()},
         "actions": {s: asdict(d.actions) for s, d in source_feeds.items()},
@@ -53,6 +60,7 @@ def prepare(config, root: Path) -> dict:
         "universe": experiment.universe,
         "sectors": experiment.sectors,
         "horizons": config.horizons,
+        **({"prefix_only": True} if prefix_only else {}),
     }
     seal_id = fingerprint(identity)
     parent = root / "sealed"

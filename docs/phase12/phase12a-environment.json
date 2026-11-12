@@ -1,0 +1,15 @@
+{
+  "environment_id": "ccarenv_b64_Y2NhcmVudl9hN2ZkY2I3YjIzNDA4MTkxODJmNjliZTliMWM1YTYzOA",
+  "source_config_version_id": "7d4fecfd80c2f65a2b956b16a6f9bdf287c55453c03b07911e7a55a759a2d253~cecfgver_6af53f18dad081958e118f30ee526040",
+  "spec_revision": "1",
+  "observed_spec_revision": "1",
+  "observations_current": true,
+  "network_policy": {
+    "state": "enforced",
+    "mode": "restricted",
+    "allowed_hosts": [
+      "stooq.com"
+    ]
+  },
+  "checked_on_utc": "2026-11-12"
+}

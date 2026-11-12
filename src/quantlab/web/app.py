@@ -20,9 +20,16 @@ from pydantic import BaseModel, ConfigDict, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from quantlab.agent.memory import Memory
+from quantlab.data.providers.factory import provider_status
 from quantlab.paper.store import PaperStore
 from quantlab.web.catalog import KINDS, Catalog
 from quantlab.web.jobs import JobManager
+from quantlab.web.workflows import (
+    DownloadRequest,
+    ResearchRequest,
+    selected_snapshots,
+    snapshot_inventory,
+)
 
 
 class Artifact(BaseModel):
@@ -106,6 +113,7 @@ def create_app(
     local_reads=True,
     approved_jobs=None,
     frontend=None,
+    workflow_library=None,
 ):
     tokens = tokens or {}
     if any(
@@ -114,6 +122,7 @@ def create_app(
     ):
         raise ValueError("Unique role tokens must contain at least 24 characters")
     jobs = JobManager(Path(state_root) / "jobs", approved_jobs)
+    library = Path(workflow_library or (Path(state_root) / "library")).resolve()
     audit = Path(state_root) / "api-audit.jsonl"
     audit.parent.mkdir(parents=True, exist_ok=True)
 
@@ -296,7 +305,60 @@ def create_app(
 
     @app.get("/api/v1/jobs")
     def list_jobs(assigned=access):
-        return {"items": jobs.rows(), "approved": sorted(jobs.approved)}
+        return {
+            "items": jobs.rows(),
+            "approved": sorted(
+                name
+                for name, spec in jobs.approved.items()
+                if spec["arguments"] != ["dashboard-workflow"]
+            ),
+        }
+
+    @app.get("/api/v1/workflows/snapshots")
+    def workflow_snapshots(assigned=access):
+        return snapshot_inventory(library)
+
+    @app.get("/api/v1/workflows/providers")
+    def workflow_providers(assigned=access):
+        return provider_status()
+
+    @app.post("/api/v1/workflows/download", status_code=202)
+    def workflow_download(body: DownloadRequest, assigned=access):
+        require(assigned, ("researcher",))
+        identity = jobs.submit_workflow(
+            "download", body.model_dump(mode="json"), library, catalog.workspace
+        )
+        log(
+            "historical_download",
+            assigned,
+            {"id": identity, "request": body.model_dump(mode="json")},
+        )
+        return {"id": identity, "status": "QUEUED"}
+
+    @app.post("/api/v1/workflows/research", status_code=202)
+    def workflow_research(body: ResearchRequest, assigned=access):
+        require(assigned, ("researcher",))
+        try:
+            selected_snapshots(library, body)
+        except FileNotFoundError as exc:
+            raise HTTPException(422, "Selected snapshot is not available in the library") from exc
+        identity = jobs.submit_workflow(
+            body.workflow, body.model_dump(mode="json"), library, catalog.workspace
+        )
+        log(
+            "equity_" + body.workflow,
+            assigned,
+            {"id": identity, "request": body.model_dump(mode="json")},
+        )
+        return {"id": identity, "status": "QUEUED"}
+
+    @app.get("/api/v1/workflows/jobs/{identity}")
+    def workflow_result(identity: str, assigned=access):
+        try:
+            result = jobs.result(identity)
+        except KeyError as exc:
+            raise HTTPException(404, "Unknown job") from exc
+        return {"result": catalog.redact(result)}
 
     @app.post("/api/v1/jobs", status_code=202)
     def submit_job(body: JobRequest, assigned=access):
@@ -507,5 +569,6 @@ def from_environment():
         tokens=tokens,
         local_reads=bind in ("127.0.0.1", "::1", "localhost"),
         approved_jobs=approved,
+        workflow_library=os.environ.get("QUANTLAB_WORKFLOW_LIBRARY"),
         frontend=workspace / "dashboard/dist",
     )

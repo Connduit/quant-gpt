@@ -72,6 +72,7 @@ def build_dataset(
     sectors: dict[str, str] | None = None,
     *,
     development_only: bool = False,
+    prefix_only: bool = False,
     feature_cache: dict | None = None,
 ) -> Dataset:
     features = features or FeatureConfig()
@@ -96,6 +97,13 @@ def build_dataset(
             d.manifest["provider"] != "discovery-development" for d in feeds.values()
         ):
             raise ValueError("Discovery requires sealed pre-holdout development prefixes")
+    elif prefix_only:
+        if any(
+            d.bars[-1].session_date >= holdout_start
+            or d.manifest["request"]["end"] >= str(holdout_start)
+            for d in feeds.values()
+        ):
+            raise ValueError("Prefix-only research requires physically pre-holdout snapshots")
     elif not reference[0].session_date < holdout_start <= reference[-1].session_date:
         raise ValueError("Reserve a final holdout inside the supplied history")
     names = tuple(definitions(features, bool(sectors)))

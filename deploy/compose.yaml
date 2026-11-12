@@ -10,7 +10,11 @@ services:
     environment:
       QUANTLAB_VIEWER_TOKEN: ${QUANTLAB_VIEWER_TOKEN:?set a distinct 24+ character viewer token}
       QUANTLAB_OPERATOR_TOKEN: ${QUANTLAB_OPERATOR_TOKEN:-}
-      # Researcher and brokerage credentials are intentionally absent.
+      QUANTLAB_RESEARCHER_TOKEN: ${QUANTLAB_RESEARCHER_TOKEN:-}
+      APCA_API_KEY_ID: ${APCA_API_KEY_ID:-}
+      APCA_API_SECRET_KEY: ${APCA_API_SECRET_KEY:-}
+      DATABENTO_API_KEY: ${DATABENTO_API_KEY:-}
+      # Data jobs get only their selected provider credentials; broker keys are absent.
     ports: ['127.0.0.1:8000:8000']
     volumes:
       - dashboard-state:/app/data/dashboard

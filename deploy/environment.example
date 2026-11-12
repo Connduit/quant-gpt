@@ -2,9 +2,13 @@
 # Only the viewer token is required for the default monitoring deployment.
 QUANTLAB_VIEWER_TOKEN=
 QUANTLAB_OPERATOR_TOKEN=
+QUANTLAB_RESEARCHER_TOKEN=
 # Broker sandbox profile only; use PAPER credentials, never real-money keys.
 QUANTLAB_ALPACA_PAPER_KEY=
 QUANTLAB_ALPACA_PAPER_SECRET=
 QUANTLAB_SANDBOX_AUTHORIZATION_KEY=
 APCA_API_KEY_ID=
 APCA_API_SECRET_KEY=
+DATABENTO_API_KEY=
+# Alpaca market data: data.alpaca.markets (no broker host required).
+# Databento historical data: hist.databento.com. Enter secrets outside Git.

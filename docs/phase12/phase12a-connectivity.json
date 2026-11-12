@@ -1,0 +1,42 @@
+{
+  "checked_at_utc": "2026-11-12T12:41:53.474030+00:00",
+  "source_commit": "f8d2717b886cc037943da8ac05188c25c5526a6d",
+  "script_sha256": "da3b8e3fd527546e9cca1c62cefaf00a6778c8dbd31355ae5d9d0a0cb61ef764",
+  "probe_request": {
+    "symbol": "AAPL",
+    "start": "2018-01-02",
+    "end": "2018-01-10"
+  },
+  "tls_verification": true,
+  "proxy": "inherited environment; no bypass",
+  "snapshots": [],
+  "status": "BLOCKED_DATA",
+  "new_model_fits": 0,
+  "new_strategy_trials": 0,
+  "holdout_payloads_read": false,
+  "live_trading_enabled": false,
+  "historical_artifacts_present": {
+    "data/network-verification/real-inputs/data_quality.json": false,
+    "data/network-verification/holdout-vault.sqlite": false,
+    "data/futures/holdout-vault.sqlite": false
+  },
+  "direct": {
+    "status": 404,
+    "content_type": "text/html",
+    "bytes": 271,
+    "sha256": "03fa6d7ffcac125ba680b7558912f278abec5a5685a4fee3c26a023b32354115",
+    "csv_header": false,
+    "javascript_verification": false,
+    "url": "https://stooq.com/q/d/l/?s=aapl.us&d1=20180102&d2=20180110&i=d"
+  },
+  "application_provider": {
+    "status": "FAILED",
+    "error": "Stooq HTTP status 404; check provider/access policy",
+    "error_type": "ProviderHTTPError"
+  },
+  "blockers": [
+    "No certified full corporate-action, delisting-return, identifier and PIT universe bundle.",
+    "Restore historical ignored data and canonical ledgers if absent; do not recreate them.",
+    "Independent confirmation plan and prefix-only research adapter remain prerequisites."
+  ]
+}

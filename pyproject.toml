@@ -17,6 +17,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+market-data = ["databento>=0.60,<1"]
 dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
 ml = ["scikit-learn>=1.6,<2", "lightgbm>=4.6,<5", "xgboost-cpu>=3,<4", "PyYAML>=6,<7", "joblib>=1.4,<2"]
 agent = ["pydantic>=2,<3"]

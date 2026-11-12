@@ -10,7 +10,7 @@ from pathlib import Path
 @dataclass(frozen=True)
 class Settings:
     data_dir: Path = Path("data")
-    provider: str = "stooq"
+    provider: str = "alpaca"
     timeout_seconds: float = 30.0
     log_level: str = "INFO"
 
@@ -37,9 +37,9 @@ def load_settings(path: Path | None = None) -> Settings:
         # Environment path overrides are relative to the invoking directory.
         root = Path.cwd() if "QUANTLAB_DATA_DIR" in os.environ else base
         data_dir = root / data_dir
-    provider = values.get("provider", "stooq")
-    if provider not in ("stooq", "fixture", "lean"):
-        raise ValueError("provider must be stooq, fixture or lean")
+    provider = values.get("provider", "alpaca")
+    if provider not in ("alpaca", "databento", "stooq", "fixture", "lean"):
+        raise ValueError("provider must be alpaca, databento, stooq, fixture or lean")
     timeout = float(values.get("timeout_seconds", 30))
     if not math.isfinite(timeout) or not 0 < timeout <= 300:
         raise ValueError("timeout_seconds must be between 0 and 300")
