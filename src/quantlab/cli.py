@@ -110,6 +110,32 @@ def parser() -> argparse.ArgumentParser:
             command.add_argument("--output", type=Path, required=True)
         else:
             command.add_argument("--reports", type=Path, nargs="+", required=True)
+    portfolio = commands.add_parser("portfolio", help="Multi-strategy research portfolios")
+    portfolio_sub = portfolio.add_subparsers(dest="portfolio_command", required=True)
+    for name in ("backtest", "stress", "report", "risk", "strategies"):
+        command = portfolio_sub.add_parser(name)
+        if name in ("backtest", "stress"):
+            command.add_argument("--portfolio-config", type=Path, required=True)
+            command.add_argument("--output", type=Path, required=True)
+        else:
+            command.add_argument("--report", type=Path, required=True)
+    create = portfolio_sub.add_parser("create")
+    create.add_argument("--output-config", type=Path, required=True)
+    create.add_argument("--source-validation", type=Path, required=True)
+    create.add_argument("--verified-inputs", type=Path, required=True)
+    create.add_argument("--start", required=True)
+    create.add_argument("--end", required=True)
+    register = portfolio_sub.add_parser("register")
+    register.add_argument("--portfolio-config", type=Path, required=True)
+    register.add_argument("--name", required=True)
+    register.add_argument("--strategy-id", required=True)
+    allocation = portfolio_sub.add_parser("allocate")
+    allocation.add_argument("--portfolio-config", type=Path, required=True)
+    allocation.add_argument(
+        "--method",
+        choices=("equal", "fixed", "inverse_volatility", "risk_parity", "volatility_target"),
+        required=True,
+    )
     return result
 
 
@@ -120,6 +146,10 @@ def main(argv: list[str] | None = None) -> int:
         settings = load_settings(args.config)
         configure_logging(settings.log_level)
         store = SnapshotStore(args.data_dir or settings.data_dir)
+        if args.command == "portfolio":
+            from quantlab.portfolio.cli import execute
+
+            return execute(args)
         if args.command == "validate":
             from quantlab.statistical.cli import execute
 

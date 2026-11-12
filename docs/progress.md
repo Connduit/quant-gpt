@@ -13,7 +13,7 @@ additional markets) and the blueprint's 12 core capabilities are separate concep
 | 3 — Feature engineering and ML | Implemented: 46 default causal features, execution-aligned targets, purged walk-forward folds, five CPU model families, OOS ranking portfolios, comparisons and exports. See verification below. |
 | 4 — Automated strategy discovery | Implemented: bounded Optuna search, local MLflow, immutable registry, resource isolation, eligibility and robustness. See results below. |
 | 5 — Statistical validation | Implemented: interval checks, advanced folds, holdout-use ledger, bootstrap uncertainty, Sharpe/search corrections, robustness and conservative status reports. |
-| 6 — Portfolio construction and risk management | Not started. Milestone 2 enforces only its cash/long-only account constraints. |
+| 6 — Portfolio construction and risk management | Implemented for cash equities: shared account, strategy attribution/netting, baseline allocations, risk/sizing, suspensions, rebalancing and stress reports. |
 | 7 — Futures research | Not started. |
 | 8 — Paper trading | Not started. |
 | 9 — Dashboard | Not started. |
@@ -82,3 +82,7 @@ The [full instructions](milestone-4-instructions.md) and [data requirements](mil
 ## Milestone 5 verification and scope
 
 The [full request](milestone-5-instructions.md), [audit](statistical-validation-audit.md), [methodology](statistical-validation.md) and [actual results](milestone-5-results.md) are recorded. **197 tests passed**, three live tests skipped by default; the explicit live run passed all three. Lint, formatting and package builds passed. Four real-data candidates and eight distinct robustness scenarios were rejected. No candidate qualifies for paper trading. All 252 reserved 2019 sessions remained unevaluated; the holdout ledger is SEALED. Action/universe certification and independent confirmation remain missing. Milestone 6 is not implemented in this verification.
+
+## Milestone 6 verification and scope
+
+The [full instructions](milestone-6-instructions.md), [design](portfolio.md), [results](milestone-6-results.md) and [Stooq runtime recheck](stooq-reverification.md) are preserved. **218 tests passed**, three live checks skipped by default. Nine real-data portfolio/stress runs reconciled attribution. Equal weighting returned -3.339%, inverse volatility -5.154%, versus SPY +12.093% in the selected 2017–2018 period. Both evaluated candidates remain rejected/research-only, with no final holdout access or paper promotion. Later milestone requests are saved and queued in order.

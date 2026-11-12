@@ -1,0 +1,53 @@
+name: research_only_rejected_candidates
+mode: research
+validation_report: ../data/statistical/milestone-5-final/validation.json
+verified_inputs: ../data/network-verification/real-inputs
+strategies:
+- name: return_xgboost
+  strategy_id: 6246e0bf1e87d7d4c1abdc289f6bff5bb782957b51eae6a6a28a59ac8171822d
+  paper_approved: false
+- name: excess_random_forest
+  strategy_id: b31393bc502f3d0388c66da88a8c7274bca76d187525e903a90dedfc273e9222
+  paper_approved: false
+start: '2017-01-03'
+end: '2018-12-31'
+holdout_start: '2019-01-02'
+allocation_methods:
+- equal
+- inverse_volatility
+- risk_parity
+- volatility_target
+allocation:
+  cash_buffer: 0.1
+  target_volatility: 0.12
+  minimum_history: 20
+risk:
+  maximum_gross: 0.9
+  maximum_net: 0.9
+  maximum_position: 0.35
+  maximum_sector: 0.6
+  maximum_correlated: 0.7
+  maximum_strategy: 0.6
+  maximum_leverage: 1
+  maximum_daily_loss: 0.03
+  maximum_drawdown: 0.15
+  maximum_strategy_drawdown: 0.2
+rebalance:
+  schedule: weekly
+  threshold: 0.005
+  minimum_trade_value: 100
+  maximum_turnover: 0.4
+execution:
+  initial_cash: '100000'
+  commission_per_share: '.005'
+  slippage_bps: 5
+  spread_bps: 2
+sectors:
+  AAPL: technology
+  AIG: financials
+  BAC: financials
+  FB: communications
+  GOOGL: communications
+  IBM: technology
+  WM: industrials
+  SPY: benchmark

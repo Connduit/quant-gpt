@@ -1,0 +1,24 @@
+{
+  "home": {
+    "error_type": "ProxyError",
+    "error": "403 Forbidden"
+  },
+  "historical": {
+    "error_type": "ProxyError",
+    "error": "403 Forbidden"
+  },
+  "application": {
+    "success": false,
+    "error_type": "ProviderNetworkError",
+    "error": "Stooq network request failed (ProxyError); check proxy allowlist, connectivity and CA trust",
+    "cause_type": "ProxyError",
+    "cause": "403 Forbidden"
+  },
+  "runtime": {
+    "observed_revision": "1",
+    "observations_current": true,
+    "network_policy_state": "enforced",
+    "stooq_in_effective_allowlist": false,
+    "custom_allowed_hosts": []
+  }
+}

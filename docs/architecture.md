@@ -72,3 +72,13 @@ reports contain complete recorded search scope, fold metrics, uncertainty,
 multiple-testing sensitivity, robustness lineage and conservative statuses.
 No final evaluator is invoked and no brokerage execution is added. See the
 [methodology](statistical-validation.md) and [pipeline audit](statistical-validation-audit.md).
+
+## Milestone 6 portfolios
+
+`portfolio/` adds past-only allocation, contract-aware sizing helpers, risk limits,
+virtual strategy claims and shared-account orchestration. Optional replay hooks
+observe actions/fills/closes and check opening risk; original strategy defaults
+remain unchanged. Cash/quantities/receivables/equity reconcile to one authoritative
+account. No live adapter or futures cash accounting is introduced here. See
+[portfolio design](portfolio.md) for netting, ownership, limits and explicit
+suspension/one-time stress-cap policies.

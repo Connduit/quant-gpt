@@ -1,7 +1,7 @@
 # Quant Research Lab
 
 CPU-compatible historical US equities infrastructure and daily event-driven
-backtesting, causal features and CPU machine learning research. Milestones 1–5
+backtesting, causal features and CPU machine learning research. Milestones 1–6
 are implemented, including bounded discovery and statistical validation.
 
 The [complete project blueprint and roadmap](docs/blueprint.md) preserves the
@@ -190,4 +190,16 @@ holdout consumption controls, block-bootstrap uncertainty, PSR/DSR, search-histo
 corrections and execution robustness. Reused development windows are labeled as
 diagnostics; no final holdout is evaluated. See [methodology](docs/statistical-validation.md),
 [audit](docs/statistical-validation-audit.md) and [results](docs/milestone-5-results.md).
-Milestone 6 has not started.
+Milestone 6 now provides research-only multi-strategy portfolios.
+
+## Multi-strategy portfolios
+
+```bash
+uv run --frozen --all-extras python examples/portfolio_demo.py --output data/portfolios/NEW_RUN --stress
+```
+
+One shared cash account, strategy attribution/netting, equal/fixed/inverse-volatility/
+risk-parity/volatility-target allocations, sizing, pre-trade risk controls,
+suspensions and stress reports. The real example uses two rejected candidates
+for research mechanics only; neither is promoted. See [design](docs/portfolio.md)
+and [actual results](docs/milestone-6-results.md).

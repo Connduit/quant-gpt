@@ -71,6 +71,8 @@ def _replay(data, strategy, config):
     first = next(iter(feeds.values()))
     end = first.bars[-1].close_time
     portfolio = Portfolio(config.initial_cash)
+    if hasattr(strategy, "on_start"):
+        strategy.on_start(portfolio, feeds, config)
     orders: list[Order] = []
     trades, signals, action_log, equity, positions = [], [], [], [], []
     histories: dict[str, list[Bar]] = {s: [] for s in feeds}
@@ -178,6 +180,18 @@ def _replay(data, strategy, config):
             for order in sorted(orders, key=lambda o: (o.side != Side.SELL, o.order_id)):
                 if order.status != OrderStatus.PENDING or order.submitted_at >= now:
                     continue
+                if hasattr(strategy, "before_fill"):
+                    approved = strategy.before_fill(
+                        order, openings[order.symbol], MappingProxyType(observed_prices.copy())
+                    )
+                    if approved < 0 or approved > order.quantity:
+                        raise ValueError("Risk hook returned invalid approved quantity")
+                    if not approved:
+                        order.status, order.reason = OrderStatus.REJECTED, "portfolio_risk_rejected"
+                        order.resolved_at = now
+                        continue
+                    if approved < order.quantity:
+                        order.quantity, order.reason = approved, "portfolio_risk_reduced"
                 fill = config.costs.fill(order, openings[order.symbol])
                 try:
                     realized = portfolio.apply_fill(fill)
@@ -186,6 +200,8 @@ def _replay(data, strategy, config):
                 else:
                     order.status = OrderStatus.FILLED
                     trades.append({**asdict(fill), "realized_pnl": realized})
+                    if hasattr(strategy, "on_fill"):
+                        strategy.on_fill(fill)
                 order.resolved_at = now
         elif kind == "close":
             marks = {b.symbol: b.close for b in payload}
@@ -227,6 +243,8 @@ def _replay(data, strategy, config):
                         "market_value": position.quantity * marks[symbol],
                     }
                 )
+            if hasattr(strategy, "on_close"):
+                strategy.on_close(now, payload, view)
         elif kind == "available":
             bar = payload
             symbol = bar.symbol
@@ -276,6 +294,10 @@ def _replay(data, strategy, config):
                             abs(difference),
                         )
                     )
+        if kind in ("split", "dividend_ex", "dividend_pay") and hasattr(strategy, "on_action"):
+            strategy.on_action(kind, payload, now)
+    if hasattr(strategy, "on_finish"):
+        strategy.on_finish(observed_prices)
     for order in orders:
         if order.status == OrderStatus.PENDING:
             order.status = OrderStatus.EXPIRED
