@@ -15,11 +15,12 @@ class FuturesPosition:
 
 
 class FuturesLedger:
-    def __init__(self, initial_cash, contracts):
+    def __init__(self, initial_cash, contracts, *, unfunded_component=False):
         self.initial_cash = decimal(initial_cash)
-        if self.initial_cash <= 0:
+        if self.initial_cash < 0 or (self.initial_cash == 0 and not unfunded_component):
             raise ValueError("Positive initial futures equity required")
         self.cash = self.initial_cash
+        self.net_funding = ZERO
         self.contracts = contracts
         self.positions = {}
         self.fees = ZERO
@@ -144,7 +145,9 @@ class FuturesLedger:
             initial += abs(p.quantity) * c.initial_margin
             maintenance += abs(p.quantity) * c.maintenance_margin
         equity = self.cash + unreal
-        expected = self.initial_cash + self.realized_gross + lifetime_unreal - self.fees
+        expected = (
+            self.initial_cash + self.net_funding + self.realized_gross + lifetime_unreal - self.fees
+        )
         if abs(equity - expected) > max(decimal("1e-18"), abs(equity) * decimal("1e-24")):
             raise ArithmeticError("Futures accounting identity failed")
         return {

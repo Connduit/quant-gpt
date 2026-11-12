@@ -215,3 +215,14 @@ purged validation and bounded discovery. The verified archival ES example has
 only two OOS sessions; all nine candidates remain rejected. No live trading.
 See [design](docs/futures.md), [audit](docs/futures-audit.md), and
 [actual results](docs/milestone-7-results.md).
+
+## Simulated paper execution
+
+```bash
+uv run --frozen --all-extras python examples/paper_demo.py --output data/paper/NEW_RUN
+```
+
+Durable orders, one equity/futures account, portfolio risk, model-pinned inference,
+restart reconciliation and local alerts. Current strategies are RESEARCH only;
+no live streaming is verified. See [operation](docs/paper-trading.md) and
+[actual replay results](docs/milestone-8-results.md). Real-money orders are unavailable.

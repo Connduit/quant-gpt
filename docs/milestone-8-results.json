@@ -1,0 +1,44 @@
+{
+  "snapshot_id": "3fac02494948aacdc5db5afb23a70118d82715b40d4072c4de0f5deba7ddbd1f",
+  "account": {
+    "buying_power": "86014.02",
+    "cash": "98014.02",
+    "equity": "98882.770",
+    "fees": "348.48",
+    "gross": "84881.250",
+    "initial_capital": "100000",
+    "initial_margin": "12000",
+    "maintenance_margin": "10000",
+    "net": "84881.250",
+    "positions": {
+      "ESZ13": 1
+    },
+    "realized_pnl": "-1985.98",
+    "unrealized_pnl": "868.750",
+    "values": {
+      "ESZ13": "84881.250"
+    }
+  },
+  "drawdown": 0.02179729999999991,
+  "daily_observations": 2,
+  "sharpe": null,
+  "matured_prediction_count": 360,
+  "model_accuracy": 0.44166666666666665,
+  "killed": true,
+  "eligibility": "Both strategies RESEARCH only; no validated paper strategy exists",
+  "restart_reconciled": true,
+  "duplicate_event_no_extra_fill": true,
+  "holdout_accessed": false,
+  "liquidity_model": "Minute closing quotes; 1% trade volume as modeled depth, then 10% participation; actual quoted depth unavailable",
+  "training_end": "2013-10-09",
+  "source": "Pinned LEAN archive; historical margins assumed, limited two-day replay",
+  "limitations": [
+    "Displayed quote liquidity is not guaranteed executable.",
+    "Replay is not real-time paper evidence.",
+    "All risk/margin/fee settings are explicit assumptions.",
+    "No strategy is automatically promoted; no live order capability."
+  ],
+  "fills": 99,
+  "predictions": 370,
+  "live_streaming_verified": false
+}

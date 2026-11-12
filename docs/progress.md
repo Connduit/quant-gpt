@@ -94,3 +94,13 @@ real-download checks passed. Real ESZ13 minute data were downloaded and stored;
 four ML trials and five controls completed. All rejected; two OOS sessions are
 insufficient for statistical eligibility. Holdouts remain untouched. No live feed,
 paid Databento access, certified historical margins, or paper eligibility verified.
+
+## Milestone 8 verification and scope
+
+[Actual replay results](milestone-8-results.md), [operation](paper-trading.md):
+278 tests passed, five optional network tests skipped. The real ES archival replay
+recorded 99 simulated fills, $348.48 fees and $98,882.77 ending equity. Its daily
+loss halt remained active across a reconciled restart; duplicate events created
+no extra fills. The installed wheel reconstructed all account metrics exactly.
+No authenticated streaming was verified, no strategies qualify for validated
+paper deployment, and no real-money submission capability exists.

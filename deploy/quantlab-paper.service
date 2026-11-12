@@ -1,0 +1,24 @@
+[Unit]
+Description=Quant Research Lab simulated paper execution
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/quant-gpt
+ExecStart=/opt/quant-gpt/.venv/bin/quantlab paper start --paper-config /etc/quantlab/paper.yaml
+EnvironmentFile=/etc/quantlab/paper.env
+User=quantlab
+Group=quantlab
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=45
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/quantlab
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

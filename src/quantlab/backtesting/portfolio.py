@@ -31,6 +31,7 @@ class Portfolio:
         if self.initial_cash <= 0:
             raise ValueError("initial_cash must be positive")
         self.cash = self.initial_cash
+        self.net_funding = ZERO
         self.positions: dict[str, Position] = {}
         self.receivables: dict[int, Decimal] = {}
         self.realized_pnl = ZERO
@@ -106,7 +107,13 @@ class Portfolio:
                 unrealized += position.quantity * (prices[symbol] - position.average_cost)
         receivable = sum(self.receivables.values(), ZERO)
         equity = self.cash + market_value + receivable
-        expected = self.initial_cash + self.realized_pnl + unrealized + self.dividend_income
+        expected = (
+            self.initial_cash
+            + self.net_funding
+            + self.realized_pnl
+            + unrealized
+            + self.dividend_income
+        )
         if abs(equity - expected) > max(Decimal("1e-18"), abs(equity) * Decimal("1e-24")):
             raise ArithmeticError("Portfolio accounting identity failed")
         return PortfolioView(

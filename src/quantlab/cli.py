@@ -136,6 +136,33 @@ def parser() -> argparse.ArgumentParser:
         choices=("equal", "fixed", "inverse_volatility", "risk_parity", "volatility_target"),
         required=True,
     )
+    paper = commands.add_parser("paper", help="Simulated execution and experimental replay")
+    paper_sub = paper.add_subparsers(dest="paper_command", required=True)
+    for name in (
+        "positions",
+        "orders",
+        "fills",
+        "equity",
+        "strategies",
+        "logs",
+        "report",
+        "pause",
+        "resume",
+        "stop",
+        "kill",
+        "reset-kill",
+        "connect",
+        "disconnect",
+    ):
+        command = paper_sub.add_parser(name)
+        command.add_argument("--database", type=Path, required=True)
+        if name in ("pause", "resume", "stop", "kill", "reset-kill", "connect", "disconnect"):
+            command.add_argument("--strategy")
+            command.add_argument("--reason", required=True)
+    command = paper_sub.add_parser("start")
+    command.add_argument("--paper-config", type=Path, required=True)
+    command = paper_sub.add_parser("replay")
+    command.add_argument("--output", type=Path, required=True)
     futures = commands.add_parser("futures", help="Contract-aware futures research only")
     future_sub = futures.add_subparsers(dest="futures_command", required=True)
     future_sub.add_parser("specifications")
@@ -194,6 +221,10 @@ def main(argv: list[str] | None = None) -> int:
         settings = load_settings(args.config)
         configure_logging(settings.log_level)
         store = SnapshotStore(args.data_dir or settings.data_dir)
+        if args.command == "paper":
+            from quantlab.paper.cli import execute
+
+            return execute(args)
         if args.command == "futures":
             from quantlab.futures.cli import execute
 

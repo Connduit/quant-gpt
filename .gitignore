@@ -8,3 +8,7 @@ __pycache__/
 /logs/
 /dist/
 .env
+
+/dashboard/node_modules/
+/dashboard/dist/
+/dashboard/*.tsbuildinfo

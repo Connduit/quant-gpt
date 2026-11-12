@@ -1,0 +1,18 @@
+# Intentionally unconfigured: provision a validated deployment before service use.
+execution:
+  mode: simulated
+account:
+  database: ../data/paper/operator/account.sqlite
+  capital: 100000
+  symbols: [SPY, AAPL]
+market_data:
+  provider: alpaca
+  mode: realtime
+  feed: iex
+risk:
+  gross: 0.9
+  net: 0.9
+  leverage: 1.0
+  position: 0.2
+  correlated: 0.7
+strategies: []
