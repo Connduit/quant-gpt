@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "campaign": "P12-EQ-001",
+  "campaign_status": "BLOCKED_DATA",
+  "evidence_status": "INSUFFICIENT_EVIDENCE",
+  "allowed_candidate_statuses": ["RESEARCH", "REJECTED", "INSUFFICIENT_EVIDENCE", "FURTHER_VALIDATION_REQUIRED", "APPROVED_FOR_PAPER", "PAPER_RUNNING", "PAPER_FAILED", "LIVE_REVIEW_REQUIRED"],
+  "new_candidates": [],
+  "blocked_hypothesis_ids": ["P12-H01", "P12-H02", "P12-H03", "P12-H04", "P12-H05", "P12-H06", "P12-H07", "P12-H08"],
+  "historical_inventory": "README.md#existing-strategy-inventory-and-results",
+  "historical_records_reclassified": false,
+  "promotions": [],
+  "live_enabled": false,
+  "note": "Proposals with no eligible data are not tested candidates. Historical outcomes remain in their original registries. These reporting labels do not implement or grant deployment authority."
+}

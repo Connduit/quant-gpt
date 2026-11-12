@@ -1,0 +1,334 @@
+{
+  "campaign": "P12-EQ-001",
+  "status": "BLOCKED_DATA",
+  "script_role": "preflight_only",
+  "source_commit": "309fe016b5a3c5b9fb578a7c14c3e66ddd0948b6",
+  "plan_sha256": "0f29b6a23968dea06d8b72f20cf79236abcd0c36e7661d4ed7c24d26dfb42a87",
+  "plan_id": "P12-EQ-001",
+  "snapshots": [
+    {
+      "symbol": "AAPL",
+      "snapshot_id": "e230aed1ba6da77f14c01fac0a8093c9ab77f116ca92cdef93f59cd3c81774e5",
+      "provider": "quantconnect-lean-archive",
+      "start": "2014-04-03",
+      "end": "2018-12-31",
+      "rows": 1195,
+      "integrity": "PASS",
+      "price_basis": "unadjusted",
+      "sector": "technology",
+      "point_in_time": false,
+      "corporate_actions_complete": false,
+      "action_method": "factor_file_proxy",
+      "dividends": 19,
+      "splits": 1,
+      "unknown_payment_dates": 19
+    },
+    {
+      "symbol": "AIG",
+      "snapshot_id": "2d2d9557fd5b5bbd62383a9f339ddcbbdb499c986bef7cba6ccd716a00347c7f",
+      "provider": "quantconnect-lean-archive",
+      "start": "2014-04-03",
+      "end": "2018-12-31",
+      "rows": 1195,
+      "integrity": "PASS",
+      "price_basis": "unadjusted",
+      "sector": "financials",
+      "point_in_time": false,
+      "corporate_actions_complete": false,
+      "action_method": "factor_file_proxy",
+      "dividends": 19,
+      "splits": 0,
+      "unknown_payment_dates": 19
+    },
+    {
+      "symbol": "BAC",
+      "snapshot_id": "5894bfb201b2f194bcdbba96a679c8a36b8fd63da58efab4d94c0e43cc8f5475",
+      "provider": "quantconnect-lean-archive",
+      "start": "2014-04-03",
+      "end": "2018-12-31",
+      "rows": 1195,
+      "integrity": "PASS",
+      "price_basis": "unadjusted",
+      "sector": "financials",
+      "point_in_time": false,
+      "corporate_actions_complete": false,
+      "action_method": "factor_file_proxy",
+      "dividends": 19,
+      "splits": 0,
+      "unknown_payment_dates": 19
+    },
+    {
+      "symbol": "FB",
+      "snapshot_id": "00245acc90f69ca9ea387ff5c26716b784052e1142e170bbab40d14ea52b20cc",
+      "provider": "quantconnect-lean-archive",
+      "start": "2014-04-03",
+      "end": "2018-12-31",
+      "rows": 1195,
+      "integrity": "PASS",
+      "price_basis": "unadjusted",
+      "sector": "communications",
+      "point_in_time": false,
+      "corporate_actions_complete": false,
+      "action_method": "factor_file_proxy",
+      "dividends": 0,
+      "splits": 0,
+      "unknown_payment_dates": 0
+    },
+    {
+      "symbol": "GOOGL",
+      "snapshot_id": "566fece2d1f14c67fac4450c2cdd92c81add26bbbf3c49f622bfca78319d9acc",
+      "provider": "quantconnect-lean-archive",
+      "start": "2014-04-03",
+      "end": "2018-12-31",
+      "rows": 1195,
+      "integrity": "PASS",
+      "price_basis": "unadjusted",
+      "sector": "communications",
+      "point_in_time": false,
+      "corporate_actions_complete": false,
+      "action_method": "factor_file_proxy",
+      "dividends": 0,
+      "splits": 1,
+      "unknown_payment_dates": 0
+    },
+    {
+      "symbol": "IBM",
+      "snapshot_id": "dd5dc3680e4ee0f4a5a69ee4d7c8ab18e613c9cfcd69a4e3982b03e489b422af",
+      "provider": "quantconnect-lean-archive",
+      "start": "2014-04-03",
+      "end": "2018-12-31",
+      "rows": 1195,
+      "integrity": "PASS",
+      "price_basis": "unadjusted",
+      "sector": "technology",
+      "point_in_time": false,
+      "corporate_actions_complete": false,
+      "action_method": "factor_file_proxy",
+      "dividends": 19,
+      "splits": 0,
+      "unknown_payment_dates": 19
+    },
+    {
+      "symbol": "SPY",
+      "snapshot_id": "8e6213a2df4e48230ec0ad9c2485f5557b35893d57a13387af5b9d58f9b02836",
+      "provider": "quantconnect-lean-archive",
+      "start": "2014-04-03",
+      "end": "2018-12-31",
+      "rows": 1195,
+      "integrity": "PASS",
+      "price_basis": "unadjusted",
+      "sector": "benchmark",
+      "point_in_time": false,
+      "corporate_actions_complete": false,
+      "action_method": "factor_file_proxy",
+      "dividends": 19,
+      "splits": 0,
+      "unknown_payment_dates": 19
+    },
+    {
+      "symbol": "WM",
+      "snapshot_id": "03b734fe5f616f23b81c133a1c5e8d40b1756aee2f8ea696c062b25109ae20a0",
+      "provider": "quantconnect-lean-archive",
+      "start": "2014-04-03",
+      "end": "2018-12-31",
+      "rows": 1195,
+      "integrity": "PASS",
+      "price_basis": "unadjusted",
+      "sector": "industrials",
+      "point_in_time": false,
+      "corporate_actions_complete": false,
+      "action_method": "factor_file_proxy",
+      "dividends": 19,
+      "splits": 0,
+      "unknown_payment_dates": 19
+    }
+  ],
+  "blockers": [
+    "Only seven stocks; protocol requires at least 100 point-in-time constituents including delisted securities.",
+    "Only four stock sectors; protocol requires eight.",
+    "Only 1,195 sessions; protocol requires 2,000 and independent confirmation outside previously reused validation.",
+    "Factor-file proxies do not certify complete corporate actions, known payment dates or delisting payouts.",
+    "No certified point-in-time membership, historical symbol mapping, or historical publication timestamps.",
+    "Independent confirmation dates, dated cost/capacity calibration and a prefix-only equity execution adapter remain unapproved/unimplemented."
+  ],
+  "history": [
+    {
+      "path": "data/discovery/initial-check/registry.sqlite",
+      "experiments": 0,
+      "attempts": 0,
+      "statuses": []
+    },
+    {
+      "path": "data/discovery/real-final/registry.sqlite",
+      "experiments": 10,
+      "attempts": 10,
+      "statuses": [
+        [
+          "REJECTED",
+          10
+        ]
+      ]
+    },
+    {
+      "path": "data/discovery/real-verified/registry.sqlite",
+      "experiments": 10,
+      "attempts": 10,
+      "statuses": [
+        [
+          "REJECTED",
+          10
+        ]
+      ]
+    },
+    {
+      "path": "data/discovery/release/registry.sqlite",
+      "experiments": 10,
+      "attempts": 11,
+      "statuses": [
+        [
+          "REJECTED",
+          11
+        ]
+      ]
+    },
+    {
+      "path": "data/discovery/second-check/registry.sqlite",
+      "experiments": 7,
+      "attempts": 7,
+      "statuses": [
+        [
+          "COMPLETE",
+          4
+        ],
+        [
+          "REJECTED",
+          3
+        ]
+      ]
+    },
+    {
+      "path": "data/statistical/milestone-5-final/experiments/registry.sqlite",
+      "experiments": 12,
+      "attempts": 12,
+      "statuses": [
+        [
+          "REJECTED",
+          12
+        ]
+      ]
+    },
+    {
+      "path": "data/statistical/milestone-5-release/experiments/registry.sqlite",
+      "experiments": 11,
+      "attempts": 11,
+      "statuses": [
+        [
+          "REJECTED",
+          11
+        ]
+      ]
+    },
+    {
+      "path": "data/futures/milestone-7-final/experiments/registry.sqlite",
+      "experiments": 9,
+      "attempts": 9,
+      "statuses": [
+        [
+          "REJECTED",
+          9
+        ]
+      ]
+    },
+    {
+      "path": "data/futures/milestone-7-release/experiments/registry.sqlite",
+      "experiments": 9,
+      "attempts": 9,
+      "statuses": [
+        [
+          "REJECTED",
+          9
+        ]
+      ]
+    },
+    {
+      "path": "data/futures/research-prototype/experiments/registry.sqlite",
+      "experiments": 9,
+      "attempts": 9,
+      "statuses": [
+        [
+          "REJECTED",
+          9
+        ]
+      ]
+    },
+    {
+      "path": "data/agent/sessions/26e0783a825f4fff9da7e82cee465d96/iteration-0/research/experiments/registry.sqlite",
+      "experiments": 6,
+      "attempts": 6,
+      "statuses": [
+        [
+          "REJECTED",
+          6
+        ]
+      ]
+    },
+    {
+      "path": "data/agent/sessions/26e0783a825f4fff9da7e82cee465d96/iteration-1/research/experiments/registry.sqlite",
+      "experiments": 6,
+      "attempts": 6,
+      "statuses": [
+        [
+          "REJECTED",
+          6
+        ]
+      ]
+    },
+    {
+      "path": "data/agent/sessions/54f1b7c8cab841f1a751c98f5d762c75/iteration-0/research/experiments/registry.sqlite",
+      "experiments": 6,
+      "attempts": 6,
+      "statuses": [
+        [
+          "REJECTED",
+          6
+        ]
+      ]
+    },
+    {
+      "path": "data/agent/sessions/54f1b7c8cab841f1a751c98f5d762c75/iteration-1/research/experiments/registry.sqlite",
+      "experiments": 6,
+      "attempts": 6,
+      "statuses": [
+        [
+          "REJECTED",
+          6
+        ]
+      ]
+    }
+  ],
+  "holdout_states": {
+    "data/network-verification/holdout-vault.sqlite": [
+      [
+        "254269992be9c9db787d46ab404b6d17d5f1df8e0ab04bc7ed0aaf60a312ce33",
+        "SEALED"
+      ]
+    ],
+    "data/futures/holdout-vault.sqlite": [
+      [
+        "30def9390a443f7daee2369ec7f18e98e0eed4e58290cc1575200f3498e971cc",
+        "SEALED"
+      ]
+    ]
+  },
+  "holdout_states_unchanged": true,
+  "new_model_fits": 0,
+  "new_strategy_trials": 0,
+  "new_candidates": [],
+  "promotions": [],
+  "statistics": {
+    "p_values": null,
+    "confidence_intervals": null,
+    "deflated_sharpe": null,
+    "reason": "No eligible data or new research trials; unavailable is not a zero estimate."
+  }
+}

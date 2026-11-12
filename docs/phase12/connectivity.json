@@ -1,0 +1,17 @@
+{
+  "observed_at": "2026-11-12T10:08:44.597915+00:00",
+  "provider": "stooq",
+  "http_client": "httpx through StooqProvider; inherited proxy and CA; TLS verification enabled",
+  "request": {
+    "symbol": "SPY",
+    "start": "2018-01-02",
+    "end": "2018-01-12"
+  },
+  "runtime_observed_revision": "1",
+  "custom_allowed_hosts": [],
+  "status": "NETWORK_BLOCKED",
+  "error_type": "ProviderNetworkError",
+  "error": "Stooq network request failed (ProxyError); check proxy allowlist, connectivity and CA trust",
+  "cause_type": "ProxyError",
+  "cause": "403 Forbidden"
+}

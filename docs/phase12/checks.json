@@ -1,0 +1,19 @@
+{
+  "python_suite": {
+    "command": "uv run --frozen --all-extras pytest -q",
+    "passed": 326,
+    "skipped": 7,
+    "warnings": 513,
+    "seconds": 162.92
+  },
+  "ruff": "PASS: src tests examples",
+  "preflight": {
+    "exit": 2,
+    "status": "BLOCKED_DATA",
+    "snapshots_verified": 8,
+    "model_fits": 0,
+    "strategy_trials": 0,
+    "holdout_states_unchanged": true
+  },
+  "documentation_links": "PASS"
+}

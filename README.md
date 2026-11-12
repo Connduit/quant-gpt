@@ -1,8 +1,13 @@
 # Quant Research Lab
 
-CPU-compatible historical US equities infrastructure and daily event-driven
-backtesting, causal features and CPU machine learning research. Milestones 1–6
-are implemented, including bounded discovery and statistical validation.
+CPU-compatible quantitative research infrastructure through Milestones 1–11,
+including historical equities/futures, bounded ML discovery, statistical validation,
+portfolios, paper simulation, a dashboard and controlled broker sandbox engineering.
+
+Start with the [complete feature usage guide](docs/user-guide.md) and
+[exhaustive CLI reference](docs/cli-reference.md). The
+[Phase 12 research audit](docs/phase12/README.md) records current data blockers;
+no strategy currently qualifies for paper/live deployment.
 
 The [complete project blueprint and roadmap](docs/blueprint.md) preserves the
 original specification, including all core capabilities, market phases and ten

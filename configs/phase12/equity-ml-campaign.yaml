@@ -1,0 +1,89 @@
+campaign_id: P12-EQ-001
+schema_version: 1
+objective: Compare five-day equity ML score rankings with momentum, mean reversion, equal-weight and SPY after costs, without weakening data or validation requirements.
+strategy_family: equity_ml_ranking
+mode: research_only
+execution_status: PREFLIGHT_REQUIRED
+input_manifest: data/network-verification/real-inputs/data_quality.json
+holdout:
+  equity_start: '2019-01-02'
+  equity_end: '2019-12-31'
+  policy: No reads of protected prices/results; no authorization, evaluation or release.
+  futures_reserved_start: '2013-10-14T00:00:00+00:00'
+data_requirements:
+  minimum_stocks: 100
+  minimum_sectors: 8
+  minimum_sessions: 2000
+  point_in_time_membership_required: true
+  delisted_securities_and_returns_required: true
+  independent_corporate_event_certification_required: true
+  known_dividend_payment_dates_required: true
+  actual_unadjusted_execution_prices_required: true
+  historical_symbol_mapping_required: true
+  independent_confirmation_plan_required: true
+  predeclared_liquidity_minimum_dollars: 10000000
+  liquidity_information: Lagged observed dollar volume; no current-index constituent selection.
+features:
+  momentum_context: [momentum, relative_strength, volatility, market_regime]
+  reversion_liquidity: [mean_reversion, volume, technical, volatility]
+models:
+  ridge: {alpha: 1.0}
+  random_forest: {n_estimators: 100, max_depth: 4, min_samples_leaf: 20}
+  lightgbm: {n_estimators: 100, num_leaves: 15, max_depth: 4, learning_rate: 0.05}
+  xgboost: {n_estimators: 100, max_depth: 3, learning_rate: 0.05}
+target:
+  horizon_sessions: 5
+  supported_native_label: Five-session next-eligible-open total return minus SPY total return, before costs.
+  supported_ranking: Rank regression scores cross-sectionally; evaluate equal/inverse-volatility portfolio sizing separately.
+  risk_adjustment: Portfolio volatility/drawdown and known-volatility sizing; do not relabel the native target as a volatility-normalized return.
+  unsupported_ranking_objectives: Pairwise/listwise learning-to-rank are not implemented; no such result may be claimed.
+validation:
+  method: chronological_purged_walk_forward
+  training_sessions: 756
+  validation_sessions: 126
+  test_sessions: 126
+  retraining_sessions: 126
+  gap_sessions: 2
+  embargo_sessions: 5
+  expanding: false
+  confirmation: Separate as-yet-unexamined period/universe and frozen candidate need independent review; previously reused 2017-2018 windows are not independent confirmation.
+execution:
+  initial_cash: '100000'
+  rebalance_sessions: 5
+  top_n: 10
+  cash_allocation: 0.2
+  maximum_position_weight: 0.1
+  commission_per_share: '0.005'
+  slippage_bps: 5
+  spread_bps: 2
+  cost_stress_multipliers: [2, 3]
+  note: Example screening assumptions; require dated instrument/liquidity calibration before qualification. No leverage or shorts.
+budget:
+  seed: 42
+  model_feature_hypotheses: 8
+  maximum_model_fits_including_folds: 64
+  maximum_registered_strategy_and_robustness_evaluations: 96
+  maximum_walk_forward_windows: 8
+  maximum_wall_seconds: 2700
+  workers: 1
+  cpu_threads: 1
+  memory_mb: 4096
+  trial_wall_seconds: 180
+  trial_cpu_seconds: 120
+  api_spending_usd: 0.0
+  automatic_expansion: false
+  generated_code_execution: false
+acceptance:
+  primary_metric: Positive net active mean against every prespecified competing baseline; report risk and capacity jointly.
+  confidence: Positive lower 95% block-bootstrap bound for net active return; block lengths 5, 10, 20; 2000 replications.
+  multiple_testing: BY q <= 0.05 across all recorded configurations/variants, with full retained-history diagnostics; do not reset the family per model.
+  dsr: At least 0.95 when assumptions/sample size support computation; otherwise insufficient evidence.
+  stability: At least 60% positive active walk-forward windows, no single-trade concentration, stable parameter neighborhoods and regimes.
+  execution: Reject if advantage disappears at doubled costs, or capacity/participation cannot be substantiated.
+  independent_evidence: Required before any qualification; no software-produced status grants paper approval.
+  human_paper_approval: Required separately; no automatic promotion.
+stop_conditions:
+- Any missing data requirement prevents fitting/optimization.
+- Any integrity/clock/holdout violation stops the campaign.
+- Budget exhaustion stops work, including failed trials and diagnostics.
+- Complete the initial bounded campaign and wait for authorization before expansion or deployment.

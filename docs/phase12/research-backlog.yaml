@@ -1,0 +1,58 @@
+schema_version: 1
+campaign: P12-EQ-001
+status: BLOCKED_DATA
+hypothesis_generation: Proposals only; none executed or qualified.
+initial_hypotheses:
+  common:
+    horizon_sessions: 5
+    universe: At least 100 PIT US equities across eight sectors, including delistings, plus SPY; exact IDs await data review.
+    baselines: [momentum, mean_reversion, equal_weight, SPY]
+    costs: $0.005/share commission, 5 bps slippage, 2 bps full spread; doubled/tripled cost diagnostics, dated calibration still required.
+    rejection: Missing data requirement, no independently confirmed net baseline advantage, unstable regimes/parameters, concentrated profits, or inadequate cost/capacity evidence.
+    evaluation: Frozen chronological purge/embargo protocol and full multiplicity history in equity-ml-campaign.yaml; independent confirmation still unassigned.
+  model_variants:
+    - {id: P12-H01, model: ridge, features: momentum_context}
+    - {id: P12-H02, model: random_forest, features: momentum_context}
+    - {id: P12-H03, model: lightgbm, features: momentum_context}
+    - {id: P12-H04, model: xgboost, features: momentum_context}
+    - {id: P12-H05, model: ridge, features: reversion_liquidity}
+    - {id: P12-H06, model: random_forest, features: reversion_liquidity}
+    - {id: P12-H07, model: lightgbm, features: reversion_liquidity}
+    - {id: P12-H08, model: xgboost, features: reversion_liquidity}
+  rationale:
+    momentum_context: Intermediate persistence may reflect delayed information diffusion; lagged relative strength and market state may contextualize it. Risk is reversal, crowding, sector exposure and current-universe selection.
+    reversion_liquidity: Temporary price pressure may reverse over five sessions; lagged volume/volatility may distinguish illiquidity from information. Risk is adverse selection, trading costs and trend continuation.
+    ridge: Lowest-complexity linear shrinkage reference; establishes whether added nonlinear complexity has value.
+    random_forest: Tests bounded threshold interactions without selecting an unconstrained feature search.
+    lightgbm: Tests shallow additive interactions; improvement must survive the same multiplicity and costs.
+    xgboost: Independently implemented shallow boosting comparison; correlated searches are not independent discoveries.
+prioritized_families:
+  - priority: 0
+    family: Certified data and independent confirmation
+    reason: All empirical campaigns blocked until this evidence exists.
+    required_data: PIT equities, complete events/pay dates, delisting returns, raw bars, historical mappings and availability.
+  - priority: 1
+    family: Equity ML score rankings
+    reason: Initial requested family; bounded simple models test incremental net value against interpretable controls.
+    hypotheses: [P12-H01, P12-H02, P12-H03, P12-H04, P12-H05, P12-H06, P12-H07, P12-H08]
+  - priority: 2
+    family: Simple trend and mean-reversion regime controls
+    reason: Validate economic signal and cost sensitivity before increasing model complexity.
+    required_data: Same certified PIT equity bundle.
+    risk: Regime mining and repeated baseline tuning; freeze variants before any future authorization.
+  - priority: 3
+    family: Cross-asset futures trend or intraday reversion
+    reason: Potentially different economic exposure; current ES sample is far too short.
+    required_data: Multi-year actual contracts including MES/NQ/MNQ if selected, quotes, rolls, historical margin/fees and independent validation.
+    risk: Roll selection, micro-contract history, overnight gaps and modeled depth.
+  - priority: 4
+    family: Multi-strategy diversification and allocation
+    reason: Only meaningful once independently qualified return streams exist.
+    required_data: Aligned qualified OOS returns, correlations, costs, capacity and joint stress periods.
+    risk: Diversifying rejected strategies does not establish positive expectancy.
+  - priority: 5
+    family: Advanced models or new ranking objectives
+    reason: Defer until simple baselines and bounded CPU models demonstrate repeatable net signal.
+    required_data: Substantially broader certified samples and an independently reviewed objective implementation.
+    risk: Complexity, multiplicity and unmeasured capacity; requires separate authorization.
+automatic_expansion: false
