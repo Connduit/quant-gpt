@@ -41,7 +41,13 @@ semantics and action completeness are caller assertions, not vendor certificatio
 Historical universe/lifecycle data and true point-in-time publication remain missing.
 No live broker functionality is enabled.
 
-Milestone 3 is awaiting user review/instruction. It introduces causal features,
-forward labels, chronological/purged splits and baseline regressions. The updated
-[11-milestone roadmap](progress.md) schedules statistical validation explicitly;
-basic timing safeguards are already implemented in the replay engine.
+Milestone 3 now supplies causal features, execution-aligned labels, purged
+walk-forward folds, five CPU model families and OOS ranking portfolios. The
+concrete replay extension is synchronized `MarketData`, with per-symbol history,
+one cash account and sell-before-buy opening batches. Single-stock APIs remain
+supported. See [ML research](ml-research.md) for the model/data contracts and
+evidence. The updated [11-milestone roadmap](progress.md) still schedules advanced
+statistical validation explicitly; baseline timing safeguards are enforced now.
+
+Milestone 4 is not started. No automated hypothesis search, Optuna optimization,
+MLflow service, broker or unrestricted research agent has been introduced.

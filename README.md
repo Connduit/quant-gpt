@@ -1,8 +1,8 @@
 # Quant Research Lab
 
 CPU-compatible historical US equities infrastructure and daily event-driven
-backtesting. Milestones 1 and 2 are implemented; ML training and broker execution
-are not implemented.
+backtesting, causal features and CPU machine learning research. Milestones 1–3
+are implemented; automated strategy discovery and broker execution are not.
 
 The [complete project blueprint and roadmap](docs/blueprint.md) preserves the
 original specification, including all core capabilities, market phases and ten
@@ -19,7 +19,7 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/getting-started/install
 From the checkout root:
 
 ```bash
-uv sync --frozen --extra dev
+uv sync --frozen --extra dev --extra ml
 uv run --frozen pytest -q
 uv run --frozen ruff check src tests examples
 ```
@@ -113,6 +113,28 @@ require declared unadjusted CSV data and a complete corporate-action ledger.
 See [backtesting](docs/backtesting.md) for raw-data import, ledger format, metric
 definitions and the hand-calculated accounting checks.
 
+## Machine learning research
+
+```bash
+uv run --frozen --extra ml python examples/ml_research_demo.py
+```
+
+Runs a seeded **synthetic** multi-stock experiment with Ridge, logistic regression,
+Random Forest, LightGBM and XGBoost. It produces purged walk-forward predictions,
+shared-cash ranking backtests, SPY/random/momentum/mean-reversion/equal-weight
+comparisons, saved models and reports. A final holdout is excluded from feature,
+label, model and trading evaluation. Existing outputs are preserved; use `--output`
+to choose a new directory. See the [ML research guide](docs/ml-research.md) for
+feature/target definitions, YAML, model interfaces, timing checks and limitations.
+
+Run a saved configuration:
+
+```bash
+uv run --frozen --extra ml quantlab research \
+  --experiment data/ml-demo-inputs/experiment.yaml \
+  --output data/research/repeated-config-run
+```
+
 ## Architecture
 
 - `config.py`, `logging.py`: validated TOML settings and UTC JSON logs.
@@ -125,6 +147,9 @@ definitions and the hand-calculated accounting checks.
 - `backtesting/`: daily adapter, event replay, opening-print execution costs,
   corporate actions, decimal portfolio ledger, metrics and report exports.
 - `strategies/`: immutable target signals, available-history contexts and baseline strategies.
+- `features/`, `ml/`: configured causal features, execution-aligned datasets,
+  chronological purging, CPU models, serialization and predictive evaluation.
+- `research/`: YAML experiments and OOS ranking/backtest comparison reports.
 
 See [data design](docs/data-design.md) for timestamp, adjustment and provenance
 contracts, and [architecture](docs/architecture.md) for extension boundaries and

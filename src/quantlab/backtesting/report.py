@@ -29,7 +29,12 @@ def dumps(value) -> str:
     return json.dumps(value, default=json_default, sort_keys=True, indent=2, allow_nan=False)
 
 
-def export_report(result: BacktestResult, benchmark: BacktestResult, output: Path) -> dict:
+def export_report(
+    result: BacktestResult,
+    benchmark: BacktestResult,
+    output: Path,
+    benchmark_policy: str | None = None,
+) -> dict:
     if output.exists():
         raise ValueError(f"Report output already exists: {output}; choose a new directory")
     if result.metadata["snapshot_id"] != benchmark.metadata["snapshot_id"]:
@@ -39,7 +44,7 @@ def export_report(result: BacktestResult, benchmark: BacktestResult, output: Pat
         or result.metadata["corporate_actions"] != benchmark.metadata["corporate_actions"]
     ):
         raise ValueError("Benchmark must use identical accounting, costs and action inputs")
-    if benchmark.metadata["strategy"] != "BuyAndHold":
+    if benchmark_policy is None and benchmark.metadata["strategy"] != "BuyAndHold":
         raise ValueError("Benchmark must be the buy-and-hold baseline")
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = Path(tempfile.mkdtemp(prefix=".pending-report-", dir=output.parent))
@@ -65,6 +70,7 @@ def export_report(result: BacktestResult, benchmark: BacktestResult, output: Pat
             ("corporate_actions.csv", result.actions, ["timestamp", "kind"]),
             ("benchmark_equity.csv", benchmark.equity, []),
             ("benchmark_trades.csv", benchmark.trades, ["order_id", "symbol", "side"]),
+            ("positions.csv", result.positions, ["session_date", "symbol", "quantity"]),
         ):
             fields = list(dict.fromkeys(key for row in rows for key in row)) or empty_fields
             with (temporary / name).open("w", newline="") as handle:
@@ -85,7 +91,8 @@ def export_report(result: BacktestResult, benchmark: BacktestResult, output: Pat
             **result.metadata,
             "software_version": version("quant-research-lab"),
             "benchmark": benchmark.metadata,
-            "benchmark_policy": "same_symbol_and_costs_fixed_shares_cash_remainder",
+            "benchmark_policy": benchmark_policy
+            or "same_symbol_and_costs_fixed_shares_cash_remainder",
             "python_version": sys.version.split()[0],
             "dependency_versions": {
                 name: version(name)

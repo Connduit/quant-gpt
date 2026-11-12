@@ -58,6 +58,15 @@ def parser() -> argparse.ArgumentParser:
     backtest.add_argument("--spread-bps", default="0", help="Full bid/ask spread in basis points")
     backtest.add_argument("--actions", type=Path, help="Complete split/dividend JSON ledger")
     backtest.add_argument("--output", type=Path, required=True, help="New report directory")
+    research = commands.add_parser(
+        "research", help="Run a configured CPU walk-forward ML experiment"
+    )
+    research.add_argument(
+        "--experiment", type=Path, required=True, help="YAML experiment definition"
+    )
+    research.add_argument(
+        "--output", type=Path, required=True, help="New research report directory"
+    )
     return result
 
 
@@ -106,6 +115,24 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"manifest": metadata, "summary": summary.to_dicts()}, default=str))
         elif args.command == "query":
             print(store.query(args.snapshot_id, args.sql).write_json())
+        elif args.command == "research":
+            try:
+                from quantlab.research.runner import run_experiment
+            except ImportError as exc:
+                raise ValueError(
+                    "Install research dependencies: uv sync --extra ml --extra dev"
+                ) from exc
+            report = run_experiment(args.experiment, args.output)
+            print(
+                json.dumps(
+                    {
+                        "output": str(args.output),
+                        "synthetic": report["synthetic"],
+                        "conclusion": report["conclusion"],
+                        "folds": len(report["folds"]),
+                    }
+                )
+            )
         elif args.command == "backtest":
             from quantlab.backtesting.actions import CorporateActions
             from quantlab.backtesting.data import DailyData

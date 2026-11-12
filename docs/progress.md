@@ -10,7 +10,7 @@ additional markets) and the blueprint's 12 core capabilities are separate concep
 | --- | --- |
 | 1 — Foundation and historical data infrastructure | Implemented and audited; original 47 tests preserved. Real Stooq connectivity remains unverified in this cloud environment; raw CSV import now available. |
 | 2 — Event-driven backtesting | Implemented for daily one-instrument long-only USD cash equities, with action accounting, causal replay, baseline strategies, benchmark and exports. See verification below. |
-| 3 — Feature engineering and ML | Not started; awaiting user instruction. |
+| 3 — Feature engineering and ML | Implemented: 46 default causal features, execution-aligned targets, purged walk-forward folds, five CPU model families, OOS ranking portfolios, comparisons and exports. See verification below. |
 | 4 — Automated strategy discovery | Not started. |
 | 5 — Statistical validation | Not started as a full subsystem. Essential causal/timing safeguards are already enforced in Milestone 2. |
 | 6 — Portfolio construction and risk management | Not started. Milestone 2 enforces only its cash/long-only account constraints. |
@@ -49,6 +49,32 @@ Tests use explicitly synthetic fixtures; no profitability claim or verified real
 backtest is made. Limits include single-instrument daily full market fills,
 caller-asserted raw/action semantics and no certified point-in-time universe.
 
-Next milestone, only after user review: causal feature engineering, forward
-labels, chronological/purged training datasets, baseline regressions, tree models
-and ML ranking. No ML training has been added in Milestone 2.
+## Milestone 3 verification and scope
+
+The [full request](milestone-3-instructions.md) is saved unchanged. The
+[ML research guide](ml-research.md) documents features, labels, publication-time
+purging, model APIs, YAML, ranking controls, artifacts and limitations. The
+single-stock interfaces and all 93 previous tests are preserved. `MarketData`
+adds synchronized daily feeds sharing the existing cash and corporate-action ledger.
+
+**135 tests passed** (93 existing plus 42 new). Lint/formatting and the source/wheel
+build passed. All five CPU model families trained in the end-to-end demonstration;
+regression/classification variants, serialization, loading and seed reproducibility
+were also tested. There are no GPU requirements or enabled live orders.
+
+An independently installed wheel reproduced the checkout's predictive/trading
+metrics and OOS prediction artifact exactly.
+
+The default synthetic experiment ran four folds and produced 402 OOS stock/session
+predictions per model, with 50 final sessions reserved and not evaluated. It
+reported that ML did not outperform the strongest simpler baseline after costs.
+These are synthetic functional results, not a verified trading advantage. No
+appropriate real raw-price/action dataset was available for a real-data integration
+demonstration. Supplied static universes can have survivorship bias; source data
+is not independently certified point-in-time.
+
+Milestone 4 remains **unstarted**. After user review, discovery work will require
+bounded Optuna searches, MLflow/experiment registries, hypothesis/variant tracking,
+resource budgets and isolation, model/dataset lineage, explicit selection rules,
+and protection against repeatedly examining reserved holdouts. Advanced statistical
+significance and multiple-testing controls remain Milestone 5 responsibilities.

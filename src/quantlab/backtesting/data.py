@@ -1,5 +1,6 @@
 """A daily-equity adapter: source storage does not know about simulation events."""
 
+import hashlib
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -141,3 +142,37 @@ class DailyData:
             for row in frame.iter_rows(named=True)
         )
         return cls(EquityInstrument(request["symbol"]), bars, snapshot_id, metadata, actions)
+
+
+@dataclass(frozen=True)
+class MarketData:
+    """Synchronized daily-equity feeds sharing one cash account and session clock."""
+
+    feeds: tuple[DailyData, ...]
+
+    def __post_init__(self) -> None:
+        if not self.feeds or len({d.instrument.symbol for d in self.feeds}) != len(self.feeds):
+            raise ValueError("MarketData requires nonempty, unique instrument feeds")
+        reference = [(b.session_date, b.open_time, b.close_time) for b in self.feeds[0].bars]
+        if any(
+            [(b.session_date, b.open_time, b.close_time) for b in d.bars] != reference
+            for d in self.feeds
+        ):
+            raise ValueError("MarketData feeds must have identical trading sessions")
+        if len({d.manifest["synthetic"] for d in self.feeds}) != 1:
+            raise ValueError("Do not mix synthetic and real inputs")
+
+    @property
+    def snapshot_id(self) -> str:
+        content = "|".join(
+            f"{d.instrument.symbol}:{d.snapshot_id}"
+            for d in sorted(self.feeds, key=lambda d: d.instrument.symbol)
+        )
+        return hashlib.sha256(content.encode()).hexdigest()
+
+    @property
+    def manifest(self) -> dict:
+        return {
+            "synthetic": self.feeds[0].manifest["synthetic"],
+            "snapshots": {d.instrument.symbol: d.manifest for d in self.feeds},
+        }

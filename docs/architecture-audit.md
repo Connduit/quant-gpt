@@ -1,5 +1,10 @@
 # Architecture audit after Milestone 1
 
+This is the historical pre-Milestone 2 audit. Current Milestone 3 implementation
+status and the targeted multi-stock replay extension are documented in
+[ML research](ml-research.md) and [progress](progress.md); future-work entries below
+describe the architecture at the time of this audit.
+
 This audit uses the original [blueprint](blueprint.md) and the subsequent
 [development instructions](development-instructions.md). The latter update the
 roadmap to 11 milestones; the original blueprint remains unchanged.

@@ -5,7 +5,7 @@
 From the repository root:
 
 ```bash
-uv sync --frozen --extra dev
+uv sync --frozen --extra dev --extra ml
 uv run python examples/backtest_demo.py
 ```
 
@@ -224,4 +224,7 @@ history is in memory. Availability, historical universe membership and vendor
 revisions are not independently certified point-in-time. These limits are not
 removed by passing accounting tests or by a positive hypothetical return.
 
-Milestone 3 is not started; review this milestone before requesting it.
+Milestone 3 adds an opt-in synchronized multi-stock feed and ranking strategy while
+preserving this single-stock workflow. See [ML research](ml-research.md) for that
+extension and its evaluation assumptions. The historical M2 scope above still
+describes the original single-instrument demo.

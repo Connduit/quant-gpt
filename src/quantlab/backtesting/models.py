@@ -38,7 +38,7 @@ class Bar:
     high: Decimal
     low: Decimal
     close: Decimal
-    volume: int
+    volume: int | Decimal
 
 
 @dataclass(frozen=True)
