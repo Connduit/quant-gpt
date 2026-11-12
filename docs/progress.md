@@ -86,3 +86,11 @@ The [full request](milestone-5-instructions.md), [audit](statistical-validation-
 ## Milestone 6 verification and scope
 
 The [full instructions](milestone-6-instructions.md), [design](portfolio.md), [results](milestone-6-results.md) and [Stooq runtime recheck](stooq-reverification.md) are preserved. **218 tests passed**, three live checks skipped by default. Nine real-data portfolio/stress runs reconciled attribution. Equal weighting returned -3.339%, inverse volatility -5.154%, versus SPY +12.093% in the selected 2017–2018 period. Both evaluated candidates remain rejected/research-only, with no final holdout access or paper promotion. Later milestone requests are saved and queued in order.
+
+## Milestone 7 verification and scope
+
+[Actual results](milestone-7-results.md): 250 offline tests passed, four optional
+real-download checks passed. Real ESZ13 minute data were downloaded and stored;
+four ML trials and five controls completed. All rejected; two OOS sessions are
+insufficient for statistical eligibility. Holdouts remain untouched. No live feed,
+paid Databento access, certified historical margins, or paper eligibility verified.

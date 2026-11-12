@@ -1,0 +1,325 @@
+{
+  "code": {
+    "git_commit": "07d34c5015e800a9dcef9841eedf8924c9984546",
+    "source_sha256": "1332d0029dde94ee5b4b6bb7f9213966dddb66e3e130c4ebf2caf753822b41f0"
+  },
+  "counts": {
+    "attempts": 9,
+    "optuna_trials": 4,
+    "unique_hypotheses": 9
+  },
+  "recorded_history": {
+    "attempts": 27,
+    "optimizer_trials": 12,
+    "registry_files": [
+      "/workspace/quant-gpt/data/futures/milestone-7-final/experiments/registry.sqlite",
+      "/workspace/quant-gpt/data/futures/milestone-7-release/experiments/registry.sqlite",
+      "/workspace/quant-gpt/data/futures/research-prototype/experiments/registry.sqlite"
+    ],
+    "scope": "all supplied registries including failures/prunes/variants; external/unrecorded searches unknown",
+    "unique_hypotheses": 27
+  },
+  "holdout": {
+    "events": [
+      {
+        "at": "2026-11-12T05:49:53.883319+00:00",
+        "detail": "",
+        "event": "REGISTERED"
+      }
+    ],
+    "id": "30def9390a443f7daee2369ec7f18e98e0eed4e58290cc1575200f3498e971cc",
+    "manifest": "{\"end\": \"2013-10-15T00:00:00+00:00\", \"purpose\": \"futures reserved period not downloaded/evaluated\", \"sources\": {\"ESZ13\": \"quantconnect-lean-futures-archive:https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/readme.md; UTC source timestamps; ESZ13\"}, \"start\": \"2013-10-14T00:00:00+00:00\"}",
+    "state": "SEALED"
+  },
+  "final_holdout": "not_downloaded_or_evaluated",
+  "limitations": [
+    "Archival sample is too short for independent-session significance.",
+    "Margins and fees are explicit assumptions, not certified historical broker/exchange rates.",
+    "Continuous charts are not execution prices; actual contract transactions only.",
+    "Intraday bootstrap does not make repeated-minute observations independent.",
+    "No live futures trading is implemented or enabled."
+  ],
+  "synthetic": false,
+  "failed": [],
+  "paper_trading_shortlist": [],
+  "results": [
+    {
+      "experiment_id": "8e4aa3484954b328decb0ce59731b82bf705156bcbb51a651f8fa7dffa6a0e5b",
+      "role": "futures_trial",
+      "status": "REJECTED",
+      "summary": {
+        "eligible": false,
+        "fills": 68,
+        "independent_sessions": 2,
+        "mean_benchmark_excess": -0.015188900000000005,
+        "mean_validation_return": -0.010759299999999972,
+        "objective": -1.0107593,
+        "rejection_reasons": [
+          "nonpositive_net_return",
+          "underperformed_contract_benchmark",
+          "insufficient_independent_sessions",
+          "uncertified_historical_margin_and_data_scope"
+        ],
+        "score": -0.017150428294605446,
+        "validation_windows": 2
+      },
+      "statistics": {
+        "daily_observations": 2,
+        "deflated_sharpe": null,
+        "fdr_by_q": 1.0,
+        "one_sided_p": 1.0,
+        "probabilistic_sharpe": null,
+        "status": "insufficient_daily_observations"
+      },
+      "strategy": "ml",
+      "target": "direction"
+    },
+    {
+      "experiment_id": "5139b91f7dffa322bba7379cd4fe551e7c048e9341ef77ac4c6b4528e977e49e",
+      "role": "futures_trial",
+      "status": "REJECTED",
+      "summary": {
+        "eligible": false,
+        "fills": 0,
+        "independent_sessions": 2,
+        "mean_benchmark_excess": -0.004679600000000117,
+        "mean_validation_return": 0.0,
+        "objective": -1.0,
+        "rejection_reasons": [
+          "nonpositive_net_return",
+          "underperformed_contract_benchmark",
+          "insufficient_independent_sessions",
+          "uncertified_historical_margin_and_data_scope"
+        ],
+        "score": 0.0,
+        "validation_windows": 2
+      },
+      "statistics": {
+        "daily_observations": 2,
+        "deflated_sharpe": null,
+        "fdr_by_q": 1.0,
+        "one_sided_p": 1.0,
+        "probabilistic_sharpe": null,
+        "status": "insufficient_daily_observations"
+      },
+      "strategy": "ml",
+      "target": "direction"
+    },
+    {
+      "experiment_id": "625dceddea91aaaab0103f1cf9c6938edcea2beba3b4139e0663d3178453c70a",
+      "role": "futures_trial",
+      "status": "REJECTED",
+      "summary": {
+        "eligible": false,
+        "fills": 44,
+        "independent_sessions": 2,
+        "mean_benchmark_excess": -0.011454000000000075,
+        "mean_validation_return": -0.007024400000000042,
+        "objective": -1.0070244000000002,
+        "rejection_reasons": [
+          "nonpositive_net_return",
+          "underperformed_contract_benchmark",
+          "insufficient_independent_sessions",
+          "uncertified_historical_margin_and_data_scope"
+        ],
+        "score": -0.013283000000000045,
+        "validation_windows": 2
+      },
+      "statistics": {
+        "daily_observations": 2,
+        "deflated_sharpe": null,
+        "fdr_by_q": 1.0,
+        "one_sided_p": 1.0,
+        "probabilistic_sharpe": null,
+        "status": "insufficient_daily_observations"
+      },
+      "strategy": "ml",
+      "target": "forward_return"
+    },
+    {
+      "experiment_id": "0d8a42bb0f156975b1cc832a1e522610e817ee6ba433b6f78f0482a50a9fee98",
+      "role": "futures_trial",
+      "status": "REJECTED",
+      "summary": {
+        "eligible": false,
+        "fills": 66,
+        "independent_sessions": 2,
+        "mean_benchmark_excess": -0.013091200000000025,
+        "mean_validation_return": -0.008661599999999992,
+        "objective": -1.0086616,
+        "rejection_reasons": [
+          "nonpositive_net_return",
+          "underperformed_contract_benchmark",
+          "insufficient_independent_sessions",
+          "uncertified_historical_margin_and_data_scope"
+        ],
+        "score": -0.014677855676321183,
+        "validation_windows": 2
+      },
+      "statistics": {
+        "daily_observations": 2,
+        "deflated_sharpe": null,
+        "fdr_by_q": 1.0,
+        "one_sided_p": 1.0,
+        "probabilistic_sharpe": null,
+        "status": "insufficient_daily_observations"
+      },
+      "strategy": "ml",
+      "target": "forward_return"
+    },
+    {
+      "experiment_id": "f2a723b392d8786dd36a62be0be19ec25284adbc4802ca7dbb2c9d2ab284979f",
+      "role": "futures_baseline",
+      "status": "REJECTED",
+      "summary": {
+        "eligible": false,
+        "fills": 82,
+        "independent_sessions": 2,
+        "mean_benchmark_excess": -0.015560300000000027,
+        "mean_validation_return": -0.011130699999999993,
+        "objective": -1.0111307,
+        "rejection_reasons": [
+          "nonpositive_net_return",
+          "underperformed_contract_benchmark",
+          "insufficient_independent_sessions",
+          "uncertified_historical_margin_and_data_scope"
+        ],
+        "score": -0.01773295655322321,
+        "validation_windows": 2
+      },
+      "statistics": {
+        "daily_observations": 2,
+        "deflated_sharpe": null,
+        "fdr_by_q": 1.0,
+        "one_sided_p": 1.0,
+        "probabilistic_sharpe": null,
+        "status": "insufficient_daily_observations"
+      },
+      "strategy": "ml",
+      "target": "forward_return"
+    },
+    {
+      "experiment_id": "9a16ce9e1e04a4e1273734682bc41f985f1c761e594d3f81f45a25067688cb70",
+      "role": "futures_baseline",
+      "status": "REJECTED",
+      "summary": {
+        "eligible": false,
+        "fills": 68,
+        "independent_sessions": 2,
+        "mean_benchmark_excess": -0.009126400000000034,
+        "mean_validation_return": -0.004696800000000001,
+        "objective": -1.0046968,
+        "rejection_reasons": [
+          "nonpositive_net_return",
+          "underperformed_contract_benchmark",
+          "insufficient_independent_sessions",
+          "uncertified_historical_margin_and_data_scope"
+        ],
+        "score": -0.007831355550734609,
+        "validation_windows": 2
+      },
+      "statistics": {
+        "daily_observations": 2,
+        "deflated_sharpe": null,
+        "fdr_by_q": 1.0,
+        "one_sided_p": 1.0,
+        "probabilistic_sharpe": null,
+        "status": "insufficient_daily_observations"
+      },
+      "strategy": "ml",
+      "target": "forward_return"
+    },
+    {
+      "experiment_id": "f4c54ee7130e237e5b1c1392eec507927c7723d76d4e135d7298374379c96d11",
+      "role": "futures_baseline",
+      "status": "REJECTED",
+      "summary": {
+        "eligible": false,
+        "fills": 147,
+        "independent_sessions": 2,
+        "mean_benchmark_excess": -0.021034400000000064,
+        "mean_validation_return": -0.01660480000000003,
+        "objective": -1.0166048,
+        "rejection_reasons": [
+          "nonpositive_net_return",
+          "underperformed_contract_benchmark",
+          "insufficient_independent_sessions",
+          "uncertified_historical_margin_and_data_scope"
+        ],
+        "score": -0.025192400000000004,
+        "validation_windows": 2
+      },
+      "statistics": {
+        "daily_observations": 2,
+        "deflated_sharpe": null,
+        "fdr_by_q": 1.0,
+        "one_sided_p": 1.0,
+        "probabilistic_sharpe": null,
+        "status": "insufficient_daily_observations"
+      },
+      "strategy": "ml",
+      "target": "forward_return"
+    },
+    {
+      "experiment_id": "21c0b07e2488bffa051e556d6aea027ebb6767a748baebcea381ba7cb14bc43e",
+      "role": "futures_baseline",
+      "status": "REJECTED",
+      "summary": {
+        "eligible": false,
+        "fills": 117,
+        "independent_sessions": 2,
+        "mean_benchmark_excess": -0.015889299999999995,
+        "mean_validation_return": -0.011459699999999962,
+        "objective": -1.0114597,
+        "rejection_reasons": [
+          "nonpositive_net_return",
+          "underperformed_contract_benchmark",
+          "insufficient_independent_sessions",
+          "uncertified_historical_margin_and_data_scope"
+        ],
+        "score": -0.018183799999999972,
+        "validation_windows": 2
+      },
+      "statistics": {
+        "daily_observations": 2,
+        "deflated_sharpe": null,
+        "fdr_by_q": 1.0,
+        "one_sided_p": 1.0,
+        "probabilistic_sharpe": null,
+        "status": "insufficient_daily_observations"
+      },
+      "strategy": "ml",
+      "target": "forward_return"
+    },
+    {
+      "experiment_id": "99fb5c9bcf2e07d916c99dfea18bd3eb844c576107965f139fbf3716c78cac4e",
+      "role": "futures_baseline",
+      "status": "REJECTED",
+      "summary": {
+        "eligible": false,
+        "fills": 4,
+        "independent_sessions": 2,
+        "mean_benchmark_excess": 0.0,
+        "mean_validation_return": 0.0044296000000000335,
+        "objective": -0.9955704,
+        "rejection_reasons": [
+          "underperformed_contract_benchmark",
+          "insufficient_independent_sessions",
+          "uncertified_historical_margin_and_data_scope"
+        ],
+        "score": 0.003037000000000012,
+        "validation_windows": 2
+      },
+      "statistics": {
+        "daily_observations": 2,
+        "deflated_sharpe": null,
+        "fdr_by_q": 1.0,
+        "one_sided_p": 1.0,
+        "probabilistic_sharpe": null,
+        "status": "insufficient_daily_observations"
+      },
+      "strategy": "ml",
+      "target": "forward_return"
+    }
+  ]
+}

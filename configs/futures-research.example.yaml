@@ -1,0 +1,159 @@
+study:
+  name: es_archival_intraday_research
+  seed: 42
+  max_trials: 4
+  max_wall_seconds: 900
+data:
+  store: ../data/futures/real-inputs
+  snapshots:
+  - 3fac02494948aacdc5db5afb23a70118d82715b40d4072c4de0f5deba7ddbd1f
+  holdout_start: '2013-10-14T00:00:00+00:00'
+  holdout_end: '2013-10-15T00:00:00+00:00'
+search:
+  models:
+    ridge:
+      alpha:
+        type: float
+        low: 0.1
+        high: 10
+        log: true
+    logistic:
+      C:
+        type: float
+        low: 0.1
+        high: 10
+        log: true
+    random_forest:
+      n_estimators:
+        type: categorical
+        choices:
+        - 8
+        - 16
+      max_depth:
+        type: categorical
+        choices:
+        - 2
+        - 4
+    lightgbm:
+      n_estimators:
+        type: categorical
+        choices:
+        - 8
+        - 16
+      num_leaves:
+        type: categorical
+        choices:
+        - 4
+        - 8
+    xgboost:
+      n_estimators:
+        type: categorical
+        choices:
+        - 8
+        - 16
+      max_depth:
+        type: categorical
+        choices:
+        - 2
+        - 3
+  feature_sets:
+    technical:
+    - momentum
+    - volatility
+    - volume
+    contextual:
+    - momentum
+    - volatility
+    - volume
+    - context
+    - opening_range
+  targets:
+  - forward_return
+  - direction
+  - volatility_adjusted
+  horizons:
+  - 5
+  - 15
+  - 60
+  decision_minutes:
+  - 1
+  - 5
+  - 15
+  thresholds:
+    forward_return:
+      type: categorical
+      choices:
+      - 0.0001
+      - 0.00025
+      - 0.0005
+    direction:
+      type: categorical
+      choices:
+      - 0.05
+      - 0.1
+    volatility_adjusted:
+      type: categorical
+      choices:
+      - 0.25
+      - 0.5
+  strategy:
+    maximum_holding_minutes:
+      type: categorical
+      choices:
+      - 5
+      - 15
+      - 60
+    stop_loss:
+      type: categorical
+      choices:
+      - 0.002
+      - 0.004
+    take_profit:
+      type: categorical
+      choices:
+      - 0.003
+      - 0.006
+    regime:
+      type: categorical
+      choices:
+      - all
+      - high_volatility
+      - low_volatility
+    position_sizing:
+      type: categorical
+      choices:
+      - fixed
+      - atr
+validation:
+  training_sessions: 1
+  validation_sessions: 1
+  test_sessions: 1
+  expanding: true
+  embargo_minutes: 5
+  gap_minutes: 1
+strategy:
+  contracts_per_trade: 1
+  roll_method: calendar
+  roll_days: 5
+execution:
+  commission: '2.25'
+  exchange_fee: '1.25'
+  regulatory_fee: '.02'
+  slippage_ticks: 1
+  spread_ticks: 0
+risk:
+  maximum_contracts: 1
+  maximum_notional: 200000
+  maximum_margin_utilization: 0.5
+  maximum_leverage: 2
+  maximum_daily_loss: 0.03
+  maximum_drawdown: 0.15
+  maximum_strategy_drawdown: 0.15
+resources:
+  workers: 1
+  cpu_threads: 1
+  memory_mb: 4096
+  trial_wall_seconds: 180
+  trial_cpu_seconds: 120
+initial_cash: '100000'
+overnight: flat_rth

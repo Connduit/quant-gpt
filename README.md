@@ -203,3 +203,15 @@ risk-parity/volatility-target allocations, sizing, pre-trade risk controls,
 suspensions and stress reports. The real example uses two rejected candidates
 for research mechanics only; neither is promoted. See [design](docs/portfolio.md)
 and [actual results](docs/milestone-6-results.md).
+
+## Futures research
+
+```bash
+uv run --frozen --all-extras python examples/futures_demo.py --output data/futures/NEW_RUN
+```
+
+Actual-contract ES/MES/NQ/MNQ accounting, causal intraday features, CPU ML,
+purged validation and bounded discovery. The verified archival ES example has
+only two OOS sessions; all nine candidates remain rejected. No live trading.
+See [design](docs/futures.md), [audit](docs/futures-audit.md), and
+[actual results](docs/milestone-7-results.md).

@@ -3,7 +3,7 @@
 import polars as pl
 
 
-def validate_intervals(frame):
+def validate_intervals(frame, *, observation_key=("symbol", "session_date")):
     required = {
         "session_date",
         "symbol",
@@ -28,7 +28,7 @@ def validate_intervals(frame):
         ).all()
     ).item():
         raise ValueError("Misaligned information interval")
-    if frame.select(pl.struct("symbol", "session_date").is_duplicated().any()).item():
+    if frame.select(pl.struct(*observation_key).is_duplicated().any()).item():
         raise ValueError("Duplicate asset/session labels")
 
 

@@ -132,3 +132,13 @@ def constrain(targets, prices, equity, limits, sectors=None, correlation_groups=
         s: (q * decimal(scales[s])).to_integral_value(rounding=ROUND_FLOOR)
         for s, q in targets.items()
     }, sorted(set(reasons))
+
+
+def limit_breaches(observed, limits):
+    """Asset-neutral strict upper-bound checks, reusable by contract/margin adapters."""
+    reasons = []
+    for name, maximum in limits.items():
+        value = observed[name]
+        if not math.isfinite(value) or value > maximum:
+            reasons.append(name)
+    return sorted(reasons)

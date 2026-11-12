@@ -1,0 +1,60 @@
+{
+  "contract": {
+    "expiration": "2013-12-20T14:30:00+00:00",
+    "identifier": "ESZ13",
+    "initial_margin": "12000",
+    "last_trade": "2013-12-20T14:30:00+00:00",
+    "maintenance_margin": "10000",
+    "margin_as_of": "2013-10-01",
+    "margin_source": "explicit research assumption, NOT certified historical exchange/broker margin",
+    "metadata_source": "CME quarterly third-Friday cash-settlement rule; Dec 20 2013 normal trading date; LEAN December 2013 member",
+    "month": 12,
+    "product": "ES",
+    "provider_symbols": {
+      "databento": "ESZ3",
+      "lean": "201312"
+    },
+    "specification": {
+      "currency": "USD",
+      "exchange": "CME",
+      "hours": "Globex, exchange calendar plus explicit maintenance/holiday overrides",
+      "multiplier": "50",
+      "settlement": "cash-settled; official settlement requires dated source prices",
+      "specification_source": "https://www.cmegroup.com/markets/equities.html",
+      "symbol": "ES",
+      "tick_size": "0.25",
+      "timezone": "America/Chicago"
+    },
+    "tick_value": "12.50",
+    "year": 2013
+  },
+  "holdout_start": "2013-10-14T00:00:00+00:00",
+  "quality": {
+    "calendar_source": "exchange_calendars CMES + caller-supplied dated CME exceptions",
+    "minutes": 1,
+    "missing_minutes": {},
+    "open_interest_coverage": 1.0,
+    "quote_coverage": 1.0,
+    "session_mode": "rth",
+    "source_hashes": {
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131007_openinterest.zip": "0f71dfc0c6e2150887c5db36a38540cc20db432304fe12dd38c3f2f5b59a1cb2",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131007_quote.zip": "dc60626a2dfb659ce6cd8851d7392bb9ded577d32d1754d322f4365213eb64a2",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131007_trade.zip": "315db1aaf4e7800fad3dfe032cc296966fd63fc4dd04decf2313f7d772dd73d5",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131008_openinterest.zip": "d5a4c0730c870cd6acdcac78ebe2aaf5a2092ddc3c42322e055794242cdc0881",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131008_quote.zip": "800b87fea82a24610734592946d9e9f07f2e61e3f668ece9ab3062f335ef9f38",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131008_trade.zip": "0887343893fef6855cdf6f9297eb2827a436e5e6d5a70625d0cee790af3c3d71",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131009_openinterest.zip": "401017b6743654a9bd9e710c328722e92be1572806e7fd4dd9f9ad2e6ab40ba0",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131009_quote.zip": "b1cdfc90905820c24f1ae90ef93a47d4577d29b24814220de845534199069265",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131009_trade.zip": "76917f7ad118af72228016ec5ac2ea40c560a099ebf834417086e404a402a87a",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131010_openinterest.zip": "afe433afb2fb901ff5dc271438946481b8d72f3d0dff90de0f7e9ff4d8733111",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131010_quote.zip": "c883227ec8b02625b7f3a10984bc4e3c5976d15a7486771f0ec4d3b5627de6f1",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131010_trade.zip": "ea8f32c6a18028a635b9af1e559e89906677d551697edade0a1ad69a421da852",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131011_openinterest.zip": "97661867574366f768deb3cbca04b89f9e8baa4524300edbb73330644112174f",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131011_quote.zip": "c3ad0192fcb44d24f651fcd66a8ac8f72de6d46ebf56764ecf9ab81664bb79b7",
+      "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/future/cme/minute/es/20131011_trade.zip": "922c60d40c75fc2d97011574a084aefb21cd89eddcaf6df466cd7e5b8424004f"
+    },
+    "sparse_policy": "complete configured sessions"
+  },
+  "reserved_period_downloaded": false,
+  "snapshot_id": "3fac02494948aacdc5db5afb23a70118d82715b40d4072c4de0f5deba7ddbd1f"
+}

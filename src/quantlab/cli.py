@@ -136,6 +136,54 @@ def parser() -> argparse.ArgumentParser:
         choices=("equal", "fixed", "inverse_volatility", "risk_parity", "volatility_target"),
         required=True,
     )
+    futures = commands.add_parser("futures", help="Contract-aware futures research only")
+    future_sub = futures.add_subparsers(dest="futures_command", required=True)
+    future_sub.add_parser("specifications")
+    command = future_sub.add_parser("import")
+    command.add_argument("--store", type=Path, required=True)
+    command.add_argument("--contracts", type=Path, required=True)
+    command.add_argument("--contract", required=True)
+    command.add_argument("--start", required=True)
+    command.add_argument("--end", required=True)
+    command.add_argument("--provider", choices=("lean", "databento", "csv"), required=True)
+    command.add_argument("--csv", type=Path)
+    command.add_argument("--source")
+    command.add_argument("--synthetic", action="store_true")
+    command.add_argument("--raw-contract-prices", action="store_true")
+    command.add_argument("--include-auxiliary", action="store_true")
+    command.add_argument("--allow-sparse", action="store_true")
+    command.add_argument("--maximum-download-cost", type=float, default=0)
+    for name in ("inspect", "query", "validate-history"):
+        command = future_sub.add_parser(name)
+        command.add_argument("--store", type=Path, required=True)
+        command.add_argument("snapshot")
+        if name == "query":
+            command.add_argument("--sql", required=True)
+    for name in ("research", "train", "discover", "resume"):
+        command = future_sub.add_parser(name)
+        command.add_argument("--research-config", type=Path, required=True)
+        command.add_argument("--output", type=Path, required=True)
+    for name in ("report", "validation-report"):
+        command = future_sub.add_parser(name)
+        command.add_argument("--root", type=Path, required=True)
+    for name in ("continuous", "backtest"):
+        command = future_sub.add_parser(name)
+        command.add_argument("--store", type=Path, required=True)
+        command.add_argument("--snapshots", nargs="+", required=True)
+        command.add_argument("--output", type=Path, required=True)
+        if name == "continuous":
+            command.add_argument(
+                "--roll-method", choices=("calendar", "volume"), default="calendar"
+            )
+            command.add_argument("--roll-days", type=int, default=5)
+            command.add_argument("--back-adjust", action="store_true")
+        else:
+            command.add_argument(
+                "--family",
+                choices=("momentum", "vwap", "opening_range", "regime", "buy_hold"),
+                default="momentum",
+            )
+            command.add_argument("--holdout-start", required=True)
     return result
 
 
@@ -146,6 +194,10 @@ def main(argv: list[str] | None = None) -> int:
         settings = load_settings(args.config)
         configure_logging(settings.log_level)
         store = SnapshotStore(args.data_dir or settings.data_dir)
+        if args.command == "futures":
+            from quantlab.futures.cli import execute
+
+            return execute(args)
         if args.command == "portfolio":
             from quantlab.portfolio.cli import execute
 

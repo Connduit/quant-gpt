@@ -26,7 +26,10 @@ def main():
             raise MemoryError("Memory budget is below the supported 512 MiB worker minimum")
         if hasattr(os, "sched_setaffinity"):
             os.sched_setaffinity(0, set(job["cpu_affinity"]))
-        from quantlab.discovery.evaluation import evaluate_candidate
+        if job["definition"].get("asset_class") == "futures":
+            from quantlab.futures.evaluation import evaluate_futures_candidate as evaluate_candidate
+        else:
+            from quantlab.discovery.evaluation import evaluate_candidate
 
         evaluate_candidate(
             job["definition"], output, progress_handshake=job.get("progress_handshake", False)

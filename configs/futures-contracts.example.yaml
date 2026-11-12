@@ -1,0 +1,20 @@
+contracts:
+  ESZ13:
+    expiration: '2013-12-20T14:30:00+00:00'
+    identifier: ESZ13
+    initial_margin: '12000'
+    last_trade: '2013-12-20T14:30:00+00:00'
+    maintenance_margin: '10000'
+    margin_as_of: '2013-10-01'
+    margin_source: explicit research assumption, NOT certified historical exchange/broker
+      margin
+    metadata_source: CME quarterly third-Friday cash-settlement rule; Dec 20 2013
+      normal trading date; LEAN December 2013 member
+    month: 12
+    product: ES
+    provider_symbols:
+      databento: ESZ3
+      lean: '201312'
+    year: 2013
+calendar:
+  mode: rth
