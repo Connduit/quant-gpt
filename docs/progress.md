@@ -12,7 +12,7 @@ additional markets) and the blueprint's 12 core capabilities are separate concep
 | 2 — Event-driven backtesting | Implemented for daily one-instrument long-only USD cash equities, with action accounting, causal replay, baseline strategies, benchmark and exports. See verification below. |
 | 3 — Feature engineering and ML | Implemented: 46 default causal features, execution-aligned targets, purged walk-forward folds, five CPU model families, OOS ranking portfolios, comparisons and exports. See verification below. |
 | 4 — Automated strategy discovery | Implemented: bounded Optuna search, local MLflow, immutable registry, resource isolation, eligibility and robustness. See results below. |
-| 5 — Statistical validation | Not started as a full subsystem. Essential causal/timing safeguards are already enforced in Milestone 2. |
+| 5 — Statistical validation | Implemented: interval checks, advanced folds, holdout-use ledger, bootstrap uncertainty, Sharpe/search corrections, robustness and conservative status reports. |
 | 6 — Portfolio construction and risk management | Not started. Milestone 2 enforces only its cash/long-only account constraints. |
 | 7 — Futures research | Not started. |
 | 8 — Paper trading | Not started. |
@@ -77,4 +77,8 @@ is not independently certified point-in-time.
 
 The [full instructions](milestone-4-instructions.md) and [data requirements](milestone-4-data-instructions.md) are preserved. The [discovery guide](discovery.md) explains the implementation; [recorded results](milestone-4-results.md) and [dataset manifest](milestone-4-datasets.json) document the real run.
 
-**170 tests passed**, preserving all prior tests. Lint, formatting and package builds passed. Four optimizer trials and six diagnostic variants ran on seven historical stocks plus SPY (2014–2019); zero candidates qualified. The final 252 sessions in 2019 remained inaccessible to trials. Explicit factor-file proxies have incomplete corporate-action coverage and unknown payment dates; this is not a fully corporate-action-aware demonstration. Milestone 5 remains unstarted.
+**170 tests passed**, preserving all prior tests. Lint, formatting and package builds passed. Four optimizer trials and six diagnostic variants ran on seven historical stocks plus SPY (2014–2019); zero candidates qualified. The final 252 sessions in 2019 remained inaccessible to trials. Explicit factor-file proxies have incomplete corporate-action coverage and unknown payment dates; this is not a fully corporate-action-aware demonstration. Milestone 5 now adds statistical diagnostics; see verification below.
+
+## Milestone 5 verification and scope
+
+The [full request](milestone-5-instructions.md), [audit](statistical-validation-audit.md), [methodology](statistical-validation.md) and [actual results](milestone-5-results.md) are recorded. **197 tests passed**, three live tests skipped by default; the explicit live run passed all three. Lint, formatting and package builds passed. Four real-data candidates and eight distinct robustness scenarios were rejected. No candidate qualifies for paper trading. All 252 reserved 2019 sessions remained unevaluated; the holdout ledger is SEALED. Action/universe certification and independent confirmation remain missing. Milestone 6 is not implemented in this verification.

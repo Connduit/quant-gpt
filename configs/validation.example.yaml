@@ -1,0 +1,42 @@
+discovery_root: ../data/discovery/release
+verified_inputs: ../data/network-verification/real-inputs
+research_config: discovery-real-research.yaml
+history_roots:
+- ../data/discovery
+- ../data/statistical
+holdout:
+  sources:
+    AAPL: ad854461f6866f2e42ce5203a4c242bb99470df20757c715659b854d5f40e734
+    AIG: da78fae98a0d86ef309e8b862caf075846936fdfb6b24c9617cf71d5acfc8be1
+    BAC: 064241dfdedba220a0735e8fd2752436525cd418befc18b56c751642dd09770b
+    FB: e78ae9e79045d5dcfecc8bafd048d313d5fee313cef9457bdfd5759855b29200
+    GOOGL: 91e8cda22decaf2796d535773d72f59183fa6c4c5b6c1fd57a9fa508c3fd0836
+    IBM: 15c1fc59a93866d65abc95cb9740cdf1bb4b048d666212c302456a46e4bd3e38
+    SPY: ee1510cdef56624df8cc1db20ee47b2479fabb5efb775304b78e68a43b197cbe
+    WM: 74efa59c009431779a8fa33c50edb957e25ad6ea43344c48db7f8e666a2aad7d
+  start: '2019-01-02'
+  end: '2019-12-31'
+  purpose: original reserved final holdout; never evaluate during Milestone 5
+policy:
+  replications: 500
+  block_lengths:
+  - 5
+  - 10
+  - 20
+  training_sessions: 504
+  validation_sessions: 126
+  test_sessions: 126
+  retraining_sessions: 126
+  gap_sessions: 2
+  embargo_sessions: 5
+  expanding: false
+  max_candidates: 4
+  max_robustness_variants: 8
+  max_wall_seconds: 1200
+resources:
+  workers: 1
+  cpu_threads: 1
+  memory_mb: 4096
+  trial_wall_seconds: 180
+  trial_cpu_seconds: 120
+  max_attempts: 2

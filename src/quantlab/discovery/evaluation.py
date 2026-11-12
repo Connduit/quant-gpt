@@ -149,10 +149,12 @@ def evaluate_candidate(definition: dict, output: Path, *, progress_handshake=Fal
             definition["test_sessions"],
             definition["expanding"],
             definition["embargo_sessions"],
+            retraining_sessions=definition.get("retraining_sessions"),
+            gap_sessions=definition.get("gap_sessions", 0),
         )
     )
     if len(folds) < eligibility.minimum_windows:
-        raise ValueError("Multiple independent chronological validation windows are required")
+        raise ValueError("Multiple chronological search-validation windows are required")
     windows = []
     prediction_frames = []
     for index, fold in enumerate(folds):
@@ -189,6 +191,28 @@ def evaluate_candidate(definition: dict, output: Path, *, progress_handshake=Fal
             decimal(definition["initial_cash"]), Costs(**definition["execution"])
         )
         rows = predicted.to_dicts()
+        delay = definition.get("execution_delay_sessions", 0)
+        if type(delay) is not int or not 0 <= delay <= 20:
+            raise ValueError("Execution delay must be 0–20 trading sessions")
+        if delay:
+            calendar = [b.session_date for b in next(iter(feeds.values())).bars]
+            shifted = []
+            for row in rows:
+                i = calendar.index(row["session_date"]) + delay
+                if i + 1 >= len(calendar):
+                    continue
+                shifted.append({**row, "session_date": calendar[i]})
+            rows = shifted
+            if not rows:
+                raise ValueError("Delay left no executable predictions")
+            last_index = max(calendar.index(row["session_date"]) for row in rows) + 1
+            last = calendar[last_index]
+            market = MarketData(
+                tuple(
+                    replace(d, bars=tuple(b for b in d.bars if first <= b.session_date <= last))
+                    for d in feeds.values()
+                )
+            )
 
         def replay(mode, costs=execution.costs, market=market, rows=rows, execution=execution):
             return run_backtest(

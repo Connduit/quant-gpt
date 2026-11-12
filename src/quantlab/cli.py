@@ -90,6 +90,26 @@ def parser() -> argparse.ArgumentParser:
             command.add_argument("--parameters", type=Path, nargs="+", required=True)
         if name == "reproduce":
             command.add_argument("attempt_id")
+    validate = commands.add_parser("validate", help="Statistical research validation")
+    validation_sub = validate.add_subparsers(dest="validation_command", required=True)
+    for name in (
+        "run",
+        "walk-forward",
+        "robustness",
+        "confidence-intervals",
+        "multiple-testing",
+        "report",
+        "compare",
+        "list",
+        "rejected",
+        "eligible",
+    ):
+        command = validation_sub.add_parser(name)
+        if name in ("run", "walk-forward", "robustness"):
+            command.add_argument("--validation-config", type=Path, required=True)
+            command.add_argument("--output", type=Path, required=True)
+        else:
+            command.add_argument("--reports", type=Path, nargs="+", required=True)
     return result
 
 
@@ -100,6 +120,10 @@ def main(argv: list[str] | None = None) -> int:
         settings = load_settings(args.config)
         configure_logging(settings.log_level)
         store = SnapshotStore(args.data_dir or settings.data_dir)
+        if args.command == "validate":
+            from quantlab.statistical.cli import execute
+
+            return execute(args)
         if args.command == "discovery":
             try:
                 from quantlab.discovery.cli import execute

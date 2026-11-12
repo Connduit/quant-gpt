@@ -1,8 +1,8 @@
 # Quant Research Lab
 
 CPU-compatible historical US equities infrastructure and daily event-driven
-backtesting, causal features and CPU machine learning research. Milestones 1–4
-are implemented, including bounded automated strategy discovery.
+backtesting, causal features and CPU machine learning research. Milestones 1–5
+are implemented, including bounded discovery and statistical validation.
 
 The [complete project blueprint and roadmap](docs/blueprint.md) preserves the
 original specification, including all core capabilities, market phases and ten
@@ -175,4 +175,19 @@ zero strategies qualified and the 2019 holdout stayed untouched. The explicitly
 selected factor-file alternative has incomplete corporate-action coverage and
 unknown payment dates. See the [discovery guide](docs/discovery.md),
 [results](docs/milestone-4-results.md) and [snapshot manifest](docs/milestone-4-datasets.json).
-Milestone 5 has not started.
+Milestone 5 adds selection-aware statistical diagnostics; see below.
+
+## Statistical validation
+
+```bash
+uv run --frozen --all-extras python examples/statistical_validation_demo.py --output data/statistical/NEW_RUN
+uv run --frozen --all-extras quantlab validate rejected --reports data/statistical/NEW_RUN
+```
+
+Uses saved discovery candidates and verified development-only real snapshots.
+The framework adds configurable rolling/expanding retraining, interval purging,
+holdout consumption controls, block-bootstrap uncertainty, PSR/DSR, search-history
+corrections and execution robustness. Reused development windows are labeled as
+diagnostics; no final holdout is evaluated. See [methodology](docs/statistical-validation.md),
+[audit](docs/statistical-validation-audit.md) and [results](docs/milestone-5-results.md).
+Milestone 6 has not started.

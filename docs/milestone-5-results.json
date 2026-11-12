@@ -1,0 +1,1716 @@
+{
+  "schema_version": 1,
+  "configuration": {
+    "discovery_root": "../data/discovery/release",
+    "history_roots": [
+      "../data/discovery",
+      "../data/statistical"
+    ],
+    "holdout": {
+      "end": "2019-12-31",
+      "purpose": "original reserved final holdout; never evaluate during Milestone 5",
+      "sources": {
+        "AAPL": "ad854461f6866f2e42ce5203a4c242bb99470df20757c715659b854d5f40e734",
+        "AIG": "da78fae98a0d86ef309e8b862caf075846936fdfb6b24c9617cf71d5acfc8be1",
+        "BAC": "064241dfdedba220a0735e8fd2752436525cd418befc18b56c751642dd09770b",
+        "FB": "e78ae9e79045d5dcfecc8bafd048d313d5fee313cef9457bdfd5759855b29200",
+        "GOOGL": "91e8cda22decaf2796d535773d72f59183fa6c4c5b6c1fd57a9fa508c3fd0836",
+        "IBM": "15c1fc59a93866d65abc95cb9740cdf1bb4b048d666212c302456a46e4bd3e38",
+        "SPY": "ee1510cdef56624df8cc1db20ee47b2479fabb5efb775304b78e68a43b197cbe",
+        "WM": "74efa59c009431779a8fa33c50edb957e25ad6ea43344c48db7f8e666a2aad7d"
+      },
+      "start": "2019-01-02"
+    },
+    "policy": {
+      "alpha": 0.05,
+      "block_lengths": [
+        5,
+        10,
+        20
+      ],
+      "confidence_level": 0.95,
+      "embargo_sessions": 5,
+      "expanding": false,
+      "gap_sessions": 2,
+      "historical_universe_certified": false,
+      "independent_selection_period": false,
+      "max_candidates": 4,
+      "max_robustness_variants": 8,
+      "max_wall_seconds": 1200,
+      "minimum_effective_sessions": 100,
+      "minimum_folds": 3,
+      "minimum_sessions": 252,
+      "replications": 500,
+      "retraining_sessions": 126,
+      "seed": 42,
+      "test_sessions": 126,
+      "training_sessions": 504,
+      "validation_sessions": 126
+    },
+    "research_config": "discovery-real-research.yaml",
+    "resources": {
+      "cpu_threads": 1,
+      "max_attempts": 2,
+      "memory_mb": 4096,
+      "trial_cpu_seconds": 120,
+      "trial_wall_seconds": 180,
+      "workers": 1
+    },
+    "verified_inputs": "../data/network-verification/real-inputs"
+  },
+  "code": {
+    "git_commit": "89e1a6bd53b2ad9b9c77a07deb8fddfb192eb1bf",
+    "source_sha256": "0e06c4e1b5f6a0814335ad25720349ea777a0c09732f059e3eb4f18b55836c69"
+  },
+  "history": {
+    "attempts": 61,
+    "optimizer_trials": 14,
+    "registry_files": [
+      "../data/discovery/initial-check/registry.sqlite",
+      "../data/discovery/real-final/registry.sqlite",
+      "../data/discovery/real-verified/registry.sqlite",
+      "../data/discovery/release/registry.sqlite",
+      "../data/discovery/second-check/registry.sqlite",
+      "../data/statistical/milestone-5-final/experiments/registry.sqlite",
+      "../data/statistical/milestone-5-release/experiments/registry.sqlite"
+    ],
+    "scope": "all supplied registries including failures/prunes/variants; external/unrecorded searches unknown",
+    "unique_hypotheses": 60
+  },
+  "effective_search_complexity": {
+    "effective_rank_diagnostic": 1.3586216096798438,
+    "note": "correlation participation ratio is diagnostic; failed/unobserved variants remain in correction count",
+    "observed_return_series": 4,
+    "recorded_variants": 60
+  },
+  "aligned_family_sessions": 465,
+  "final_holdout": "not_read_or_evaluated",
+  "research_role": "reused_development_diagnostics",
+  "paper_trading_shortlist": [],
+  "limitations": [
+    "Repeatedly inspected development data; no independent confirmation.",
+    "PSR/DSR moment and null-dispersion assumptions are approximations.",
+    "Bootstrap assumes local stationarity within folds; block-size sensitivity reported.",
+    "Action completeness and historical universe are not certified.",
+    "Recorded history excludes unknown external/manual searches.",
+    "Daily cash-equity fills omit intraday liquidity/impact; no live authorization."
+  ],
+  "holdout": {
+    "id": "254269992be9c9db787d46ab404b6d17d5f1df8e0ab04bc7ed0aaf60a312ce33",
+    "state": "SEALED",
+    "events": [
+      {
+        "at": "2026-11-12T04:22:52.435912+00:00",
+        "detail": "",
+        "event": "REGISTERED"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "strategy_id": "6246e0bf1e87d7d4c1abdc289f6bff5bb782957b51eae6a6a28a59ac8171822d",
+      "parent_attempt": "6246e0bf1e87d7d4-1-d03e5136",
+      "attempt_id": "9a8b338a517c38f8-1-3c85be13",
+      "status": "REJECTED",
+      "rejection_reasons": [
+        "insufficient_excess_return",
+        "no_economic_edge_over_strongest_baseline",
+        "weaker_than_simple_baselines"
+      ],
+      "configuration": {
+        "cost_multipliers": [
+          2
+        ],
+        "eligibility": {
+          "maximum_cost_degradation": 0.03,
+          "maximum_drawdown": 0.25,
+          "maximum_top_trade_profit_share": 0.6,
+          "maximum_turnover": 20,
+          "maximum_window_excess_std": 0.1,
+          "minimum_exit_fills": 3,
+          "minimum_fills": 10,
+          "minimum_mean_baseline_excess": 0,
+          "minimum_mean_excess": 0,
+          "minimum_positive_window_fraction": 0.5,
+          "minimum_windows": 2
+        },
+        "embargo_sessions": 5,
+        "execution": {
+          "commission_per_share": ".005",
+          "slippage_bps": 5,
+          "spread_bps": 2
+        },
+        "expanding": false,
+        "feature_config": {
+          "atr_window": 14,
+          "bollinger_window": 20,
+          "long_window": 20,
+          "macd_fast": 12,
+          "macd_signal": 9,
+          "macd_slow": 26,
+          "return_windows": [
+            1,
+            3,
+            5,
+            10,
+            20,
+            60
+          ],
+          "rsi_window": 14,
+          "short_window": 10
+        },
+        "gap_sessions": 2,
+        "git_commit": "89e1a6bd53b2ad9b9c77a07deb8fddfb192eb1bf",
+        "groups": [
+          "mean_reversion",
+          "volatility",
+          "market_regime"
+        ],
+        "holdout_start": "2019-01-02",
+        "horizon": 1,
+        "hypothesis": "Statistical diagnostic of 6246e0bf1e87d7d4c1abdc289f6bff5bb782957b51eae6a6a28a59ac8171822d",
+        "initial_cash": "100000",
+        "model": {
+          "objective": "regression",
+          "parameters": {
+            "max_depth": 2,
+            "n_estimators": 8
+          },
+          "seed": 42,
+          "type": "xgboost"
+        },
+        "retraining_sessions": 126,
+        "score": {
+          "costs": 1,
+          "drawdown": 0.5,
+          "excess_return": 1,
+          "instability": 0.5,
+          "predictive_skill": 0.02,
+          "rejection_penalty": 1,
+          "sharpe": 0.01,
+          "turnover": 0.001
+        },
+        "seal_id": "eb23a343459d318dda93539823c4f64a2ac49a8d367b66138165b592693955bb",
+        "seal_sha256": "9276bd1a3701455c12d171f15342ef4e40403a05b8d907eb81bf7071d46e017a",
+        "sealed_dir": "../data/statistical/milestone-5-final/sealed/eb23a343459d318dda93539823c4f64a2ac49a8d367b66138165b592693955bb",
+        "sectors": {},
+        "source_sha256": "0e06c4e1b5f6a0814335ad25720349ea777a0c09732f059e3eb4f18b55836c69",
+        "strategy": {
+          "cash_allocation": 0.2,
+          "lower_is_better": false,
+          "maximum_position_weight": 0.3,
+          "minimum_dollar_volume": 1000000.0,
+          "minimum_market_trend": 0,
+          "minimum_prediction": null,
+          "position_sizing": "equal",
+          "rebalance_sessions": 5,
+          "regime_filter": true,
+          "top_n": 3,
+          "volatility_adjusted": true
+        },
+        "synthetic": false,
+        "target": "stock_return",
+        "test_sessions": 126,
+        "training_sessions": 504,
+        "universe": [
+          "AAPL",
+          "AIG",
+          "BAC",
+          "FB",
+          "GOOGL",
+          "IBM",
+          "WM"
+        ],
+        "validation_sessions": 126
+      },
+      "summary": {
+        "cost_degradation": 0.010527911380000088,
+        "cost_rate": 0.008321240535,
+        "eligible": false,
+        "exit_fills": 132,
+        "fills": 267,
+        "mean_annualized_return": 0.09617031778266075,
+        "mean_baseline_excess": -0.027928715295000073,
+        "mean_excess_return": -0.0017594185475001134,
+        "mean_profit_factor": 2.0358976658380574,
+        "mean_sharpe_ratio": 1.1857280696133523,
+        "mean_sortino_ratio": 2.0856755967208898,
+        "mean_turnover": 12.419843805962248,
+        "mean_validation_return": 0.04027820836999996,
+        "mean_win_rate": 0.6686507936507936,
+        "objective": -1.1143093159479438,
+        "positive_window_fraction": 0.75,
+        "rejection_reasons": [
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.11430931594794382,
+        "score_terms": {
+          "costs": -0.008321240535,
+          "drawdown": -0.06922915390543483,
+          "excess_return": -0.0017594185475001134,
+          "instability": -0.024987094558344716,
+          "predictive_skill": -0.0004261285586388547,
+          "sharpe": 0.002833563962936948,
+          "turnover": -0.012419843805962248
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.07843899488381555,
+        "validation_windows": 4,
+        "window_excess_std": 0.04997418911668943,
+        "worst_drawdown": 0.13845830781086965
+      },
+      "diagnostics": {
+        "all_excess_intervals_positive": false,
+        "deflated_sharpe": {
+          "annualized_sharpe": 0.9585641914252546,
+          "assumption": "moment/normal approximation; effective-n substitution is heuristic",
+          "daily_sharpe": 0.06038386824292706,
+          "effective_n": 377.85508759457923,
+          "kurtosis": 15.631759821709142,
+          "null_dispersion_assumption": "independent Gaussian null SRs; conservative count",
+          "probability": 0.13202357112299945,
+          "reference_daily_sharpe": 0.12081425864595596,
+          "skewness": -1.4890534058116407,
+          "tested_variants": 60
+        },
+        "effective_sessions": 449.63651570741126,
+        "familywise_p": 1.0,
+        "fdr_bh_q_sensitivity": 1.0,
+        "fdr_by_q": 1.0,
+        "mean_excess_daily_return": -3.156258570292586e-05,
+        "probabilistic_sharpe": {
+          "annualized_sharpe": 0.9585641914252546,
+          "assumption": "moment/normal approximation; effective-n substitution is heuristic",
+          "daily_sharpe": 0.06038386824292706,
+          "effective_n": 377.85508759457923,
+          "kurtosis": 15.631759821709142,
+          "probability": 0.8677924974800428,
+          "reference_daily_sharpe": 0.0,
+          "skewness": -1.4890534058116407
+        },
+        "robustness_passed": false,
+        "sessions": 465
+      },
+      "intervals": {
+        "10": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.25486306807807163,
+              -0.07003629967079515
+            ],
+            "mean_daily_return": [
+              -0.0004630659337134337,
+              0.00041590877531786117
+            ],
+            "sharpe": [
+              -1.2441567278213996,
+              1.0565307343269024
+            ],
+            "total_return": [
+              -0.20119059981230886,
+              0.20158679012051028
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.2656135402062578,
+              -0.04149395093624958
+            ],
+            "mean_daily_return": [
+              -0.00014983564915695968,
+              0.0007996273357606221
+            ],
+            "sharpe": [
+              -0.41502663374582865,
+              2.4765150116121135
+            ],
+            "total_return": [
+              -0.0757518690609792,
+              0.44112539004469087
+            ]
+          }
+        },
+        "20": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.23375944713986802,
+              -0.07049208871524892
+            ],
+            "mean_daily_return": [
+              -0.0004229211350858645,
+              0.00037617727886992677
+            ],
+            "sharpe": [
+              -1.1151764975641363,
+              0.9272373747245171
+            ],
+            "total_return": [
+              -0.18485044023152888,
+              0.17780460067116935
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.2590875250782239,
+              -0.04431589947714377
+            ],
+            "mean_daily_return": [
+              -0.00017259136497294476,
+              0.0008419265595856296
+            ],
+            "sharpe": [
+              -0.44642204907650174,
+              2.517319089019694
+            ],
+            "total_return": [
+              -0.08508760659835017,
+              0.46970481201446945
+            ]
+          }
+        },
+        "5": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.2773288520707261,
+              -0.06910251594639225
+            ],
+            "mean_daily_return": [
+              -0.0005054133997014628,
+              0.00044873892921809007
+            ],
+            "sharpe": [
+              -1.2909696014966616,
+              1.166759838353933
+            ],
+            "total_return": [
+              -0.21760252439259417,
+              0.22141919580948646
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.26293819984951666,
+              -0.04325062939479691
+            ],
+            "mean_daily_return": [
+              -0.00015460878611040153,
+              0.0008442179820174434
+            ],
+            "sharpe": [
+              -0.4073712417847644,
+              2.5534466364879043
+            ],
+            "total_return": [
+              -0.07669751685116538,
+              0.4709608659738255
+            ]
+          }
+        }
+      },
+      "volatility_regimes": {
+        "high": {
+          "mean_excess": -0.0011976214385556994,
+          "sessions": 67
+        },
+        "low": {
+          "mean_excess": 0.00015015637987429557,
+          "sessions": 394
+        }
+      }
+    },
+    {
+      "strategy_id": "38e6ed5aaaa07318a2ea72558e0a3993359bd50577919dcf73ed2d91d8e8fedd",
+      "parent_attempt": "38e6ed5aaaa07318-1-dd57d2b3",
+      "attempt_id": "c4254e2faf4bd60c-1-c512e8e5",
+      "status": "REJECTED",
+      "rejection_reasons": [
+        "insufficient_excess_return",
+        "no_economic_edge_over_strongest_baseline",
+        "nonpositive_net_validation_return",
+        "too_few_positive_excess_windows",
+        "weaker_than_simple_baselines"
+      ],
+      "configuration": {
+        "cost_multipliers": [
+          2
+        ],
+        "eligibility": {
+          "maximum_cost_degradation": 0.03,
+          "maximum_drawdown": 0.25,
+          "maximum_top_trade_profit_share": 0.6,
+          "maximum_turnover": 20,
+          "maximum_window_excess_std": 0.1,
+          "minimum_exit_fills": 3,
+          "minimum_fills": 10,
+          "minimum_mean_baseline_excess": 0,
+          "minimum_mean_excess": 0,
+          "minimum_positive_window_fraction": 0.5,
+          "minimum_windows": 2
+        },
+        "embargo_sessions": 5,
+        "execution": {
+          "commission_per_share": ".005",
+          "slippage_bps": 5,
+          "spread_bps": 2
+        },
+        "expanding": false,
+        "feature_config": {
+          "atr_window": 14,
+          "bollinger_window": 20,
+          "long_window": 20,
+          "macd_fast": 12,
+          "macd_signal": 9,
+          "macd_slow": 26,
+          "return_windows": [
+            1,
+            3,
+            5,
+            10,
+            20,
+            60
+          ],
+          "rsi_window": 14,
+          "short_window": 10
+        },
+        "gap_sessions": 2,
+        "git_commit": "89e1a6bd53b2ad9b9c77a07deb8fddfb192eb1bf",
+        "groups": [
+          "mean_reversion",
+          "volatility",
+          "market_regime"
+        ],
+        "holdout_start": "2019-01-02",
+        "horizon": 1,
+        "hypothesis": "Statistical diagnostic of 38e6ed5aaaa07318a2ea72558e0a3993359bd50577919dcf73ed2d91d8e8fedd",
+        "initial_cash": "100000",
+        "model": {
+          "objective": "regression",
+          "parameters": {
+            "max_depth": 2,
+            "n_estimators": 16
+          },
+          "seed": 42,
+          "type": "random_forest"
+        },
+        "retraining_sessions": 126,
+        "score": {
+          "costs": 1,
+          "drawdown": 0.5,
+          "excess_return": 1,
+          "instability": 0.5,
+          "predictive_skill": 0.02,
+          "rejection_penalty": 1,
+          "sharpe": 0.01,
+          "turnover": 0.001
+        },
+        "seal_id": "eb23a343459d318dda93539823c4f64a2ac49a8d367b66138165b592693955bb",
+        "seal_sha256": "9276bd1a3701455c12d171f15342ef4e40403a05b8d907eb81bf7071d46e017a",
+        "sealed_dir": "../data/statistical/milestone-5-final/sealed/eb23a343459d318dda93539823c4f64a2ac49a8d367b66138165b592693955bb",
+        "sectors": {},
+        "source_sha256": "0e06c4e1b5f6a0814335ad25720349ea777a0c09732f059e3eb4f18b55836c69",
+        "strategy": {
+          "cash_allocation": 0.2,
+          "lower_is_better": false,
+          "maximum_position_weight": 0.3,
+          "minimum_dollar_volume": 1000000.0,
+          "minimum_market_trend": 0,
+          "minimum_prediction": null,
+          "position_sizing": "inverse_volatility",
+          "rebalance_sessions": 10,
+          "regime_filter": true,
+          "top_n": 2,
+          "volatility_adjusted": true
+        },
+        "synthetic": false,
+        "target": "stock_return",
+        "test_sessions": 126,
+        "training_sessions": 504,
+        "universe": [
+          "AAPL",
+          "AIG",
+          "BAC",
+          "FB",
+          "GOOGL",
+          "IBM",
+          "WM"
+        ],
+        "validation_sessions": 126
+      },
+      "summary": {
+        "cost_degradation": 0.004099763139999935,
+        "cost_rate": 0.00306364053,
+        "eligible": false,
+        "exit_fills": 42,
+        "fills": 88,
+        "mean_annualized_return": -0.0010533549930468985,
+        "mean_baseline_excess": -0.04882113867500007,
+        "mean_excess_return": -0.04380460962750013,
+        "mean_profit_factor": 1.2025058374029736,
+        "mean_sharpe_ratio": 0.05088243367006458,
+        "mean_sortino_ratio": 0.3848782093813179,
+        "mean_turnover": 4.633801332778449,
+        "mean_validation_return": -0.001766982710000059,
+        "mean_win_rate": 0.45363247863247863,
+        "objective": -1.1116579789121193,
+        "positive_window_fraction": 0.0,
+        "rejection_reasons": [
+          "too_few_positive_excess_windows",
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.11165797891211926,
+        "score_terms": {
+          "costs": -0.00306364053,
+          "drawdown": -0.04554426371043102,
+          "excess_return": -0.04380460962750013,
+          "instability": -0.013586583410245451,
+          "predictive_skill": -0.00106437653532388,
+          "sharpe": 3.929623415967566e-05,
+          "turnover": -0.00463380133277845
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.19141087489222097,
+        "validation_windows": 4,
+        "window_excess_std": 0.027173166820490903,
+        "worst_drawdown": 0.09108852742086204
+      },
+      "diagnostics": {
+        "all_excess_intervals_positive": false,
+        "deflated_sharpe": {
+          "annualized_sharpe": -0.04570609903396519,
+          "assumption": "moment/normal approximation; effective-n substitution is heuristic",
+          "daily_sharpe": -0.0028792136057800336,
+          "effective_n": 437.44578993359227,
+          "kurtosis": 15.574093098609072,
+          "null_dispersion_assumption": "independent Gaussian null SRs; conservative count",
+          "probability": 0.008007529665607305,
+          "reference_daily_sharpe": 0.11226392714127073,
+          "skewness": -0.8993498348426142,
+          "tested_variants": 60
+        },
+        "effective_sessions": 465.0,
+        "familywise_p": 1.0,
+        "fdr_bh_q_sensitivity": 1.0,
+        "fdr_by_q": 1.0,
+        "mean_excess_daily_return": -0.00037960898346025966,
+        "probabilistic_sharpe": {
+          "annualized_sharpe": -0.04570609903396519,
+          "assumption": "moment/normal approximation; effective-n substitution is heuristic",
+          "daily_sharpe": -0.0028792136057800336,
+          "effective_n": 437.44578993359227,
+          "kurtosis": 15.574093098609072,
+          "probability": 0.47598718631226267,
+          "reference_daily_sharpe": 0.0,
+          "skewness": -0.8993498348426142
+        },
+        "robustness_passed": false,
+        "sessions": 465
+      },
+      "intervals": {
+        "10": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.3367405776829661,
+              -0.10088257811202662
+            ],
+            "mean_daily_return": [
+              -0.0007779996971411301,
+              6.141300144011595e-05
+            ],
+            "sharpe": [
+              -2.3379160016858695,
+              0.15253030159406805
+            ],
+            "total_return": [
+              -0.3090453536998976,
+              0.01917552930238809
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.22674947244110538,
+              -0.047265264753415664
+            ],
+            "mean_daily_return": [
+              -0.00042245071728228803,
+              0.0003591870451499249
+            ],
+            "sharpe": [
+              -1.460033087228256,
+              1.310571171108374
+            ],
+            "total_return": [
+              -0.1834659543485594,
+              0.17680444565307618
+            ]
+          }
+        },
+        "20": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.32082163765634075,
+              -0.10640023018993353
+            ],
+            "mean_daily_return": [
+              -0.0007558132941862765,
+              5.183900404673065e-06
+            ],
+            "sharpe": [
+              -2.3062674606929887,
+              0.013905465642805925
+            ],
+            "total_return": [
+              -0.30209644440899636,
+              -0.005530340666058649
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.23963193530563365,
+              -0.053283767033870354
+            ],
+            "mean_daily_return": [
+              -0.0004228557130317439,
+              0.00042629967190106944
+            ],
+            "sharpe": [
+              -1.4548811063137739,
+              1.4999465050556975
+            ],
+            "total_return": [
+              -0.18405720608495063,
+              0.21321525127155697
+            ]
+          }
+        },
+        "5": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.3531883179301982,
+              -0.10238521807838076
+            ],
+            "mean_daily_return": [
+              -0.0008533100699848654,
+              9.354074968485379e-05
+            ],
+            "sharpe": [
+              -2.5336923258700295,
+              0.23458399995638624
+            ],
+            "total_return": [
+              -0.33188362012132455,
+              0.034748025102129154
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.23478499025931032,
+              -0.04504617208179188
+            ],
+            "mean_daily_return": [
+              -0.00041940461764568027,
+              0.0004110386132576594
+            ],
+            "sharpe": [
+              -1.4742052770979492,
+              1.4271559112419512
+            ],
+            "total_return": [
+              -0.18111651587126182,
+              0.20413640959698537
+            ]
+          }
+        }
+      },
+      "volatility_regimes": {
+        "high": {
+          "mean_excess": -0.0007612875834018652,
+          "sessions": 67
+        },
+        "low": {
+          "mean_excess": -0.00034571015115699094,
+          "sessions": 394
+        }
+      }
+    },
+    {
+      "strategy_id": "b31393bc502f3d0388c66da88a8c7274bca76d187525e903a90dedfc273e9222",
+      "parent_attempt": "b31393bc502f3d03-1-bcdec00b",
+      "attempt_id": "adc87a5bf48c4442-1-1d95fe44",
+      "status": "REJECTED",
+      "rejection_reasons": [
+        "insufficient_excess_return",
+        "no_economic_edge_over_strongest_baseline",
+        "too_few_positive_excess_windows",
+        "weaker_than_simple_baselines"
+      ],
+      "configuration": {
+        "cost_multipliers": [
+          2
+        ],
+        "eligibility": {
+          "maximum_cost_degradation": 0.03,
+          "maximum_drawdown": 0.25,
+          "maximum_top_trade_profit_share": 0.6,
+          "maximum_turnover": 20,
+          "maximum_window_excess_std": 0.1,
+          "minimum_exit_fills": 3,
+          "minimum_fills": 10,
+          "minimum_mean_baseline_excess": 0,
+          "minimum_mean_excess": 0,
+          "minimum_positive_window_fraction": 0.5,
+          "minimum_windows": 2
+        },
+        "embargo_sessions": 5,
+        "execution": {
+          "commission_per_share": ".005",
+          "slippage_bps": 5,
+          "spread_bps": 2
+        },
+        "expanding": false,
+        "feature_config": {
+          "atr_window": 14,
+          "bollinger_window": 20,
+          "long_window": 20,
+          "macd_fast": 12,
+          "macd_signal": 9,
+          "macd_slow": 26,
+          "return_windows": [
+            1,
+            3,
+            5,
+            10,
+            20,
+            60
+          ],
+          "rsi_window": 14,
+          "short_window": 10
+        },
+        "gap_sessions": 2,
+        "git_commit": "89e1a6bd53b2ad9b9c77a07deb8fddfb192eb1bf",
+        "groups": [
+          "technical",
+          "market_regime"
+        ],
+        "holdout_start": "2019-01-02",
+        "horizon": 1,
+        "hypothesis": "Statistical diagnostic of b31393bc502f3d0388c66da88a8c7274bca76d187525e903a90dedfc273e9222",
+        "initial_cash": "100000",
+        "model": {
+          "objective": "regression",
+          "parameters": {
+            "max_depth": 4,
+            "n_estimators": 8
+          },
+          "seed": 42,
+          "type": "random_forest"
+        },
+        "retraining_sessions": 126,
+        "score": {
+          "costs": 1,
+          "drawdown": 0.5,
+          "excess_return": 1,
+          "instability": 0.5,
+          "predictive_skill": 0.02,
+          "rejection_penalty": 1,
+          "sharpe": 0.01,
+          "turnover": 0.001
+        },
+        "seal_id": "eb23a343459d318dda93539823c4f64a2ac49a8d367b66138165b592693955bb",
+        "seal_sha256": "9276bd1a3701455c12d171f15342ef4e40403a05b8d907eb81bf7071d46e017a",
+        "sealed_dir": "../data/statistical/milestone-5-final/sealed/eb23a343459d318dda93539823c4f64a2ac49a8d367b66138165b592693955bb",
+        "sectors": {},
+        "source_sha256": "0e06c4e1b5f6a0814335ad25720349ea777a0c09732f059e3eb4f18b55836c69",
+        "strategy": {
+          "cash_allocation": 0.2,
+          "lower_is_better": false,
+          "maximum_position_weight": 0.3,
+          "minimum_dollar_volume": 1000000.0,
+          "minimum_market_trend": 0,
+          "minimum_prediction": null,
+          "position_sizing": "equal",
+          "rebalance_sessions": 5,
+          "regime_filter": true,
+          "top_n": 2,
+          "volatility_adjusted": true
+        },
+        "synthetic": false,
+        "target": "excess_return",
+        "test_sessions": 126,
+        "training_sessions": 504,
+        "universe": [
+          "AAPL",
+          "AIG",
+          "BAC",
+          "FB",
+          "GOOGL",
+          "IBM",
+          "WM"
+        ],
+        "validation_sessions": 126
+      },
+      "summary": {
+        "cost_degradation": 0.007144549539999989,
+        "cost_rate": 0.006204914005,
+        "eligible": false,
+        "exit_fills": 87,
+        "fills": 176,
+        "mean_annualized_return": 0.04582155661610015,
+        "mean_baseline_excess": -0.04374465489500001,
+        "mean_excess_return": -0.023247729467500033,
+        "mean_profit_factor": 2.1088576853118703,
+        "mean_sharpe_ratio": 0.7462741011723941,
+        "mean_sortino_ratio": 1.5146335516527605,
+        "mean_turnover": 9.38136002901991,
+        "mean_validation_return": 0.018789897450000037,
+        "mean_win_rate": 0.6296807359307359,
+        "objective": -1.1289038929321331,
+        "positive_window_fraction": 0.25,
+        "rejection_reasons": [
+          "too_few_positive_excess_windows",
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.12890389293213306,
+        "score_terms": {
+          "costs": -0.006204914005,
+          "drawdown": -0.05778743306740758,
+          "excess_return": -0.023247729467500033,
+          "instability": -0.0329325903184567,
+          "predictive_skill": -0.0016481812363807159,
+          "sharpe": 0.002298315191631878,
+          "turnover": -0.009381360029019912
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.11205224763187625,
+        "validation_windows": 4,
+        "window_excess_std": 0.0658651806369134,
+        "worst_drawdown": 0.11557486613481516
+      },
+      "diagnostics": {
+        "all_excess_intervals_positive": false,
+        "deflated_sharpe": {
+          "annualized_sharpe": 0.5563848114049241,
+          "assumption": "moment/normal approximation; effective-n substitution is heuristic",
+          "daily_sharpe": 0.035048948672166735,
+          "effective_n": 397.07309856919915,
+          "kurtosis": 14.167336881375165,
+          "null_dispersion_assumption": "independent Gaussian null SRs; conservative count",
+          "probability": 0.05082861403671418,
+          "reference_daily_sharpe": 0.11784677758624353,
+          "skewness": -0.2671422759286569,
+          "tested_variants": 60
+        },
+        "effective_sessions": 452.68786912334406,
+        "familywise_p": 1.0,
+        "fdr_bh_q_sensitivity": 1.0,
+        "fdr_by_q": 1.0,
+        "mean_excess_daily_return": -0.00021284199790951218,
+        "probabilistic_sharpe": {
+          "annualized_sharpe": 0.5563848114049241,
+          "assumption": "moment/normal approximation; effective-n substitution is heuristic",
+          "daily_sharpe": 0.035048948672166735,
+          "effective_n": 397.07309856919915,
+          "kurtosis": 14.167336881375165,
+          "probability": 0.7558139410110503,
+          "reference_daily_sharpe": 0.0,
+          "skewness": -0.2671422759286569
+        },
+        "robustness_passed": false,
+        "sessions": 465
+      },
+      "intervals": {
+        "10": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.30078231895803703,
+              -0.09731460788706779
+            ],
+            "mean_daily_return": [
+              -0.0006100478820155213,
+              0.0002122570918292764
+            ],
+            "sharpe": [
+              -1.6702821520043682,
+              0.5195606848910452
+            ],
+            "total_return": [
+              -0.2538774837764419,
+              0.09351650785579743
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.2240938630135152,
+              -0.03620727645011239
+            ],
+            "mean_daily_return": [
+              -0.00019392808035258575,
+              0.0005167945762899853
+            ],
+            "sharpe": [
+              -0.6822634315179953,
+              1.9038316492643124
+            ],
+            "total_return": [
+              -0.09077886761911495,
+              0.26481145059579386
+            ]
+          }
+        },
+        "20": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.300949426541569,
+              -0.10647812354739453
+            ],
+            "mean_daily_return": [
+              -0.000587187029951171,
+              0.00018080419090281467
+            ],
+            "sharpe": [
+              -1.579742654639467,
+              0.42940010164340836
+            ],
+            "total_return": [
+              -0.24654394798899323,
+              0.07657234430986841
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.21859730833786722,
+              -0.03984926374236512
+            ],
+            "mean_daily_return": [
+              -0.00021557056618371457,
+              0.0005031439908519345
+            ],
+            "sharpe": [
+              -0.7981705788881895,
+              1.767443864094157
+            ],
+            "total_return": [
+              -0.10038657326313957,
+              0.257613136510174
+            ]
+          }
+        },
+        "5": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.3167567774626822,
+              -0.093694777500963
+            ],
+            "mean_daily_return": [
+              -0.0006655680930844872,
+              0.0002275815054214162
+            ],
+            "sharpe": [
+              -1.764218480607316,
+              0.5767581285681835
+            ],
+            "total_return": [
+              -0.27166767531119684,
+              0.10172510801960513
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.2158365763766842,
+              -0.03849606165061916
+            ],
+            "mean_daily_return": [
+              -0.00020078083246139632,
+              0.0005670212680295351
+            ],
+            "sharpe": [
+              -0.7658401503242049,
+              2.00415442677384
+            ],
+            "total_return": [
+              -0.0938335438104592,
+              0.2949549282150651
+            ]
+          }
+        }
+      },
+      "volatility_regimes": {
+        "high": {
+          "mean_excess": -0.0005175765187095841,
+          "sessions": 67
+        },
+        "low": {
+          "mean_excess": -0.00021347310402582107,
+          "sessions": 394
+        }
+      }
+    },
+    {
+      "strategy_id": "b65a005cf94c0275a7fdf7c80ce4586e51d490dec78b801526c0b630613196ca",
+      "parent_attempt": "b65a005cf94c0275-1-1beafe8a",
+      "attempt_id": "a47e5ead4cb66576-1-6776ac04",
+      "status": "REJECTED",
+      "rejection_reasons": [
+        "insufficient_excess_return",
+        "no_economic_edge_over_strongest_baseline",
+        "too_few_positive_excess_windows",
+        "weaker_than_simple_baselines"
+      ],
+      "configuration": {
+        "cost_multipliers": [
+          2
+        ],
+        "eligibility": {
+          "maximum_cost_degradation": 0.03,
+          "maximum_drawdown": 0.25,
+          "maximum_top_trade_profit_share": 0.6,
+          "maximum_turnover": 20,
+          "maximum_window_excess_std": 0.1,
+          "minimum_exit_fills": 3,
+          "minimum_fills": 10,
+          "minimum_mean_baseline_excess": 0,
+          "minimum_mean_excess": 0,
+          "minimum_positive_window_fraction": 0.5,
+          "minimum_windows": 2
+        },
+        "embargo_sessions": 5,
+        "execution": {
+          "commission_per_share": ".005",
+          "slippage_bps": 5,
+          "spread_bps": 2
+        },
+        "expanding": false,
+        "feature_config": {
+          "atr_window": 14,
+          "bollinger_window": 20,
+          "long_window": 20,
+          "macd_fast": 12,
+          "macd_signal": 9,
+          "macd_slow": 26,
+          "return_windows": [
+            1,
+            3,
+            5,
+            10,
+            20,
+            60
+          ],
+          "rsi_window": 14,
+          "short_window": 10
+        },
+        "gap_sessions": 2,
+        "git_commit": "89e1a6bd53b2ad9b9c77a07deb8fddfb192eb1bf",
+        "groups": [
+          "technical",
+          "market_regime"
+        ],
+        "holdout_start": "2019-01-02",
+        "horizon": 5,
+        "hypothesis": "Statistical diagnostic of b65a005cf94c0275a7fdf7c80ce4586e51d490dec78b801526c0b630613196ca",
+        "initial_cash": "100000",
+        "model": {
+          "objective": "regression",
+          "parameters": {
+            "max_depth": 2,
+            "n_estimators": 12
+          },
+          "seed": 42,
+          "type": "random_forest"
+        },
+        "retraining_sessions": 126,
+        "score": {
+          "costs": 1,
+          "drawdown": 0.5,
+          "excess_return": 1,
+          "instability": 0.5,
+          "predictive_skill": 0.02,
+          "rejection_penalty": 1,
+          "sharpe": 0.01,
+          "turnover": 0.001
+        },
+        "seal_id": "eb23a343459d318dda93539823c4f64a2ac49a8d367b66138165b592693955bb",
+        "seal_sha256": "9276bd1a3701455c12d171f15342ef4e40403a05b8d907eb81bf7071d46e017a",
+        "sealed_dir": "../data/statistical/milestone-5-final/sealed/eb23a343459d318dda93539823c4f64a2ac49a8d367b66138165b592693955bb",
+        "sectors": {},
+        "source_sha256": "0e06c4e1b5f6a0814335ad25720349ea777a0c09732f059e3eb4f18b55836c69",
+        "strategy": {
+          "cash_allocation": 0.2,
+          "lower_is_better": false,
+          "maximum_position_weight": 0.3,
+          "minimum_dollar_volume": 1000000.0,
+          "minimum_market_trend": 0,
+          "minimum_prediction": null,
+          "position_sizing": "equal",
+          "rebalance_sessions": 5,
+          "regime_filter": true,
+          "top_n": 2,
+          "volatility_adjusted": true
+        },
+        "synthetic": false,
+        "target": "excess_return",
+        "test_sessions": 126,
+        "training_sessions": 504,
+        "universe": [
+          "AAPL",
+          "AIG",
+          "BAC",
+          "FB",
+          "GOOGL",
+          "IBM",
+          "WM"
+        ],
+        "validation_sessions": 126
+      },
+      "summary": {
+        "cost_degradation": 0.006237852769999996,
+        "cost_rate": 0.00527969285,
+        "eligible": false,
+        "exit_fills": 81,
+        "fills": 161,
+        "mean_annualized_return": 0.09036046336099407,
+        "mean_baseline_excess": -0.022881450257500102,
+        "mean_excess_return": -0.002384524830000123,
+        "mean_profit_factor": 2.1403327236658334,
+        "mean_sharpe_ratio": 1.3012372111446944,
+        "mean_sortino_ratio": 2.2621686584679996,
+        "mean_turnover": 7.999610034105471,
+        "mean_validation_return": 0.03965310208749995,
+        "mean_win_rate": 0.6870432955791013,
+        "objective": -1.0839486694305045,
+        "positive_window_fraction": 0.25,
+        "rejection_reasons": [
+          "too_few_positive_excess_windows",
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.08394866943050455,
+        "score_terms": {
+          "costs": -0.00527969285,
+          "drawdown": -0.04769656379725157,
+          "excess_return": -0.002384524830000123,
+          "instability": -0.023939153774943545,
+          "predictive_skill": -0.00030269385303448136,
+          "sharpe": 0.003653569708830634,
+          "turnover": -0.007999610034105471
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.11520254988239267,
+        "validation_windows": 4,
+        "window_excess_std": 0.04787830754988709,
+        "worst_drawdown": 0.09539312759450314
+      },
+      "diagnostics": {
+        "all_excess_intervals_positive": false,
+        "deflated_sharpe": {
+          "annualized_sharpe": 1.1645063400760658,
+          "assumption": "moment/normal approximation; effective-n substitution is heuristic",
+          "daily_sharpe": 0.07335700419045903,
+          "effective_n": 353.57809898697343,
+          "kurtosis": 14.667235383560527,
+          "null_dispersion_assumption": "independent Gaussian null SRs; conservative count",
+          "probability": 0.17210079524688637,
+          "reference_daily_sharpe": 0.1249043945900194,
+          "skewness": -0.3912110324869228,
+          "tested_variants": 60
+        },
+        "effective_sessions": 465.0,
+        "familywise_p": 1.0,
+        "fdr_bh_q_sensitivity": 1.0,
+        "fdr_by_q": 1.0,
+        "mean_excess_daily_return": -2.899589464793232e-05,
+        "probabilistic_sharpe": {
+          "annualized_sharpe": 1.1645063400760658,
+          "assumption": "moment/normal approximation; effective-n substitution is heuristic",
+          "daily_sharpe": 0.07335700419045903,
+          "effective_n": 353.57809898697343,
+          "kurtosis": 14.667235383560527,
+          "probability": 0.9108653687991606,
+          "reference_daily_sharpe": 0.0,
+          "skewness": -0.3912110324869228
+        },
+        "robustness_passed": false,
+        "sessions": 465
+      },
+      "intervals": {
+        "10": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.24990042298260698,
+              -0.06901640754726607
+            ],
+            "mean_daily_return": [
+              -0.00045101349268679403,
+              0.0003753298355623745
+            ],
+            "sharpe": [
+              -1.2101494010385379,
+              0.908702976079564
+            ],
+            "total_return": [
+              -0.19680401508663456,
+              0.17816265363340927
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.20795827457416627,
+              -0.030153222207300802
+            ],
+            "mean_daily_return": [
+              -6.435106985159316e-05,
+              0.0007190956027497386
+            ],
+            "sharpe": [
+              -0.2137487397416045,
+              2.581772396573877
+            ],
+            "total_return": [
+              -0.03405415871905822,
+              0.389761083348886
+            ]
+          }
+        },
+        "20": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.22826845278567837,
+              -0.07018379929027485
+            ],
+            "mean_daily_return": [
+              -0.00038489052960368896,
+              0.00034045206973198856
+            ],
+            "sharpe": [
+              -1.0338903004501745,
+              0.8111426328438516
+            ],
+            "total_return": [
+              -0.1714166014708108,
+              0.15870131893725747
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.1890005470940314,
+              -0.03266202818747712
+            ],
+            "mean_daily_return": [
+              -5.129790278573104e-05,
+              0.0007057879549933207
+            ],
+            "sharpe": [
+              -0.18496817945505412,
+              2.427482101526427
+            ],
+            "total_return": [
+              -0.028277550020749435,
+              0.381807813029259
+            ]
+          }
+        },
+        "5": {
+          "benchmark_relative": {
+            "maximum_drawdown": [
+              -0.2679575467537202,
+              -0.0660850692426998
+            ],
+            "mean_daily_return": [
+              -0.0005000518537597302,
+              0.000452093472287133
+            ],
+            "sharpe": [
+              -1.3010872773885163,
+              1.0808146085460726
+            ],
+            "total_return": [
+              -0.21388167895293986,
+              0.2211526864646017
+            ]
+          },
+          "net": {
+            "maximum_drawdown": [
+              -0.20099014857517336,
+              -0.030675992414629906
+            ],
+            "mean_daily_return": [
+              -3.1600330490608034e-05,
+              0.0007599125189602782
+            ],
+            "sharpe": [
+              -0.0929418849088526,
+              2.735598010365206
+            ],
+            "total_return": [
+              -0.021241821120806192,
+              0.4167304628038981
+            ]
+          }
+        }
+      },
+      "volatility_regimes": {
+        "high": {
+          "mean_excess": 7.556974175396011e-05,
+          "sessions": 67
+        },
+        "low": {
+          "mean_excess": -8.056016637282608e-05,
+          "sessions": 394
+        }
+      }
+    }
+  ],
+  "robustness": [
+    {
+      "attempt_id": "797028573e522cdc-1-45aef865",
+      "parent_attempt": "a47e5ead4cb66576-1-6776ac04",
+      "scenario": "double_commission_per_share",
+      "status": "REJECTED",
+      "summary": {
+        "cost_degradation": 0.006644622050000049,
+        "cost_rate": 0.0056857869500000005,
+        "eligible": false,
+        "exit_fills": 82,
+        "fills": 162,
+        "mean_annualized_return": 0.0894191424690268,
+        "mean_baseline_excess": -0.02301073761,
+        "mean_excess_return": -0.0027837314300000193,
+        "mean_profit_factor": 2.1222812952895915,
+        "mean_sharpe_ratio": 1.2892888313507382,
+        "mean_sortino_ratio": 2.241010096755511,
+        "mean_turnover": 8.000878819989076,
+        "mean_validation_return": 0.03923790798749999,
+        "mean_win_rate": 0.6788733609385783,
+        "objective": -1.0849398181641587,
+        "positive_window_fraction": 0.25,
+        "rejection_reasons": [
+          "too_few_positive_excess_windows",
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.08493981816415867,
+        "score_terms": {
+          "costs": -0.0056857869500000005,
+          "drawdown": -0.047860238421861434,
+          "excess_return": -0.0027837314300000193,
+          "instability": -0.023931209663392707,
+          "predictive_skill": -0.00030269385303448136,
+          "sharpe": 0.003624720974119049,
+          "turnover": -0.008000878819989076
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.11551167735503348,
+        "validation_windows": 4,
+        "window_excess_std": 0.047862419326785414,
+        "worst_drawdown": 0.09572047684372287
+      }
+    },
+    {
+      "attempt_id": "af2f3b5cf9a829a2-1-8a9dc1da",
+      "parent_attempt": "a47e5ead4cb66576-1-6776ac04",
+      "scenario": "double_slippage_bps",
+      "status": "REJECTED",
+      "summary": {
+        "cost_degradation": 0.011370743110000081,
+        "cost_rate": 0.009325487435,
+        "eligible": false,
+        "exit_fills": 81,
+        "fills": 162,
+        "mean_annualized_return": 0.08115366608696302,
+        "mean_baseline_excess": -0.023838732405000007,
+        "mean_excess_return": -0.006060898845000023,
+        "mean_profit_factor": 1.9843785292804905,
+        "mean_sharpe_ratio": 1.1826495062006694,
+        "mean_sortino_ratio": 2.05793451335656,
+        "mean_turnover": 8.002372815129066,
+        "mean_validation_return": 0.035577507497499994,
+        "mean_win_rate": 0.6860198624904508,
+        "objective": -1.0933461103900357,
+        "positive_window_fraction": 0.25,
+        "rejection_reasons": [
+          "too_few_positive_excess_windows",
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.09334611039003562,
+        "score_terms": {
+          "costs": -0.009325487435,
+          "drawdown": -0.04922165878817086,
+          "excess_return": -0.006060898845000023,
+          "instability": -0.023796953833652573,
+          "predictive_skill": -0.00030269385303448136,
+          "sharpe": 0.0033639551799513755,
+          "turnover": -0.008002372815129066
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.11774947135690969,
+        "validation_windows": 4,
+        "window_excess_std": 0.047593907667305146,
+        "worst_drawdown": 0.09844331757634173
+      }
+    },
+    {
+      "attempt_id": "846d9f2caa8882af-1-98ca6a26",
+      "parent_attempt": "a47e5ead4cb66576-1-6776ac04",
+      "scenario": "one_session_execution_delay",
+      "status": "REJECTED",
+      "summary": {
+        "cost_degradation": 0.006450702260000107,
+        "cost_rate": 0.005285684875,
+        "eligible": false,
+        "exit_fills": 78,
+        "fills": 165,
+        "mean_annualized_return": 0.06636558743935704,
+        "mean_baseline_excess": -0.010754629485000056,
+        "mean_excess_return": -0.005272922364999988,
+        "mean_profit_factor": 1.8154256023336113,
+        "mean_sharpe_ratio": 0.9644070215345518,
+        "mean_sortino_ratio": 1.495152786034248,
+        "mean_turnover": 8.011363420663926,
+        "mean_validation_return": 0.02959668832500001,
+        "mean_win_rate": 0.6849774838164931,
+        "objective": -1.071503569009333,
+        "positive_window_fraction": 0.25,
+        "rejection_reasons": [
+          "too_few_positive_excess_windows",
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.07150356900933301,
+        "score_terms": {
+          "costs": -0.005285684875,
+          "drawdown": -0.03824077212999011,
+          "excess_return": -0.005272922364999988,
+          "instability": -0.0171656491259607,
+          "predictive_skill": -0.00030269385303448136,
+          "sharpe": 0.002775516760316199,
+          "turnover": -0.008011363420663926
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.12727435027246536,
+        "validation_windows": 4,
+        "window_excess_std": 0.0343312982519214,
+        "worst_drawdown": 0.07648154425998022
+      }
+    },
+    {
+      "attempt_id": "358f6f75e5d35805-1-7e74c3c6",
+      "parent_attempt": "a47e5ead4cb66576-1-6776ac04",
+      "scenario": "alternative_rolling_expanding",
+      "status": "REJECTED",
+      "summary": {
+        "cost_degradation": 0.006617797749999932,
+        "cost_rate": 0.0050099694,
+        "eligible": false,
+        "exit_fills": 82,
+        "fills": 168,
+        "mean_annualized_return": 0.043667210464936615,
+        "mean_baseline_excess": -0.04393294289750005,
+        "mean_excess_return": -0.02343601747000007,
+        "mean_profit_factor": 3.2032001747226353,
+        "mean_sharpe_ratio": 0.7451671372090958,
+        "mean_sortino_ratio": 1.2311217219639066,
+        "mean_turnover": 7.393601272168281,
+        "mean_validation_return": 0.0186016094475,
+        "mean_win_rate": 0.625103519668737,
+        "objective": -1.1154603065984576,
+        "positive_window_fraction": 0.25,
+        "rejection_reasons": [
+          "too_few_positive_excess_windows",
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.11546030659845771,
+        "score_terms": {
+          "costs": -0.0050099694,
+          "drawdown": -0.05727290529190765,
+          "excess_return": -0.02343601747000007,
+          "instability": -0.02412873838676586,
+          "predictive_skill": -0.00034827892567831253,
+          "sharpe": 0.0021292041480624564,
+          "turnover": -0.0073936012721682815
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.12712657166046015,
+        "validation_windows": 4,
+        "window_excess_std": 0.04825747677353172,
+        "worst_drawdown": 0.1145458105838153
+      }
+    },
+    {
+      "attempt_id": "ad8814b6de81315a-1-0f9c55ec",
+      "parent_attempt": "a47e5ead4cb66576-1-6776ac04",
+      "scenario": "alternative_validation_period",
+      "status": "REJECTED",
+      "summary": {
+        "cost_degradation": 0.006592823240000101,
+        "cost_rate": 0.0053313468150000005,
+        "eligible": false,
+        "exit_fills": 82,
+        "fills": 157,
+        "mean_annualized_return": 0.07247775034118664,
+        "mean_baseline_excess": -0.02292313822,
+        "mean_excess_return": -0.015226049289999988,
+        "mean_profit_factor": 2.7518873030042825,
+        "mean_sharpe_ratio": 0.8919377916295925,
+        "mean_sortino_ratio": 1.7242762028316232,
+        "mean_turnover": 8.119776294109347,
+        "mean_validation_return": 0.03103412295000002,
+        "mean_win_rate": 0.6507441744813868,
+        "objective": -1.0764543473263015,
+        "positive_window_fraction": 0.5,
+        "rejection_reasons": [
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.0764543473263016,
+        "score_terms": {
+          "costs": -0.0053313468150000005,
+          "drawdown": -0.0205791679332904,
+          "excess_return": -0.015226049289999988,
+          "instability": -0.029054811754121564,
+          "predictive_skill": -0.00028520256370510036,
+          "sharpe": 0.002142007323924797,
+          "turnover": -0.008119776294109347
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.1533588714278757,
+        "validation_windows": 4,
+        "window_excess_std": 0.05810962350824313,
+        "worst_drawdown": 0.0411583358665808
+      }
+    },
+    {
+      "attempt_id": "afac666374b5fd48-1-0310612f",
+      "parent_attempt": "a47e5ead4cb66576-1-6776ac04",
+      "scenario": "nearby_n_estimators",
+      "status": "REJECTED",
+      "summary": {
+        "cost_degradation": 0.006317784209999955,
+        "cost_rate": 0.00567362949,
+        "eligible": false,
+        "exit_fills": 82,
+        "fills": 167,
+        "mean_annualized_return": 0.08924110130964377,
+        "mean_baseline_excess": -0.023707587755000037,
+        "mean_excess_return": -0.003210662327500058,
+        "mean_profit_factor": 2.223034791452747,
+        "mean_sharpe_ratio": 1.2837013464797051,
+        "mean_sortino_ratio": 2.2818691247789906,
+        "mean_turnover": 8.58805969276499,
+        "mean_validation_return": 0.03882696459000001,
+        "mean_win_rate": 0.6753136037023505,
+        "objective": -1.0878342698369725,
+        "positive_window_fraction": 0.25,
+        "rejection_reasons": [
+          "too_few_positive_excess_windows",
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.08783426983697254,
+        "score_terms": {
+          "costs": -0.00567362949,
+          "drawdown": -0.04769656379725157,
+          "excess_return": -0.003210662327500058,
+          "instability": -0.02591138427234118,
+          "predictive_skill": -0.0002953915088211839,
+          "sharpe": 0.0035414212517064425,
+          "turnover": -0.00858805969276499
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.10387093223808716,
+        "validation_windows": 4,
+        "window_excess_std": 0.05182276854468236,
+        "worst_drawdown": 0.09539312759450314
+      }
+    },
+    {
+      "attempt_id": "a3050cf057cb12b3-1-2490f49f",
+      "parent_attempt": "a47e5ead4cb66576-1-6776ac04",
+      "scenario": "alternative_position_sizing",
+      "status": "REJECTED",
+      "summary": {
+        "cost_degradation": 0.005906295609999779,
+        "cost_rate": 0.0050800349299999995,
+        "eligible": false,
+        "exit_fills": 79,
+        "fills": 162,
+        "mean_annualized_return": 0.09303653689525689,
+        "mean_baseline_excess": -0.01868096574500011,
+        "mean_excess_return": -0.0012090293900001159,
+        "mean_profit_factor": 2.228270047187733,
+        "mean_sharpe_ratio": 1.3849962866259118,
+        "mean_sortino_ratio": 2.5229710200294417,
+        "mean_turnover": 7.67651870910925,
+        "mean_validation_return": 0.040828597527499955,
+        "mean_win_rate": 0.6802953238711753,
+        "objective": -1.0827610635777292,
+        "positive_window_fraction": 0.25,
+        "rejection_reasons": [
+          "too_few_positive_excess_windows",
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.08276106357772914,
+        "score_terms": {
+          "costs": -0.0050800349299999995,
+          "drawdown": -0.04756817350710846,
+          "excess_return": -0.0012090293900001159,
+          "instability": -0.024772548663319863,
+          "predictive_skill": -0.00030269385303448136,
+          "sharpe": 0.00384793547484303,
+          "turnover": -0.007676518709109251
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.11615506039085706,
+        "validation_windows": 4,
+        "window_excess_std": 0.049545097326639725,
+        "worst_drawdown": 0.09513634701421692
+      }
+    },
+    {
+      "attempt_id": "ae42c870a7c2f379-1-9b988e69",
+      "parent_attempt": "a47e5ead4cb66576-1-6776ac04",
+      "scenario": "alternative_market_filter",
+      "status": "REJECTED",
+      "summary": {
+        "cost_degradation": 0.008447406609999986,
+        "cost_rate": 0.006347470075,
+        "eligible": false,
+        "exit_fills": 111,
+        "fills": 221,
+        "mean_annualized_return": 0.058157052163964634,
+        "mean_baseline_excess": -0.04710937903750001,
+        "mean_excess_return": -0.017288989410000066,
+        "mean_profit_factor": 1.6588526136549147,
+        "mean_sharpe_ratio": 0.7823875170803116,
+        "mean_sortino_ratio": 1.3644995975414553,
+        "mean_turnover": 9.649477888058806,
+        "mean_validation_return": 0.024748637507500004,
+        "mean_win_rate": 0.6636424731182795,
+        "objective": -1.1185977453613711,
+        "positive_window_fraction": 0.5,
+        "rejection_reasons": [
+          "insufficient_excess_return",
+          "weaker_than_simple_baselines"
+        ],
+        "score": -0.11859774536137113,
+        "score_terms": {
+          "costs": -0.006347470075,
+          "drawdown": -0.05996912696405243,
+          "excess_return": -0.017288989410000066,
+          "instability": -0.02724639316899457,
+          "predictive_skill": -0.00030269385303448136,
+          "sharpe": 0.00220640599776923,
+          "turnover": -0.009649477888058807
+        },
+        "thresholds_are_heuristics": true,
+        "top_trade_profit_share": 0.1231826944306554,
+        "validation_windows": 4,
+        "window_excess_std": 0.05449278633798914,
+        "worst_drawdown": 0.11993825392810487
+      }
+    }
+  ]
+}

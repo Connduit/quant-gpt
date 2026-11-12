@@ -1,0 +1,74 @@
+{
+  "coverage_certified": false,
+  "inferred_events": [
+    {
+      "absolute_difference": 4.581129212977153e-06,
+      "ex_date": "2015-05-07",
+      "implied_distribution": 0.520005581129213,
+      "provided_proxy_amount": 0.520001
+    },
+    {
+      "absolute_difference": 1.1438893927295801e-05,
+      "ex_date": "2015-08-06",
+      "implied_distribution": 0.5199955611060727,
+      "provided_proxy_amount": 0.520007
+    },
+    {
+      "absolute_difference": 6.959611296153412e-06,
+      "ex_date": "2015-11-05",
+      "implied_distribution": 0.5200069596112962,
+      "provided_proxy_amount": 0.52
+    },
+    {
+      "absolute_difference": 7.125764571069837e-06,
+      "ex_date": "2016-02-04",
+      "implied_distribution": 0.519993874235429,
+      "provided_proxy_amount": 0.520001
+    },
+    {
+      "absolute_difference": 4.733184177041494e-06,
+      "ex_date": "2016-05-05",
+      "implied_distribution": 0.5700037331841771,
+      "provided_proxy_amount": 0.569999
+    },
+    {
+      "absolute_difference": 3.162697848169138e-06,
+      "ex_date": "2016-08-04",
+      "implied_distribution": 0.5699988373021518,
+      "provided_proxy_amount": 0.570002
+    },
+    {
+      "absolute_difference": 8.948653942297824e-06,
+      "ex_date": "2016-11-03",
+      "implied_distribution": 0.5699999486539423,
+      "provided_proxy_amount": 0.569991
+    },
+    {
+      "absolute_difference": 9.000000004366626e-06,
+      "ex_date": "2017-02-09",
+      "implied_distribution": 0.5699989999999956,
+      "provided_proxy_amount": 0.570008
+    }
+  ],
+  "limitations": [
+    "Adjusted-close ratios infer distributions, not authoritative event records.",
+    "Limited to AAPL in the overlapping archived reference interval.",
+    "No payment dates or full split/noncash/delisting certification."
+  ],
+  "period": [
+    "2015-02-17",
+    "2017-02-16"
+  ],
+  "source": {
+    "fraction_within_one_cent": 0.9980237154150198,
+    "maximum_close_error": 0.020002000000005182,
+    "median_close_error": 1.9999999949504854e-06,
+    "overlapping_sessions": 506,
+    "scope": "AAPL price-level check only; no full-universe or corporate-event certification",
+    "sha256": "24c7604edfd5afe862ddb9f9535e2fd7351f43711bfc442bca52055e15e37bcd",
+    "url": "https://raw.githubusercontent.com/plotly/datasets/0c447c47b757ad74edecab31f0d72f849d2e67c2/finance-charts-apple.csv"
+  },
+  "symbol": "AAPL",
+  "unmatched_inferred_dates": [],
+  "unmatched_provided_dates": []
+}

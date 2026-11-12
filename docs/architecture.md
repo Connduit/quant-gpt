@@ -49,8 +49,8 @@ supported. See [ML research](ml-research.md) for the model/data contracts and
 evidence. The updated [11-milestone roadmap](progress.md) still schedules advanced
 statistical validation explicitly; baseline timing safeguards are enforced now.
 
-Milestone 4 is not started. No automated hypothesis search, Optuna optimization,
-MLflow service, broker or unrestricted research agent has been introduced.
+Milestone 4 provides automated bounded search and local MLflow tracking. Broker
+execution and unrestricted research agents remain unimplemented.
 
 ## Milestone 4 discovery
 
@@ -61,3 +61,14 @@ variants and reports. The parent excludes final holdout data before launching
 workers. Existing ML and execution modules remain the evaluation foundation.
 The LEAN provider supports an explicitly incomplete factor-file alternative with
 unknown distribution payment dates. See [discovery](discovery.md) for boundaries.
+
+## Milestone 5 statistical validation
+
+`statistical/` builds on existing sealed data and resource-limited discovery
+workers. Its config, interval checks, holdout ledger, statistical methods,
+validation pipeline and CLI maintain distinct training/search/selection/final
+roles. Fresh verified inputs must end before the reserved cutoff. Immutable
+reports contain complete recorded search scope, fold metrics, uncertainty,
+multiple-testing sensitivity, robustness lineage and conservative statuses.
+No final evaluator is invoked and no brokerage execution is added. See the
+[methodology](statistical-validation.md) and [pipeline audit](statistical-validation-audit.md).

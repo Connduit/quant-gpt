@@ -34,7 +34,7 @@ archive over permitted HTTPS to `raw.githubusercontent.com`. A fresh SPY ZIP
 request returned **200**, 103,363 bytes. The application then downloaded,
 normalized and stored eight real daily histories: AAPL, AIG, BAC, FB, GOOGL, IBM,
 WM and SPY. Each contains 1,195 complete XNYS sessions from April 3, 2014 through
-December 31, 2018. No reserved 2019 observations were used. Exact snapshot IDs,
+December 31, 2018. No reserved 2019 observations were used by normalization or research. Bulk source archives can contain additional dates; those are not materialized into development snapshots. Exact snapshot IDs,
 source hashes, dates and action limitations are in the
 [dataset manifest](market-data-verification-datasets.json). Inputs are local at
 `data/network-verification/real-inputs`; raw vendor data is ignored by Git.
@@ -87,3 +87,10 @@ the explicit live run passed all **three provider round trips**. The first
 concurrent baseline run encountered the intentional code-change integrity guard
 while provider edits were in progress (169 passed, one failed); the unchanged
 source rerun passed all 170.
+
+The application CLI also confirmed Stooq failure (exit 1):
+`Stooq network request failed (ProxyError); check proxy allowlist, connectivity and CA trust`.
+The explicit `--provider lean` CLI download succeeded and produced a reloadable
+SPY snapshot. No automatic provider substitution or synthetic fallback occurs.
+
+An additional [independent adjustment-ratio cross-check](market-data-action-crosscheck.json) found all eight inferred Apple distribution ex-dates in the overlapping 2015–2017 Yahoo reference matched the factor proxy, with maximum inferred amount discrepancy below $0.000012. Reproduce with `uv run --all-extras python examples/verify_action_reference.py`. This is limited inference from adjusted-price ratios, not authoritative event/payment-date certification.

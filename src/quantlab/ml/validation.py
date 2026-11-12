@@ -21,6 +21,9 @@ def walk_forward(
     test_sessions: int,
     expanding: bool = True,
     embargo_sessions: int = 0,
+    *,
+    retraining_sessions: int | None = None,
+    gap_sessions: int = 0,
 ):
     if any(
         type(n) is not int or n < 1 for n in (training_sessions, validation_sessions, test_sessions)
@@ -28,6 +31,12 @@ def walk_forward(
         raise ValueError("Training/validation/test windows must be positive session counts")
     if type(embargo_sessions) is not int or embargo_sessions < 0:
         raise ValueError("Embargo must be a nonnegative session count")
+    from quantlab.statistical.splits import validate_intervals
+
+    validate_intervals(frame)
+    step = test_sessions if retraining_sessions is None else retraining_sessions
+    if type(step) is not int or step < 1 or type(gap_sessions) is not int or gap_sessions < 0:
+        raise ValueError("Retraining must be positive and gap nonnegative session counts")
     dates = sorted(frame["session_date"].unique().to_list())
     first_test = training_sessions + validation_sessions
     if first_test >= len(dates):
@@ -35,12 +44,14 @@ def walk_forward(
             "Not enough usable sessions for chronological training, validation and test"
         )
     number = 0
-    for test_start in range(first_test, len(dates), test_sessions):
+    for test_start in range(first_test, len(dates), step):
         val_start = test_start - validation_sessions
         train_start = 0 if expanding else val_start - training_sessions
-        train_dates = dates[train_start : max(train_start, val_start - embargo_sessions)]
-        val_dates = dates[val_start : max(val_start, test_start - embargo_sessions)]
-        test_dates = dates[test_start : test_start + test_sessions]
+        train_dates = dates[
+            train_start : max(train_start, val_start - embargo_sessions - gap_sessions)
+        ]
+        val_dates = dates[val_start : max(val_start, test_start - embargo_sessions - gap_sessions)]
+        test_dates = dates[test_start : test_start + min(test_sessions, step)]
         raw_train = frame.filter(pl.col("session_date").is_in(train_dates))
         raw_val = frame.filter(pl.col("session_date").is_in(val_dates))
         test = frame.filter(pl.col("session_date").is_in(test_dates))
