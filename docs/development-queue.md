@@ -1,18 +1,20 @@
-# Accepted subsequent development requests
+# Accepted development requests and current status
 
-The user supplied these complete specifications while earlier work was active.
-They are queued in milestone order and do not imply prior engineering or empirical
-completion. Each requires its own audit, tests, demonstration and honest limitations.
+All complete user specifications remain preserved in the linked instruction files.
+Implementation proceeded in order without assuming a later request proved an
+earlier milestone complete. No Milestone 12 or live activation is authorized.
 
-- [Milestone 7: futures research and ML](milestone-7-instructions.md).
-- [Milestone 8: live data and paper trading](milestone-8-instructions.md).
-- [Milestone 9: dashboard](milestone-9-instructions.md).
-- [Milestone 10: research agent](milestone-10-instructions.md).
-- [Milestone 11: controlled live/production](milestone-11-instructions.md).
+| Milestone | Engineering status | Empirical/operational limits |
+|---|---|---|
+| [7: futures](milestone-7-instructions.md) | Implemented, tested, real archive demonstration | Two OOS sessions; rejected candidates; assumed margins |
+| [8: paper](milestone-8-instructions.md) | Durable simulation/replay and recovery verified | No actual streaming or qualified paper strategy |
+| [9: dashboard](milestone-9-instructions.md) | API/UI and real browser verification | Curated artifact access; live controls unavailable |
+| [10: research agent](milestone-10-instructions.md) | Bounded real-data workflow and policy tests | Scripted planning; external LLM/code sandbox unverified |
+| [11: controlled execution](milestone-11-instructions.md) | Sandbox engineering, mock OMS/recovery and deployment artifacts | External broker access blocked; LIVE disabled |
 
 The Stooq-specific prerequisite remains blocked in the older attached runtime;
-[the recheck](stooq-reverification.md) records the required applied configuration.
-Verified LEAN inputs remain available for permitted research with disclosed limits.
-The protected equity holdout must not be consumed by any queued demonstration.
-Live implementation instructions are not a blanket authorization for real orders;
-all eligibility, credential, operating and explicit activation gates still apply.
+[latest connectivity evidence](milestone-11-connectivity.json) records proxy 403.
+Verified LEAN inputs remain available for permitted research with disclosed action,
+universe and margin limitations. Protected holdouts remain unevaluated. The
+[go-live readiness report](go-live-readiness.md) is the authoritative operator
+summary of missing evidence and separate future authorizations.

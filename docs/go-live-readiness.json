@@ -1,0 +1,91 @@
+{
+  "live_enabled": false,
+  "status": "NOT_READY_FOR_LIVE",
+  "eligible_strategy_ids": [],
+  "holdout_state": "SEALED",
+  "checks": [
+    {
+      "id": "research_validation",
+      "status": "BLOCKED",
+      "evidence": "No independently validated strategy is available; real investigations remain rejected."
+    },
+    {
+      "id": "final_holdout",
+      "status": "BLOCKED",
+      "evidence": "Ledger state SEALED; no future authorization, evaluation or released result."
+    },
+    {
+      "id": "historical_data_quality",
+      "status": "BLOCKED",
+      "evidence": "Equity actions/universe and futures historical margins/calendar coverage are incomplete."
+    },
+    {
+      "id": "paper_performance",
+      "status": "BLOCKED",
+      "evidence": "Only historical experimental replay; no approved real-time paper operating history."
+    },
+    {
+      "id": "external_broker_sandbox",
+      "status": "UNVERIFIED",
+      "evidence": "Mock tests are not external broker connectivity or routing verification."
+    },
+    {
+      "id": "risk_and_order_management",
+      "status": "ENGINEERING_TESTED",
+      "evidence": "Per-order limits, idempotency, uncertainty and kill behavior require independent operational review."
+    },
+    {
+      "id": "account_reconciliation",
+      "status": "MOCK_TESTED",
+      "evidence": "Real broker balances, fees and activity coverage remain unverified."
+    },
+    {
+      "id": "crash_backup_recovery",
+      "status": "ENGINEERING_TESTED",
+      "evidence": "External positions must be reconciled before any restart is armed."
+    },
+    {
+      "id": "independent_review",
+      "status": "PENDING",
+      "evidence": "No human statistical/operational independent review recorded."
+    },
+    {
+      "id": "strategy_model_eligibility",
+      "status": "BLOCKED",
+      "evidence": "Zero research/paper/live-qualified strategies; sandbox test approval is separate."
+    },
+    {
+      "id": "capital_and_sizing",
+      "status": "PENDING",
+      "evidence": "No real-money capital allocation authorized; example limits are not optimal settings."
+    },
+    {
+      "id": "security_and_deployment",
+      "status": "REVIEW_REQUIRED",
+      "evidence": "Credential isolation, TLS/host hardening, token rotation and deployment artifacts need operator review."
+    },
+    {
+      "id": "monitoring",
+      "status": "ENGINEERING_TESTED",
+      "evidence": "Mock alerts/model hooks tested; live degradation thresholds are not empirically verified."
+    },
+    {
+      "id": "regulatory_tax_operator_readiness",
+      "status": "PENDING",
+      "evidence": "Operator must independently review applicable obligations and incident procedures."
+    },
+    {
+      "id": "separate_live_authorization",
+      "status": "BLOCKED",
+      "evidence": "No activation authorization; this build has no enabled LIVE broker path."
+    }
+  ],
+  "external_broker_verified": false,
+  "research_artifacts_available": true,
+  "replay_only": true,
+  "limits": [
+    "A completed checklist is not a profitability guarantee.",
+    "No checklist, API token, AI output or environment variable can enable LIVE in this build.",
+    "Final holdout access requires a separate future authorization; none occurred."
+  ]
+}

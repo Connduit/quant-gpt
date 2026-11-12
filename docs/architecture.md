@@ -82,3 +82,20 @@ remain unchanged. Cash/quantities/receivables/equity reconcile to one authoritat
 account. No live adapter or futures cash accounting is introduced here. See
 [portfolio design](portfolio.md) for netting, ownership, limits and explicit
 suspension/one-time stress-cap policies.
+
+## Operational extensions (Milestones 7–11)
+
+`futures/` adds actual-contract calendars/accounting, causal intraday features and
+bounded supervised research. `paper/` adds normalized quote transports, one funded
+equity/futures virtual account, conservative fills, durable orders, risk and restart
+reconciliation. `web/` plus `dashboard/` expose curated artifacts and role-checked
+paper/research controls. `agent/` validates structured proposals against independent
+data/resource/holdout policies and records bounded experiments in durable memory.
+`execution/` adds broker-independent sandbox control, the official Alpaca PAPER
+adapter, signed scope, uncertainty recovery and reconciliation. LIVE is disabled.
+
+No component turns a research finding into deployment authorization. Generated
+code cannot execute. Broker credentials are excluded from research workers and
+frontend clients. Canonical holdout ledgers are not exposed for evaluation through
+the agent/dashboard. See the [operator readiness report](go-live-readiness.md)
+for scientific and external operational limits that remain unresolved.

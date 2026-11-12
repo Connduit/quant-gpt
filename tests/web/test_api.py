@@ -310,3 +310,24 @@ def test_job_worker_has_fixed_arguments_and_no_broker_secrets(tmp_path, monkeypa
         assert captured["env"]["QUANTLAB_LLM_API_KEY"] == "allowed-for-agent-only"
     finally:
         manager.close()
+
+
+def test_live_readiness_is_read_only_and_has_no_order_entry(api):
+    client, _ = api
+    data = client.get("/api/v1/execution/readiness").json()
+    assert data["live_enabled"] is False and data["eligible_strategy_ids"] == []
+    assert data["status"] == "NOT_READY_FOR_LIVE"
+    assert any(
+        x["id"] == "separate_live_authorization" and x["status"] == "BLOCKED"
+        for x in data["checks"]
+    )
+    capabilities = client.get("/api/v1/execution/capabilities").json()
+    assert capabilities["live_controls"] is False
+    assert (
+        client.post(
+            "/api/v1/execution/orders",
+            json={"symbol": "SPY"},
+            headers={"Authorization": "Bearer " + TOKEN},
+        ).status_code
+        == 404
+    )

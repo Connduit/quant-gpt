@@ -74,3 +74,15 @@ artifacts:
     path: data/agent/sessions/54f1b7c8cab841f1a751c98f5d762c75/report.json
     mode: SCRIPTED_ENGINEERING_NOT_LLM
     status: COMPLETED_ALL_REJECTED
+  - id: live-readiness-checklist
+    kind: live
+    label: Independent go-live readiness checklist
+    path: docs/go-live-readiness.json
+    mode: LIVE_DISABLED
+    status: NOT_READY_FOR_LIVE
+  - id: sandbox-execution-audit
+    kind: live
+    label: Explicit MOCK broker execution and recovery audit
+    path: docs/milestone-11-execution.json
+    mode: MOCK_BROKER_SANDBOX
+    status: ENGINEERING_TEST_ONLY

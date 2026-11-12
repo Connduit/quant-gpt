@@ -15,3 +15,6 @@ __pycache__/
 /test-results/
 /dashboard/test-results/
 /dashboard/playwright-report/
+/deploy/*.env
+/deploy/operator-execution.yaml
+.env.*

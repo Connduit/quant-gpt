@@ -121,3 +121,20 @@ real-data investigations made 12 recorded attempts; all rejected, with canonical
 holdout state SEALED. The installed 0.10 wheel matched executed policy/source
 identity. Planning was scripted engineering; no external LLM or generated-code
 sandbox was verified. No eligible paper/live strategy or trading authority granted.
+
+## Milestone 11 verification and scope
+
+[Execution design](controlled-execution.md), [actual verification](milestone-11-results.md),
+[production operation](production.md), [incident response](incident-response.md),
+and [independent readiness report](go-live-readiness.md) are saved. **326 Python
+tests passed**, seven optional checks skipped; the explicit archive run passed four
+real-download checks. Five frontend and seven real Chromium browser tests passed.
+The installed wheel matched source/accounting. The digest-pinned nonroot/read-only
+container built and passed mock recovery, frontend and authenticated API checks.
+
+The explicit mock broker demo verified uncertain acceptance without retry,
+partials/duplicates, restart reconciliation, outage, kill/cancellation and backups.
+External Alpaca PAPER/Stooq/data requests remain proxy-403 blocked in the older
+runtime; credentials are missing. No external broker routing or real-time paper
+record is claimed, no strategy qualifies, and no final holdout was consumed.
+**LIVE remains disabled.** No Milestone 12 starts automatically.

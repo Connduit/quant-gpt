@@ -1,0 +1,26 @@
+{
+  "credentials_configured": {
+    "QUANTLAB_ALPACA_PAPER_KEY": false,
+    "QUANTLAB_ALPACA_PAPER_SECRET": false,
+    "APCA_API_KEY_ID": false,
+    "APCA_API_SECRET_KEY": false
+  },
+  "https://stooq.com": {
+    "error_type": "ProxyError",
+    "error": "403 Forbidden"
+  },
+  "https://paper-api.alpaca.markets/v2/account": {
+    "error_type": "ProxyError",
+    "error": "403 Forbidden"
+  },
+  "https://data.alpaca.markets/v2/stocks/quotes/latest?symbols=SPY&feed=iex": {
+    "error_type": "ProxyError",
+    "error": "403 Forbidden"
+  },
+  "actual_stooq_provider": {
+    "error_type": "ProviderNetworkError",
+    "error": "Stooq network request failed (ProxyError); check proxy allowlist, connectivity and CA trust",
+    "cause_type": "ProxyError",
+    "cause": "403 Forbidden"
+  }
+}

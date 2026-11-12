@@ -1,0 +1,14 @@
+# Optional runtime trust for the managed Cloud HTTPS proxy; never disables TLS.
+services:
+  dashboard:
+    environment:
+      SSL_CERT_FILE: /run/quantlab-ca.pem
+      REQUESTS_CA_BUNDLE: /run/quantlab-ca.pem
+    volumes:
+      - ${QUANTLAB_BUILD_CA:-/etc/ssl/certs/ca-certificates.crt}:/run/quantlab-ca.pem:ro
+  broker-sandbox:
+    environment:
+      SSL_CERT_FILE: /run/quantlab-ca.pem
+      REQUESTS_CA_BUNDLE: /run/quantlab-ca.pem
+    volumes:
+      - ${QUANTLAB_BUILD_CA:-/etc/ssl/certs/ca-certificates.crt}:/run/quantlab-ca.pem:ro

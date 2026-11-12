@@ -1,0 +1,68 @@
+name: quantlab
+services:
+  dashboard:
+    image: quantlab:0.11.0
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      secrets: [proxy_ca]
+    command: [dashboard, --host, 0.0.0.0, --port, '8000']
+    environment:
+      QUANTLAB_VIEWER_TOKEN: ${QUANTLAB_VIEWER_TOKEN:?set a distinct 24+ character viewer token}
+      QUANTLAB_OPERATOR_TOKEN: ${QUANTLAB_OPERATOR_TOKEN:-}
+      # Researcher and brokerage credentials are intentionally absent.
+    ports: ['127.0.0.1:8000:8000']
+    volumes:
+      - dashboard-state:/app/data/dashboard
+      - paper-state:/app/data/paper
+      - ../data/portfolios:/app/data/portfolios:ro
+      - ../data/statistical:/app/data/statistical:ro
+      - ../data/discovery/release/reports:/app/data/discovery/release/reports:ro
+      - ../data/futures/milestone-7-final:/app/data/futures/milestone-7-final:ro
+      - ../data/agent/sessions:/app/data/agent/sessions:ro
+    read_only: true
+    tmpfs: ['/tmp:size=256m,mode=1777']
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    pids_limit: 256
+    mem_limit: 6g
+    cpus: 2
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 45s
+    healthcheck:
+      test: [CMD, /app/.venv/bin/python, -c, "import os,urllib.request; r=urllib.request.Request('http://127.0.0.1:8000/api/v1/health',headers={'Authorization':'Bearer '+os.environ['QUANTLAB_VIEWER_TOKEN']}); assert urllib.request.urlopen(r,timeout=5).status==200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  broker-sandbox:
+    image: quantlab:0.11.0
+    profiles: [sandbox]
+    command: [execution, service, --execution-config, /etc/quantlab/execution.yaml]
+    environment:
+      QUANTLAB_ALPACA_PAPER_KEY: ${QUANTLAB_ALPACA_PAPER_KEY:-}
+      QUANTLAB_ALPACA_PAPER_SECRET: ${QUANTLAB_ALPACA_PAPER_SECRET:-}
+      QUANTLAB_SANDBOX_AUTHORIZATION_KEY: ${QUANTLAB_SANDBOX_AUTHORIZATION_KEY:-}
+      APCA_API_KEY_ID: ${APCA_API_KEY_ID:-}
+      APCA_API_SECRET_KEY: ${APCA_API_SECRET_KEY:-}
+      # No LIVE credential names or live execution flags exist.
+    volumes:
+      - execution-state:/app/data/execution
+      - ./operator-execution.yaml:/etc/quantlab/execution.yaml:ro
+    read_only: true
+    tmpfs: ['/tmp:size=128m,mode=1777']
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    pids_limit: 128
+    mem_limit: 2g
+    cpus: 1
+    init: true
+    restart: on-failure:3
+    stop_grace_period: 45s
+volumes:
+  dashboard-state:
+  paper-state:
+  execution-state:
+secrets:
+  proxy_ca:
+    file: ${QUANTLAB_BUILD_CA:-/etc/ssl/certs/ca-certificates.crt}

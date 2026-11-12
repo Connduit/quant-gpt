@@ -136,6 +136,38 @@ def parser() -> argparse.ArgumentParser:
         choices=("equal", "fixed", "inverse_volatility", "risk_parity", "volatility_target"),
         required=True,
     )
+    execution = commands.add_parser(
+        "execution", help="Controlled PAPER broker sandbox; LIVE disabled"
+    )
+    execution_sub = execution.add_subparsers(dest="execution_command", required=True)
+    command = execution_sub.add_parser("sandbox-demo")
+    command.add_argument("--output", type=Path, required=True)
+    command = execution_sub.add_parser("readiness")
+    command.add_argument("--workspace", type=Path, default=Path.cwd())
+    command.add_argument("--output", type=Path)
+    for name in ("inspect", "kill", "pause", "backup", "restore"):
+        command = execution_sub.add_parser(name)
+        command.add_argument("--database", type=Path, required=True)
+        if name in ("backup", "restore"):
+            command.add_argument("--output", type=Path, required=True)
+        if name in ("kill", "pause"):
+            command.add_argument("--reason", required=True)
+        if name == "kill":
+            command.add_argument("--cancel-open", action="store_true")
+        if name == "pause":
+            command.add_argument("--strategy", required=True)
+    for name in ("service", "approve-sandbox-test"):
+        command = execution_sub.add_parser(name)
+        command.add_argument("--execution-config", type=Path, required=True)
+        if name == "service":
+            command.add_argument("--arm-approved-sandbox-test", action="store_true")
+            command.add_argument("--resume-reconciled-sandbox-test", action="store_true")
+            command.add_argument("--resume-reason")
+        else:
+            command.add_argument("--actor", required=True)
+            command.add_argument("--reason", required=True)
+            command.add_argument("--minutes", type=int, default=15)
+            command.add_argument("--output", type=Path, required=True)
     agent = commands.add_parser(
         "agent", help="Bounded research orchestration; no trading authority"
     )
@@ -251,6 +283,10 @@ def main(argv: list[str] | None = None) -> int:
         settings = load_settings(args.config)
         configure_logging(settings.log_level)
         store = SnapshotStore(args.data_dir or settings.data_dir)
+        if args.command == "execution":
+            from quantlab.execution.cli import execute
+
+            return execute(args)
         if args.command == "agent":
             from quantlab.agent.cli import execute
 
@@ -394,7 +430,14 @@ def main(argv: list[str] | None = None) -> int:
                     }
                 )
             )
-    except (ValueError, TypeError, OSError, duckdb.Error, pl.exceptions.PolarsError) as exc:
+    except (
+        ValueError,
+        TypeError,
+        OSError,
+        PermissionError,
+        duckdb.Error,
+        pl.exceptions.PolarsError,
+    ) as exc:
         logging.getLogger("quantlab").error(str(exc), extra={"event": "command_failed"})
         return 1
     return 0

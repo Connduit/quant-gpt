@@ -362,6 +362,7 @@ function Artifacts() {
           </div>
         </div>
       )}
+      {kind === "live" && <LiveReadiness />}
       <section className="panel">
         <div className="panel-title">
           <h3>Saved {title.toLowerCase()}</h3>
@@ -929,6 +930,42 @@ function AgentSessions() {
           label="Actual hypotheses, iterations, usage and findings"
         />
       )}
+    </section>
+  );
+}
+
+function LiveReadiness() {
+  const data = useQuery({
+    queryKey: ["execution-readiness"],
+    queryFn: () =>
+      request<{
+        status: string;
+        live_enabled: boolean;
+        checks: Record<string, unknown>[];
+        limits: string[];
+      }>("/execution/readiness"),
+    refetchInterval: 15000,
+  });
+  return (
+    <section className="panel">
+      <div className="panel-title">
+        <h3>Go-live readiness</h3>
+        <Badge text={data.data?.status ?? "CHECKING"} />
+      </div>
+      {data.error ? (
+        <ErrorBox error={data.error} />
+      ) : data.data ? (
+        <>
+          <Table rows={data.data.checks} />
+          <Warnings warnings={data.data.limits} />
+        </>
+      ) : (
+        <p className="empty">Checking recorded readiness evidence…</p>
+      )}
+      <p className="subtle">
+        Read-only monitoring. No live order entry, activation, liquidation or
+        strategy-promotion controls.
+      </p>
     </section>
   );
 }

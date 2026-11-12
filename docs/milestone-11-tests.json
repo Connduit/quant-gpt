@@ -1,0 +1,19 @@
+{
+  "python_passed": 326,
+  "python_skipped": 7,
+  "optional_real_downloads_passed": 4,
+  "optional_credentials_tests_skipped": 3,
+  "frontend_unit_passed": 5,
+  "browser_passed": 7,
+  "source_sha256": "222f9c5ab72aaf92b5109f472b3ca3106ea0b4afc34a40dd7cce55d1caf4e794",
+  "python_package_build": "passed",
+  "typescript_production_build": "passed",
+  "external_broker_verified": false,
+  "live_enabled": false,
+  "docker_build": "passed; base digests pinned",
+  "container_runtime": "passed; nonroot/read-only/capabilities dropped",
+  "container_mock_recovery": "passed",
+  "container_authentication": "passed; anonymous 401, authenticated 200",
+  "container_image_id": "sha256:a26ca09efe0297e194f2fe027d29c981ec4c5f10c19d117fc374682432116390",
+  "installed_wheel_source_and_account_reconstruction": "passed"
+}

@@ -1,0 +1,25 @@
+{
+  "image_id": "sha256:a26ca09efe0297e194f2fe027d29c981ec4c5f10c19d117fc374682432116390",
+  "user": "10001:10001",
+  "source_sha256": "222f9c5ab72aaf92b5109f472b3ca3106ea0b4afc34a40dd7cce55d1caf4e794",
+  "read_only_runtime": true,
+  "capabilities_dropped": true,
+  "mock_pipeline": {
+    "backup_restore_verified": true,
+    "broker": "mock",
+    "external_broker_verified": false,
+    "live_enabled": false,
+    "mode": "BROKER_SANDBOX",
+    "output": "/app/data/container-demo",
+    "restart_reconciled": true
+  },
+  "anonymous_api_status": 401,
+  "authenticated_api_status": 200,
+  "health_status": "LIMITED",
+  "live_enabled": false,
+  "readiness": "NOT_READY_FOR_LIVE",
+  "frontend_served": true,
+  "external_broker_verified": false,
+  "published_to_registry": false,
+  "container_removed_after_test": true
+}

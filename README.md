@@ -252,3 +252,16 @@ Optuna/MLflow execution and statistical rejection. The real-data engineering run
 used a scripted planner; external LLM integration is unverified. No broker,
 holdout-evaluation, generated-code execution or promotion authority is available.
 See [operation](docs/research-agent.md) and [actual results](docs/milestone-10-results.md).
+
+## Controlled execution and go-live readiness
+
+```bash
+uv run --frozen --all-extras quantlab execution sandbox-demo --output data/execution/NEW_RUN
+uv run --frozen --all-extras quantlab execution readiness
+```
+
+Signed sandbox scopes, durable orders, shared risk, reconciliation, recovery,
+kill controls and deployment artifacts. Current broker verification uses explicit
+mocks: external PAPER access is blocked and no strategies qualify. **Real-money
+execution remains disabled.** See the [readiness report](docs/go-live-readiness.md),
+[execution design](docs/controlled-execution.md) and [deployment guide](docs/production.md).

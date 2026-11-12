@@ -11,7 +11,7 @@ import {
 import type { Point } from "./api";
 export function Badge({ text }: { text: string }) {
   const lower = text.toLowerCase();
-  const cls = /reject|failed|blocked|halt|kill/.test(lower)
+  const cls = /reject|failed|blocked|halt|kill|not_ready/.test(lower)
     ? "danger"
     : /replay|research|synthetic|unverified|insufficient|stale/.test(lower)
       ? "warn"

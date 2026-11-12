@@ -346,6 +346,24 @@ def create_app(
         )
         return {"queued": True, "applied": False, "execution": "SIMULATED"}
 
+    @app.get("/api/v1/execution/readiness")
+    def execution_readiness(assigned=access):
+        from quantlab.execution.readiness import readiness
+
+        return readiness(catalog.workspace)
+
+    @app.get("/api/v1/execution/capabilities")
+    def execution_capabilities(assigned=access):
+        return {
+            "modes": ["BACKTEST", "PAPER", "BROKER_SANDBOX"],
+            "live_enabled": False,
+            "live_controls": False,
+            "broker_adapter": "Alpaca PAPER only",
+            "futures_brokerage": "UNAVAILABLE",
+            "order_entry_api": "UNAVAILABLE",
+            "strategy_promotion_api": "UNAVAILABLE",
+        }
+
     agent_root = catalog.workspace / "data/agent"
 
     @app.get("/api/v1/agent/sessions")

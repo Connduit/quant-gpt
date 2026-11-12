@@ -1,0 +1,10 @@
+# Set secrets outside Git in managed settings or a protected environment file.
+# Only the viewer token is required for the default monitoring deployment.
+QUANTLAB_VIEWER_TOKEN=
+QUANTLAB_OPERATOR_TOKEN=
+# Broker sandbox profile only; use PAPER credentials, never real-money keys.
+QUANTLAB_ALPACA_PAPER_KEY=
+QUANTLAB_ALPACA_PAPER_SECRET=
+QUANTLAB_SANDBOX_AUTHORIZATION_KEY=
+APCA_API_KEY_ID=
+APCA_API_SECRET_KEY=

@@ -56,3 +56,15 @@ test('bounded agent displays actual sessions and rejects unauthorized controls',
  await expect(page.getByRole('status')).toContainText('Role does not authorize');
  await page.screenshot({path:'../docs/dashboard-agent.png',fullPage:true});
 });
+
+test('live readiness is evidence-based and exposes no order controls',async({page})=>{
+ await page.goto('/live');
+ await expect(page.getByRole('heading',{name:'Go-live readiness',exact:true})).toBeVisible();
+ await expect(page.getByText('NOT READY FOR LIVE',{exact:true}).first()).toBeVisible();
+ await expect(page.getByText('research_validation',{exact:true})).toBeVisible();
+ await expect(page.getByText('Real-money execution remains disabled.',{exact:true})).toBeVisible();
+ const response=await page.request.post('/api/v1/execution/orders',{data:{symbol:'SPY',qty:1}});
+ expect([404,405]).toContain(response.status());
+ await expect(page.getByRole('button',{name:/buy|sell|enable live|submit order/i})).toHaveCount(0);
+ await page.screenshot({path:'../docs/dashboard-live-readiness.png',fullPage:true});
+});

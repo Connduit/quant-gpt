@@ -1,0 +1,262 @@
+{
+  "account": {
+    "buying_power": "99999.600",
+    "cash": "99999.600",
+    "equity": "99999.600",
+    "fees": "0.100",
+    "gross": "0",
+    "initial_capital": "100000",
+    "initial_margin": "0",
+    "maintenance_margin": "0",
+    "net": "0",
+    "positions": {},
+    "realized_pnl": "-0.400",
+    "unrealized_pnl": "0",
+    "values": {}
+  },
+  "alerts": [
+    {
+      "at": "2024-06-03T13:30:00+00:00",
+      "code": "sandbox_bootstrap",
+      "detail": "Actual sandbox baseline, never a live account or strategy promotion"
+    },
+    {
+      "at": "2024-06-03T13:30:00+00:00",
+      "code": "broker_reconciled",
+      "detail": "Account cash, positions, open orders and reported executions agree; strategy remains separately gated"
+    },
+    {
+      "at": "2024-06-03T13:30:00+00:00",
+      "code": "sandbox_armed",
+      "detail": "Explicit simulated test operator; not real paper eligibility"
+    },
+    {
+      "at": "2024-06-03T13:30:00+00:00",
+      "code": "execution_suspended",
+      "detail": "uncertain_submission:BrokerUncertain"
+    },
+    {
+      "at": "2024-06-03T13:30:01+00:00",
+      "code": "broker_reconciled",
+      "detail": "Account cash, positions, open orders and reported executions agree; strategy remains separately gated"
+    },
+    {
+      "at": "2024-06-03T13:30:01+00:00",
+      "code": "sandbox_armed",
+      "detail": "Accepted order recovered by client ID; no resubmission"
+    },
+    {
+      "at": "2024-06-03T13:30:02+00:00",
+      "code": "broker_reconciled",
+      "detail": "Account cash, positions, open orders and reported executions agree; strategy remains separately gated"
+    },
+    {
+      "at": "2024-06-03T13:30:02+00:00",
+      "code": "broker_reconciled",
+      "detail": "Account cash, positions, open orders and reported executions agree; strategy remains separately gated"
+    },
+    {
+      "at": "2024-06-03T13:30:02+00:00",
+      "code": "execution_suspended",
+      "detail": "restart_requires_broker_reconciliation"
+    },
+    {
+      "at": "2024-06-03T13:30:03+00:00",
+      "code": "broker_reconciled",
+      "detail": "Account cash, positions, open orders and reported executions agree; strategy remains separately gated"
+    },
+    {
+      "at": "2024-06-03T13:30:03+00:00",
+      "code": "sandbox_armed",
+      "detail": "Operator reviewed fresh data and broker reconciliation after restart"
+    },
+    {
+      "at": "2024-06-03T13:30:04+00:00",
+      "code": "broker_reconciled",
+      "detail": "Account cash, positions, open orders and reported executions agree; strategy remains separately gated"
+    },
+    {
+      "at": "2024-06-03T13:30:04+00:00",
+      "code": "execution_suspended",
+      "detail": "broker_read_failure:BrokerUnavailable"
+    },
+    {
+      "at": "2024-06-03T13:30:06+00:00",
+      "code": "broker_reconciled",
+      "detail": "Account cash, positions, open orders and reported executions agree; strategy remains separately gated"
+    },
+    {
+      "at": "2024-06-03T13:30:06+00:00",
+      "code": "sandbox_armed",
+      "detail": "Explicit operator recovery after simulated outage"
+    },
+    {
+      "at": "2024-06-03T13:30:07+00:00",
+      "code": "broker_reconciled",
+      "detail": "Account cash, positions, open orders and reported executions agree; strategy remains separately gated"
+    },
+    {
+      "at": "2024-06-03T13:30:07+00:00",
+      "code": "execution_suspended",
+      "detail": "global_kill:Verify new-order block and explicit open-order cancellation"
+    },
+    {
+      "at": "2024-06-03T13:30:07+00:00",
+      "code": "broker_reconciled",
+      "detail": "Account cash, positions, open orders and reported executions agree; strategy remains separately gated"
+    }
+  ],
+  "backup_restore_verified": true,
+  "broker": "mock",
+  "connected": true,
+  "duplicate_fill_ignored": true,
+  "eligibility": "SANDBOX_TEST engineering approval is not validated-paper or LIVE eligibility",
+  "execution_mode": "BROKER_SANDBOX",
+  "external_broker_verified": false,
+  "fee_coverage": "Broker-reported activity fees where present; absent fee fields are explicitly unverified; cash reconciliation required",
+  "fills": [
+    {
+      "at": "2024-06-03T13:30:02+00:00",
+      "client_id": "entry",
+      "fee": "0.020",
+      "instrument": "SPY",
+      "price": "100.03",
+      "quantity": 4,
+      "realized_closed_pnl": "0",
+      "strategy": "test"
+    },
+    {
+      "at": "2024-06-03T13:30:04+00:00",
+      "client_id": "entry",
+      "fee": "0.030",
+      "instrument": "SPY",
+      "price": "100.03",
+      "quantity": 6,
+      "realized_closed_pnl": "0",
+      "strategy": "test"
+    },
+    {
+      "at": "2024-06-03T13:30:07+00:00",
+      "client_id": "exit",
+      "fee": "0.050",
+      "instrument": "SPY",
+      "price": "100.00",
+      "quantity": -10,
+      "realized_closed_pnl": "-0.400",
+      "strategy": "test"
+    }
+  ],
+  "final_holdout_accessed": false,
+  "kill_result": {
+    "cancellation_requested": true,
+    "new_orders_stopped": true,
+    "positions_liquidated": false
+  },
+  "killed": true,
+  "limitations": [
+    "Mock broker and synthetic quotes; external Alpaca paper routing remains unverified.",
+    "No research/paper-qualified strategy exists.",
+    "LIVE is disabled; no real-money orders were sent."
+  ],
+  "live_enabled": false,
+  "mock_demonstration": true,
+  "model_monitor": [],
+  "no_profitability_evidence": true,
+  "orders": [
+    {
+      "client_id": "entry",
+      "filled": 10,
+      "instrument": "SPY",
+      "limit": null,
+      "order_type": "market",
+      "quantity": 10,
+      "reason": null,
+      "state": "FILLED",
+      "stop": null,
+      "strategy": "test",
+      "submitted_at": "2024-06-03T13:30:00+00:00",
+      "tif": "day",
+      "triggered_at": null
+    },
+    {
+      "client_id": "exit",
+      "filled": 10,
+      "instrument": "SPY",
+      "limit": null,
+      "order_type": "market",
+      "quantity": -10,
+      "reason": null,
+      "state": "FILLED",
+      "stop": null,
+      "strategy": "test",
+      "submitted_at": "2024-06-03T13:30:06+00:00",
+      "tif": "day",
+      "triggered_at": null
+    },
+    {
+      "client_id": "pending-limit",
+      "filled": 0,
+      "instrument": "SPY",
+      "limit": "99",
+      "order_type": "limit",
+      "quantity": 1,
+      "reason": "broker_status",
+      "state": "CANCELLED",
+      "stop": null,
+      "strategy": "test",
+      "submitted_at": "2024-06-03T13:30:07+00:00",
+      "tif": "day",
+      "triggered_at": null
+    },
+    {
+      "client_id": "after-kill",
+      "filled": 0,
+      "instrument": "SPY",
+      "limit": null,
+      "order_type": "market",
+      "quantity": 1,
+      "reason": "killed_or_disconnected,strategy_not_running",
+      "state": "REJECTED",
+      "stop": null,
+      "strategy": "test",
+      "submitted_at": "2024-06-03T13:30:07+00:00",
+      "tif": "day",
+      "triggered_at": null
+    }
+  ],
+  "outage_recovery_verified": true,
+  "real_market_observations": false,
+  "reconciled": true,
+  "restart_reconciled": true,
+  "risk": {
+    "correlated": 0.7,
+    "daily_loss": 0.02,
+    "drawdown": 0.1,
+    "gross": 0.9,
+    "leverage": 1,
+    "margin": 0.5,
+    "max_contracts": 2,
+    "max_order_notional": 100000,
+    "max_order_units": 100,
+    "max_orders_per_minute": 20,
+    "net": 0.9,
+    "position": 0.35,
+    "stale_seconds": 120,
+    "strategy": 0.6,
+    "strategy_drawdown": 0.1
+  },
+  "source_sha256": "222f9c5ab72aaf92b5109f472b3ca3106ea0b4afc34a40dd7cce55d1caf4e794",
+  "strategies": {
+    "test": {
+      "capital": "100000",
+      "deployment": "SANDBOX_TEST",
+      "execution": "PAUSED",
+      "model_hash": null,
+      "peak": "100000",
+      "validation_status": "TEST_ONLY_NOT_VALIDATED",
+      "version": "test-only-v1"
+    }
+  },
+  "uncertain_order_recovered_without_resubmit": true,
+  "uncertain_orders": []
+}
