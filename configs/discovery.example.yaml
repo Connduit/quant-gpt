@@ -1,0 +1,115 @@
+# Recorded run configuration; generate inputs with examples/discovery_demo.py.
+study:
+  name: lean_factor_proxy_discovery
+  hypothesis: Test whether bounded causal feature/model/ranking variants beat SPY
+    and simpler baselines after costs.
+  experiment: ../data/discovery-real-verified-inputs/discovery-research.yaml
+  seed: 42
+  max_trials: 4
+  max_wall_seconds: 900
+resources:
+  workers: 2
+  cpu_threads: 1
+  memory_mb: 4096
+  trial_wall_seconds: 180
+  trial_cpu_seconds: 120
+  max_attempts: 2
+search:
+  feature_sets:
+    momentum_volume:
+    - momentum
+    - volume
+    - relative_strength
+    reversion_regime:
+    - mean_reversion
+    - volatility
+    - market_regime
+    technical:
+    - technical
+    - market_regime
+  targets:
+  - excess_return
+  - stock_return
+  - direction
+  - volatility
+  horizons:
+  - 1
+  - 5
+  - 10
+  models:
+    ridge:
+      alpha:
+        type: float
+        low: 0.1
+        high: 20
+        log: true
+    logistic:
+      C:
+        type: float
+        low: 0.1
+        high: 10
+        log: true
+    random_forest:
+      n_estimators:
+        type: int
+        low: 8
+        high: 16
+        step: 4
+      max_depth:
+        type: int
+        low: 2
+        high: 4
+    lightgbm:
+      n_estimators:
+        type: int
+        low: 8
+        high: 16
+        step: 4
+      num_leaves:
+        type: int
+        low: 4
+        high: 8
+    xgboost:
+      n_estimators:
+        type: int
+        low: 8
+        high: 16
+        step: 4
+      max_depth:
+        type: int
+        low: 2
+        high: 4
+  strategy:
+    top_n:
+      type: categorical
+      choices:
+      - 2
+      - 3
+    rebalance_sessions:
+      type: categorical
+      choices:
+      - 5
+      - 10
+    position_sizing:
+      type: categorical
+      choices:
+      - equal
+      - inverse_volatility
+    volatility_adjusted:
+      type: categorical
+      choices:
+      - false
+      - true
+    regime_filter:
+      type: categorical
+      choices:
+      - false
+      - true
+cost_multipliers:
+- 2
+robustness:
+  top_k: 1
+  max_variants: 6
+  include_rejected_for_diagnostics: true
+  parameter_fraction: 0.2
+  window_fraction: 0.2

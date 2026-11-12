@@ -1,8 +1,8 @@
 # Quant Research Lab
 
 CPU-compatible historical US equities infrastructure and daily event-driven
-backtesting, causal features and CPU machine learning research. Milestones 1–3
-are implemented; automated strategy discovery and broker execution are not.
+backtesting, causal features and CPU machine learning research. Milestones 1–4
+are implemented, including bounded automated strategy discovery.
 
 The [complete project blueprint and roadmap](docs/blueprint.md) preserves the
 original specification, including all core capabilities, market phases and ten
@@ -19,7 +19,7 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/getting-started/install
 From the checkout root:
 
 ```bash
-uv sync --frozen --extra dev --extra ml
+uv sync --frozen --all-extras
 uv run --frozen pytest -q
 uv run --frozen ruff check src tests examples
 ```
@@ -160,3 +160,18 @@ Corporate actions, delistings, historical universes and verified unadjusted
 execution prices are not included. Vendor adjustment semantics are recorded as
 unspecified, never assumed suitable for execution. Neither fixture data nor
 vendor downloads establish a profitable strategy.
+
+## Automated strategy discovery
+
+```bash
+uv run --frozen --all-extras python examples/discovery_demo.py --allow-factor-proxy
+```
+
+Runs a bounded real historical example with Optuna, local MLflow, immutable
+experiment records, CPU resource limits, rejection rules and robustness diagnostics.
+The recorded run used seven stocks plus SPY, four trials and six diagnostics;
+zero strategies qualified and the 2019 holdout stayed untouched. The explicitly
+selected factor-file alternative has incomplete corporate-action coverage and
+unknown payment dates. See the [discovery guide](docs/discovery.md),
+[results](docs/milestone-4-results.md) and [snapshot manifest](docs/milestone-4-datasets.json).
+Milestone 5 has not started.

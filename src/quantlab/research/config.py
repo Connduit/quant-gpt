@@ -23,6 +23,10 @@ class RankingConfig:
     cash_allocation: float = 0.2
     regime_filter: bool = False
     minimum_market_trend: float = 0
+    minimum_prediction: float | None = None
+    volatility_adjusted: bool = False
+    position_sizing: str = "equal"
+    lower_is_better: bool = False
 
     def __post_init__(self):
         if any(
@@ -37,6 +41,12 @@ class RankingConfig:
             raise ValueError("Ranking limits must be finite")
         if type(self.regime_filter) is not bool:
             raise ValueError("regime_filter must be boolean")
+        if type(self.volatility_adjusted) is not bool or type(self.lower_is_better) is not bool:
+            raise ValueError("Ranking switches must be booleans")
+        if self.minimum_prediction is not None and not math.isfinite(self.minimum_prediction):
+            raise ValueError("Prediction threshold must be finite")
+        if self.position_sizing not in ("equal", "inverse_volatility"):
+            raise ValueError("Unsupported position sizing")
         if (
             type(self.top_n) is not int
             or self.top_n < 1

@@ -1,0 +1,162 @@
+{
+  "commit": "655ac6d475ad8539ff54583a26327e63b59c5703",
+  "independent_crosscheck": {
+    "fraction_within_one_cent": 0.9980237154150198,
+    "maximum_close_error": 0.020002000000005182,
+    "median_close_error": 1.9999999949504854e-06,
+    "overlapping_sessions": 506,
+    "scope": "AAPL price-level check only; no full-universe or corporate-event certification",
+    "sha256": "24c7604edfd5afe862ddb9f9535e2fd7351f43711bfc442bca52055e15e37bcd",
+    "url": "https://raw.githubusercontent.com/plotly/datasets/0c447c47b757ad74edecab31f0d72f849d2e67c2/finance-charts-apple.csv"
+  },
+  "limitations": [
+    "Corporate-event completeness is not certified; supplied factor changes are represented.",
+    "Distributions are reconstructed from rounded factors, not authoritative dividend records.",
+    "Unknown payment dates stay null; distributions remain non-spendable receivables.",
+    "Non-cash distributions may be cash-equivalent proxies; this is not full action coverage."
+  ],
+  "provider": "quantconnect-lean-archive",
+  "quality": {
+    "AAPL": {
+      "end": "2019-12-31",
+      "factor_file_brackets_interval": true,
+      "factor_rows": 41,
+      "full_corporate_action_certification": false,
+      "rows": 1447,
+      "sectors": "technology",
+      "split_checks": [
+        {
+          "date": "2014-06-09",
+          "price_jump_over_split": 0.9949755714131591,
+          "ratio": "7"
+        }
+      ],
+      "start": "2014-04-03"
+    },
+    "AIG": {
+      "end": "2019-12-31",
+      "factor_file_brackets_interval": true,
+      "factor_rows": 81,
+      "full_corporate_action_certification": false,
+      "rows": 1447,
+      "sectors": "financials",
+      "split_checks": [],
+      "start": "2014-04-03"
+    },
+    "BAC": {
+      "end": "2019-12-31",
+      "factor_file_brackets_interval": true,
+      "factor_rows": 96,
+      "full_corporate_action_certification": false,
+      "rows": 1447,
+      "sectors": "financials",
+      "split_checks": [],
+      "start": "2014-04-03"
+    },
+    "FB": {
+      "end": "2019-12-31",
+      "factor_file_brackets_interval": true,
+      "factor_rows": 2,
+      "full_corporate_action_certification": false,
+      "rows": 1447,
+      "sectors": "communications",
+      "split_checks": [],
+      "start": "2014-04-03"
+    },
+    "GOOGL": {
+      "end": "2019-12-31",
+      "factor_file_brackets_interval": true,
+      "factor_rows": 3,
+      "full_corporate_action_certification": false,
+      "rows": 1447,
+      "sectors": "communications",
+      "split_checks": [],
+      "start": "2014-04-03"
+    },
+    "IBM": {
+      "end": "2019-12-31",
+      "factor_file_brackets_interval": true,
+      "factor_rows": 96,
+      "full_corporate_action_certification": false,
+      "rows": 1447,
+      "sectors": "technology",
+      "split_checks": [],
+      "start": "2014-04-03"
+    },
+    "SPY": {
+      "end": "2019-12-31",
+      "factor_file_brackets_interval": true,
+      "factor_rows": 96,
+      "full_corporate_action_certification": false,
+      "rows": 1447,
+      "sectors": "benchmark",
+      "split_checks": [],
+      "start": "2014-04-03"
+    },
+    "WM": {
+      "end": "2019-12-31",
+      "factor_file_brackets_interval": true,
+      "factor_rows": 78,
+      "full_corporate_action_certification": false,
+      "rows": 1447,
+      "sectors": "industrials",
+      "split_checks": [],
+      "start": "2014-04-03"
+    }
+  },
+  "raw_price_evidence": "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/readme.md; raw reader and split checks",
+  "snapshots": {
+    "AAPL": {
+      "actions": "../data/discovery-real-verified-inputs/actions/AAPL.json",
+      "snapshot_id": "ad854461f6866f2e42ce5203a4c242bb99470df20757c715659b854d5f40e734"
+    },
+    "AIG": {
+      "actions": "../data/discovery-real-verified-inputs/actions/AIG.json",
+      "snapshot_id": "da78fae98a0d86ef309e8b862caf075846936fdfb6b24c9617cf71d5acfc8be1"
+    },
+    "BAC": {
+      "actions": "../data/discovery-real-verified-inputs/actions/BAC.json",
+      "snapshot_id": "064241dfdedba220a0735e8fd2752436525cd418befc18b56c751642dd09770b"
+    },
+    "FB": {
+      "actions": "../data/discovery-real-verified-inputs/actions/FB.json",
+      "snapshot_id": "e78ae9e79045d5dcfecc8bafd048d313d5fee313cef9457bdfd5759855b29200"
+    },
+    "GOOGL": {
+      "actions": "../data/discovery-real-verified-inputs/actions/GOOGL.json",
+      "snapshot_id": "91e8cda22decaf2796d535773d72f59183fa6c4c5b6c1fd57a9fa508c3fd0836"
+    },
+    "IBM": {
+      "actions": "../data/discovery-real-verified-inputs/actions/IBM.json",
+      "snapshot_id": "15c1fc59a93866d65abc95cb9740cdf1bb4b048d666212c302456a46e4bd3e38"
+    },
+    "SPY": {
+      "actions": "../data/discovery-real-verified-inputs/actions/SPY.json",
+      "snapshot_id": "ee1510cdef56624df8cc1db20ee47b2479fabb5efb775304b78e68a43b197cbe"
+    },
+    "WM": {
+      "actions": "../data/discovery-real-verified-inputs/actions/WM.json",
+      "snapshot_id": "74efa59c009431779a8fa33c50edb957e25ad6ea43344c48db7f8e666a2aad7d"
+    }
+  },
+  "source_hashes": {
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/daily/aapl.zip": "a6f609711a1f550252f95a4edfaa5ac2c6dd75ca9a1fbbb417e853d1516831fe",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/daily/aig.zip": "9e194e786d9104af09799559972a883113c36e2a550093d20ac1df0a30df884b",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/daily/bac.zip": "29224f2b8e9b03bd0c4a1c9c937b33c78e5baf82eb3b5f8e86e05bf28f196cdb",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/daily/fb.zip": "f5460863c901d976937ed7dae3770052bb593b88d947f91c0d93d0b5851fb8db",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/daily/googl.zip": "3d73949ec53ba46878e94956550f2e25eeb315b1f0ecb492d883e6c2ae9f847c",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/daily/ibm.zip": "dbc2eb8db4793506612cdc2426047e35fb170f97271d05760b7faf418c63127e",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/daily/spy.zip": "aaa1febad0cb8f91011212c92ff7caac6d4d6415a3b7f73c4b98c438db4274ad",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/daily/wm.zip": "dda1178f64d42010c2c9c7033557eb1644e960fe72adc76e7ec7a759a78b1a2d",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/factor_files/aapl.csv": "86f7f2508a11259dfbb53b2f81fc8e711c8a4b97a9ee599b661079a9566801c9",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/factor_files/aig.csv": "1bd3b9e896fee271e9a7af9b4826da3fc6a8ff21661e211047a173ffcd6801e3",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/factor_files/bac.csv": "2c6be614492df18bcaf40cb1b63feeaab55bed1e43cf1f090d492e2c4420b465",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/factor_files/fb.csv": "8429d224cd0495ce11b9b96f747fe07752025d4ee7a99eaea4bbf3e276f6b13d",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/factor_files/googl.csv": "29a555a7d0c0f55032b0ff715cc071c9e7ead9fdf5eeb51fd60342613b90f02f",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/factor_files/ibm.csv": "8a310e86aca164304e93596ca919ec413fc3a11d3aefa0c0c2edf1e6feffbc5a",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/factor_files/spy.csv": "ad53e292de2e7076ff36721e1dcffd1db0d04fe6813b59aeece8620fb0d4cec1",
+    "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/factor_files/wm.csv": "82ecf99c3656e96675a0c9e3cfc28a440afd2aeeb60e71d8e28eebbd39e9d61d"
+  },
+  "unavailable_preference": "Archive lacks 10-20 suitable distinct stock histories; seven stocks selected across four sectors.",
+  "universe_bias": "Fixed archive survivors/share classes; not an unbiased universe."
+}

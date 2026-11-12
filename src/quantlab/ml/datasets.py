@@ -16,6 +16,8 @@ class Dataset:
 
 
 def available_history(feed: DailyData, index: int, prediction_at):
+    if feed.bars[index].available_at > prediction_at:
+        raise ValueError("Unavailable bar in feature history")
     history = []
     splits = [
         s
@@ -23,6 +25,8 @@ def available_history(feed: DailyData, index: int, prediction_at):
         if s.date <= prediction_at.astimezone(feed.bars[0].open_time.tzinfo).date()
         and any(b.session_date == s.date and b.open_time <= prediction_at for b in feed.bars)
     ]
+    if not splits:
+        return feed.bars[: index + 1]
     for bar in feed.bars[: index + 1]:
         if bar.available_at > prediction_at:
             raise ValueError("Unavailable bar in feature history")
@@ -31,7 +35,9 @@ def available_history(feed: DailyData, index: int, prediction_at):
             if split.date > bar.session_date:
                 ratio *= split.ratio
         history.append(
-            replace(
+            bar
+            if ratio == 1
+            else replace(
                 bar,
                 open=bar.open / ratio,
                 high=bar.high / ratio,
@@ -64,6 +70,9 @@ def build_dataset(
     horizon: int = 5,
     features: FeatureConfig | None = None,
     sectors: dict[str, str] | None = None,
+    *,
+    development_only: bool = False,
+    feature_cache: dict | None = None,
 ) -> Dataset:
     features = features or FeatureConfig()
     if type(horizon) is not int or horizon not in (1, 5, 10):
@@ -82,7 +91,12 @@ def build_dataset(
     if sectors and (set(sectors) != set(universe) or set(sectors.values()) - set(feeds)):
         raise ValueError("Sector context must cover every ticker with supplied ETF snapshots")
     reference = feeds[benchmark].bars
-    if not reference[0].session_date < holdout_start <= reference[-1].session_date:
+    if development_only:
+        if reference[-1].session_date >= holdout_start or any(
+            d.manifest["provider"] != "discovery-development" for d in feeds.values()
+        ):
+            raise ValueError("Discovery requires sealed pre-holdout development prefixes")
+    elif not reference[0].session_date < holdout_start <= reference[-1].session_date:
         raise ValueError("Reserve a final holdout inside the supplied history")
     names = tuple(definitions(features, bool(sectors)))
     opens = [bar.open_time for bar in reference]
@@ -97,17 +111,24 @@ def build_dataset(
         if end >= len(reference) or reference[end].session_date >= holdout_start:
             holdout_purged += 1
             continue
-        histories = {
-            symbol: available_history(feed, i, prediction_at) for symbol, feed in feeds.items()
-        }
+        histories = None
         benchmark_return = forward_return(feeds[benchmark], entry, end)
         for symbol in universe:
-            values = calculate(
-                histories[symbol],
-                histories[benchmark],
-                features,
-                histories[sectors[symbol]] if sectors else None,
-            )
+            key = (symbol, reference[i].session_date, prediction_at)
+            values = feature_cache.get(key) if feature_cache is not None else None
+            if values is None:
+                if histories is None:
+                    histories = {
+                        s: available_history(d, i, prediction_at) for s, d in feeds.items()
+                    }
+                values = calculate(
+                    histories[symbol],
+                    histories[benchmark],
+                    features,
+                    histories[sectors[symbol]] if sectors else None,
+                )
+                if feature_cache is not None:
+                    feature_cache[key] = values
             if any(value is None for value in values.values()):
                 missing += 1
                 continue

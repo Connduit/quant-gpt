@@ -1,0 +1,59 @@
+# Recorded snapshot IDs; retained input directory required.
+experiment:
+  name: bounded_discovery_input
+  primary_model: ridge
+data:
+  data_dir: ../data/discovery-real-verified-inputs
+  snapshots:
+    AAPL:
+      snapshot_id: ad854461f6866f2e42ce5203a4c242bb99470df20757c715659b854d5f40e734
+      actions: ../data/discovery-real-verified-inputs/actions/AAPL.json
+    AIG:
+      snapshot_id: da78fae98a0d86ef309e8b862caf075846936fdfb6b24c9617cf71d5acfc8be1
+      actions: ../data/discovery-real-verified-inputs/actions/AIG.json
+    BAC:
+      snapshot_id: 064241dfdedba220a0735e8fd2752436525cd418befc18b56c751642dd09770b
+      actions: ../data/discovery-real-verified-inputs/actions/BAC.json
+    FB:
+      snapshot_id: e78ae9e79045d5dcfecc8bafd048d313d5fee313cef9457bdfd5759855b29200
+      actions: ../data/discovery-real-verified-inputs/actions/FB.json
+    GOOGL:
+      snapshot_id: 91e8cda22decaf2796d535773d72f59183fa6c4c5b6c1fd57a9fa508c3fd0836
+      actions: ../data/discovery-real-verified-inputs/actions/GOOGL.json
+    IBM:
+      snapshot_id: 15c1fc59a93866d65abc95cb9740cdf1bb4b048d666212c302456a46e4bd3e38
+      actions: ../data/discovery-real-verified-inputs/actions/IBM.json
+    WM:
+      snapshot_id: 74efa59c009431779a8fa33c50edb957e25ad6ea43344c48db7f8e666a2aad7d
+      actions: ../data/discovery-real-verified-inputs/actions/WM.json
+    SPY:
+      snapshot_id: ee1510cdef56624df8cc1db20ee47b2479fabb5efb775304b78e68a43b197cbe
+      actions: ../data/discovery-real-verified-inputs/actions/SPY.json
+  benchmark: SPY
+  universe:
+  - AAPL
+  - AIG
+  - BAC
+  - FB
+  - GOOGL
+  - IBM
+  - WM
+  prediction_horizon: 5
+  holdout_start: '2019-01-02'
+models:
+- type: ridge
+validation:
+  training_sessions: 504
+  validation_sessions: 126
+  test_sessions: 126
+  embargo_sessions: 1
+strategy:
+  top_n: 3
+  cash_allocation: 0.2
+  maximum_position_weight: 0.3
+  minimum_dollar_volume: 1000000.0
+execution:
+  initial_cash: '100000'
+  commission_per_share: '.005'
+  slippage_bps: 5
+  spread_bps: 2

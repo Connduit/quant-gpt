@@ -106,10 +106,11 @@ def _replay(data, strategy, config):
                 ex_time = by_date[dividend.ex_date].open_time
                 payload = (symbol, dividend_id, dividend)
                 schedule(ex_time, 1, "dividend_ex", payload)
-                pay_time = datetime.combine(
-                    dividend.pay_date, time(), ZoneInfo("America/New_York")
-                ).astimezone(UTC)
-                schedule(max(pay_time, ex_time), 2, "dividend_pay", payload)
+                if dividend.pay_date is not None:
+                    pay_time = datetime.combine(
+                        dividend.pay_date, time(), ZoneInfo("America/New_York")
+                    ).astimezone(UTC)
+                    schedule(max(pay_time, ex_time), 2, "dividend_pay", payload)
                 dividend_id += 1
 
     def rebase(bar, ratio):

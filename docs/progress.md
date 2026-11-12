@@ -11,7 +11,7 @@ additional markets) and the blueprint's 12 core capabilities are separate concep
 | 1 — Foundation and historical data infrastructure | Implemented and audited; original 47 tests preserved. Real Stooq connectivity remains unverified in this cloud environment; raw CSV import now available. |
 | 2 — Event-driven backtesting | Implemented for daily one-instrument long-only USD cash equities, with action accounting, causal replay, baseline strategies, benchmark and exports. See verification below. |
 | 3 — Feature engineering and ML | Implemented: 46 default causal features, execution-aligned targets, purged walk-forward folds, five CPU model families, OOS ranking portfolios, comparisons and exports. See verification below. |
-| 4 — Automated strategy discovery | Not started. |
+| 4 — Automated strategy discovery | Implemented: bounded Optuna search, local MLflow, immutable registry, resource isolation, eligibility and robustness. See results below. |
 | 5 — Statistical validation | Not started as a full subsystem. Essential causal/timing safeguards are already enforced in Milestone 2. |
 | 6 — Portfolio construction and risk management | Not started. Milestone 2 enforces only its cash/long-only account constraints. |
 | 7 — Futures research | Not started. |
@@ -73,8 +73,8 @@ appropriate real raw-price/action dataset was available for a real-data integrat
 demonstration. Supplied static universes can have survivorship bias; source data
 is not independently certified point-in-time.
 
-Milestone 4 remains **unstarted**. After user review, discovery work will require
-bounded Optuna searches, MLflow/experiment registries, hypothesis/variant tracking,
-resource budgets and isolation, model/dataset lineage, explicit selection rules,
-and protection against repeatedly examining reserved holdouts. Advanced statistical
-significance and multiple-testing controls remain Milestone 5 responsibilities.
+## Milestone 4 verification and scope
+
+The [full instructions](milestone-4-instructions.md) and [data requirements](milestone-4-data-instructions.md) are preserved. The [discovery guide](discovery.md) explains the implementation; [recorded results](milestone-4-results.md) and [dataset manifest](milestone-4-datasets.json) document the real run.
+
+**170 tests passed**, preserving all prior tests. Lint, formatting and package builds passed. Four optimizer trials and six diagnostic variants ran on seven historical stocks plus SPY (2014–2019); zero candidates qualified. The final 252 sessions in 2019 remained inaccessible to trials. Explicit factor-file proxies have incomplete corporate-action coverage and unknown payment dates; this is not a fully corporate-action-aware demonstration. Milestone 5 remains unstarted.

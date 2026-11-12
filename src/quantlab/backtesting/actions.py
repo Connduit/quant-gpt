@@ -23,12 +23,12 @@ class Split:
 @dataclass(frozen=True)
 class Dividend:
     ex_date: date
-    pay_date: date
+    pay_date: date | None
     amount: Decimal
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "amount", decimal(self.amount))
-        if self.amount < 0 or self.pay_date < self.ex_date:
+        if self.amount < 0 or self.pay_date is not None and self.pay_date < self.ex_date:
             raise ValueError("Dividend must be nonnegative with pay date on/after ex date")
 
 
@@ -41,12 +41,28 @@ class CorporateActions:
     splits: tuple[Split, ...] = ()
     dividends: tuple[Dividend, ...] = ()
     complete: bool = True
+    coverage_method: str = "provided_events"
+    limitations: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.source.strip() or self.coverage_start > self.coverage_end:
             raise ValueError("Corporate actions require a source and valid coverage dates")
-        if self.complete is not True:
+        if self.coverage_method not in ("provided_events", "factor_file_proxy"):
+            raise ValueError("Unsupported action coverage method")
+        if self.complete is not True and not (
+            self.complete is False
+            and self.coverage_method == "factor_file_proxy"
+            and self.limitations
+        ):
             raise ValueError("Corporate-action coverage must be explicitly complete")
+        if self.coverage_method == "factor_file_proxy" and self.complete:
+            raise ValueError(
+                "Factor-file proxies cannot claim independently complete event coverage"
+            )
+        if self.coverage_method == "provided_events" and any(
+            d.pay_date is None for d in self.dividends
+        ):
+            raise ValueError("Unknown pay dates require an explicit factor-file alternative")
         dates = [a.date for a in self.splits]
         dividend_keys = [(a.ex_date, a.pay_date, a.amount) for a in self.dividends]
         if len(set(dates)) != len(dates) or len(set(dividend_keys)) != len(dividend_keys):
@@ -67,7 +83,10 @@ class CorporateActions:
             "splits",
             "dividends",
         }
-        if set(values) != expected:
+        if not expected <= set(values) or set(values) - expected - {
+            "coverage_method",
+            "limitations",
+        }:
             raise ValueError(f"Action ledger must contain exactly: {', '.join(sorted(expected))}")
         try:
             if any(set(a) != {"date", "ratio"} for a in values["splits"]):
@@ -86,12 +105,14 @@ class CorporateActions:
                 tuple(
                     Dividend(
                         date.fromisoformat(a["ex_date"]),
-                        date.fromisoformat(a["pay_date"]),
+                        date.fromisoformat(a["pay_date"]) if a["pay_date"] is not None else None,
                         decimal(a["amount"]),
                     )
                     for a in values["dividends"]
                 ),
                 values["complete"],
+                values.get("coverage_method", "provided_events"),
+                tuple(values.get("limitations", [])),
             )
         except KeyError as exc:
             raise ValueError(f"Missing corporate-action field: {exc}") from exc

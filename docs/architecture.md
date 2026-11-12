@@ -51,3 +51,13 @@ statistical validation explicitly; baseline timing safeguards are enforced now.
 
 Milestone 4 is not started. No automated hypothesis search, Optuna optimization,
 MLflow service, broker or unrestricted research agent has been introduced.
+
+## Milestone 4 discovery
+
+`discovery/` adds bounded configuration, sealed development-only data, transactional
+experiment identities/attempts, local MLflow tracking, persistent Optuna searches,
+resource-limited subprocess workers, eligibility scoring, separate robustness
+variants and reports. The parent excludes final holdout data before launching
+workers. Existing ML and execution modules remain the evaluation foundation.
+The LEAN provider supports an explicitly incomplete factor-file alternative with
+unknown distribution payment dates. See [discovery](discovery.md) for boundaries.

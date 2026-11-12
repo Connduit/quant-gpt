@@ -67,6 +67,29 @@ def parser() -> argparse.ArgumentParser:
     research.add_argument(
         "--output", type=Path, required=True, help="New research report directory"
     )
+    discovery = commands.add_parser("discovery", help="Bounded strategy discovery")
+    sub = discovery.add_subparsers(dest="discovery_command", required=True)
+    for name in (
+        "run",
+        "batch",
+        "study",
+        "resume",
+        "list",
+        "compare",
+        "reproduce",
+        "report",
+        "rejected",
+    ):
+        command = sub.add_parser(name)
+        command.add_argument("--root", type=Path, required=True)
+        if name in ("run", "batch", "study", "resume", "reproduce"):
+            command.add_argument("--study", type=Path, required=True)
+        if name == "run":
+            command.add_argument("--parameters", type=Path)
+        if name == "batch":
+            command.add_argument("--parameters", type=Path, nargs="+", required=True)
+        if name == "reproduce":
+            command.add_argument("attempt_id")
     return result
 
 
@@ -77,7 +100,13 @@ def main(argv: list[str] | None = None) -> int:
         settings = load_settings(args.config)
         configure_logging(settings.log_level)
         store = SnapshotStore(args.data_dir or settings.data_dir)
-        if args.command in ("download", "import-csv"):
+        if args.command == "discovery":
+            try:
+                from quantlab.discovery.cli import execute
+            except ImportError as exc:
+                raise ValueError("Install discovery dependencies: uv sync --all-extras") from exc
+            return execute(args)
+        elif args.command in ("download", "import-csv"):
             if args.command == "import-csv":
                 from quantlab.data.providers.csv import CsvProvider
 

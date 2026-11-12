@@ -120,7 +120,7 @@ def export_report(
                 "Synthetic test data."
                 if result.metadata["synthetic"]
                 else (
-                    "Caller-declared raw prices and complete actions; not independently verified."
+                    "Caller-declared raw prices; review action coverage and payment-date limits."
                 ),
                 "Full market fills at next eligible open; no volume/queue/latency model.",
                 "Fractional shares allowed; no taxes, interest, FX, borrow or cash-in-lieu.",
