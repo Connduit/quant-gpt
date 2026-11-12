@@ -70,9 +70,10 @@ and redistribution terms before using or sharing downloads. Rate limits,
 unavailable symbols, CAPTCHA responses and source changes produce errors,
 never a silent fixture fallback. There are no automatic retries.
 
-**Cloud access:** HTTPS to `stooq.com` must be permitted. The initial onboarding
-request was blocked by the proxy; real downloads have not been verified here.
-Offline and mocked HTTP tests do not need that access.
+**Cloud access:** Stooq remains blocked by the enforced proxy allowlist. The
+working `lean` fallback has verified real HTTPS downloads and immutable snapshots
+for SPY and seven stocks. See [connectivity evidence, integration tests and data
+limitations](docs/market-data-verification.md). Offline tests need no network.
 
 ## Configuration
 

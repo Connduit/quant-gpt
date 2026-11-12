@@ -1,0 +1,35 @@
+{
+  "environment": {
+    "HTTPS_PROXY": "http://proxy:8080",
+    "HTTP_PROXY": "http://proxy:8080",
+    "https_proxy": "http://proxy:8080",
+    "http_proxy": "http://proxy:8080",
+    "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
+    "SSL_CERT_DIR": null,
+    "REQUESTS_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
+    "QUANTLAB_PROVIDER": null,
+    "QUANTLAB_DATA_DIR": null,
+    "QUANTLAB_TIMEOUT_SECONDS": null
+  },
+  "stooq": {
+    "error_type": "ProxyError",
+    "error": "403 Forbidden"
+  },
+  "lean": {
+    "url": "https://raw.githubusercontent.com/QuantConnect/Lean/655ac6d475ad8539ff54583a26327e63b59c5703/Data/equity/usa/daily/spy.zip",
+    "status": 200,
+    "headers": {
+      "content-type": "application/zip",
+      "server": "envoy"
+    },
+    "error_body": null,
+    "bytes": 103363
+  },
+  "checked_at_utc": "2026-11-12",
+  "runtime_policy": {
+    "observations_current": true,
+    "state": "enforced",
+    "stooq_allowlisted": false,
+    "raw_github_allowlisted": true
+  }
+}

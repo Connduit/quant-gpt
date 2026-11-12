@@ -25,7 +25,7 @@ def parser() -> argparse.ArgumentParser:
     download.add_argument("symbol")
     download.add_argument("--start", type=date.fromisoformat, required=True)
     download.add_argument("--end", type=date.fromisoformat, required=True)
-    download.add_argument("--provider", choices=["stooq", "fixture"])
+    download.add_argument("--provider", choices=["stooq", "fixture", "lean"])
     download.add_argument("--refresh", action="store_true", help="Fetch a new vendor revision")
     download.add_argument("--extend", help="Append new sessions to this parent snapshot")
     imported = commands.add_parser(
@@ -114,8 +114,12 @@ def main(argv: list[str] | None = None) -> int:
                 refresh, extend = True, None
             else:
                 provider_name = args.provider or settings.provider
+                from quantlab.data.providers.lean import LeanProvider
+
                 provider = (
-                    FixtureProvider()
+                    LeanProvider(timeout=settings.timeout_seconds)
+                    if provider_name == "lean"
+                    else FixtureProvider()
                     if provider_name == "fixture"
                     else StooqProvider(settings.timeout_seconds)
                 )

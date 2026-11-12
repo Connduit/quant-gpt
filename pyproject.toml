@@ -29,6 +29,7 @@ packages = ["src/quantlab"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["live: opt-in real HTTPS provider integration (QUANTLAB_LIVE_PROVIDERS=1)"]
 
 [tool.ruff]
 target-version = "py312"

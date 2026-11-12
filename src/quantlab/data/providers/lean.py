@@ -14,7 +14,13 @@ import httpx
 
 from quantlab.backtesting.actions import CorporateActions, Dividend, Split
 from quantlab.backtesting.report import dumps
-from quantlab.data.providers.base import DataRequest, Download, ProviderError
+from quantlab.data.providers.base import (
+    DataRequest,
+    Download,
+    ProviderError,
+    ProviderHTTPError,
+    ProviderNetworkError,
+)
 from quantlab.data.storage import SnapshotStore
 from quantlab.data.validation import normalize_daily
 
@@ -52,9 +58,13 @@ class LeanProvider:
             with httpx.Client(timeout=self.timeout, transport=self.transport) as client:
                 response = client.get(url)
                 response.raise_for_status()
-        except httpx.HTTPError as exc:
-            raise ProviderError(
-                f"LEAN archive request failed: {path} ({type(exc).__name__})"
+        except httpx.HTTPStatusError as exc:
+            raise ProviderHTTPError(
+                f"LEAN archive HTTP status {exc.response.status_code}: {path}"
+            ) from exc
+        except httpx.RequestError as exc:
+            raise ProviderNetworkError(
+                f"LEAN archive network request failed: {path} ({type(exc).__name__})"
             ) from exc
         self.evidence[url] = hashlib.sha256(response.content).hexdigest()
         self.payloads[path] = response.content

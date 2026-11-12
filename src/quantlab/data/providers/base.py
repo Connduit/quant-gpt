@@ -40,3 +40,11 @@ class HistoricalProvider(Protocol):
     name: str
 
     def fetch(self, request: DataRequest) -> Download: ...
+
+
+class ProviderNetworkError(ProviderError):
+    """Transport/proxy/TLS failure, distinct from invalid downloaded data."""
+
+
+class ProviderHTTPError(ProviderError):
+    """HTTP response failure; status retained without exposing credentials."""

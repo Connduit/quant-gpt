@@ -2,7 +2,13 @@
 
 import httpx
 
-from quantlab.data.providers.base import DataRequest, Download, ProviderError
+from quantlab.data.providers.base import (
+    DataRequest,
+    Download,
+    ProviderError,
+    ProviderHTTPError,
+    ProviderNetworkError,
+)
 
 
 class StooqProvider:
@@ -24,8 +30,15 @@ class StooqProvider:
             with httpx.Client(timeout=self.timeout_seconds, transport=self.transport) as client:
                 response = client.get("https://stooq.com/q/d/l/", params=params)
                 response.raise_for_status()
-        except httpx.HTTPError as exc:
-            raise ProviderError(f"Stooq request failed ({type(exc).__name__})") from exc
+        except httpx.HTTPStatusError as exc:
+            raise ProviderHTTPError(
+                f"Stooq HTTP status {exc.response.status_code}; check provider/access policy"
+            ) from exc
+        except httpx.RequestError as exc:
+            raise ProviderNetworkError(
+                f"Stooq network request failed ({type(exc).__name__}); "
+                "check proxy allowlist, connectivity and CA trust"
+            ) from exc
         raw = response.content
         if not raw.lstrip().startswith(b"Date,Open,High,Low,Close,Volume"):
             raise ProviderError("Stooq returned no CSV data; check symbol, dates or source access")

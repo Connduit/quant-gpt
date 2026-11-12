@@ -38,8 +38,8 @@ def load_settings(path: Path | None = None) -> Settings:
         root = Path.cwd() if "QUANTLAB_DATA_DIR" in os.environ else base
         data_dir = root / data_dir
     provider = values.get("provider", "stooq")
-    if provider not in ("stooq", "fixture"):
-        raise ValueError("provider must be stooq or fixture")
+    if provider not in ("stooq", "fixture", "lean"):
+        raise ValueError("provider must be stooq, fixture or lean")
     timeout = float(values.get("timeout_seconds", 30))
     if not math.isfinite(timeout) or not 0 < timeout <= 300:
         raise ValueError("timeout_seconds must be between 0 and 300")
