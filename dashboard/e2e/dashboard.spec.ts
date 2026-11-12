@@ -43,3 +43,16 @@ test('mobile navigation remains keyboard accessible',async({page})=>{
  await page.getByRole('link',{name:'System health',exact:true}).click();
  await expect(page.getByRole('heading',{name:'System health',exact:true})).toBeVisible();
 });
+
+test('bounded agent displays actual sessions and rejects unauthorized controls',async({page})=>{
+ await page.goto('/agent');
+ await expect(page.getByRole('heading',{name:'Bounded research agent',exact:true})).toBeVisible();
+ await expect(page.getByText('Current demonstration uses a scripted planner',{exact:false})).toBeVisible();
+ await page.getByLabel('Research session').selectOption('54f1b7c8cab841f1a751c98f5d762c75');
+ await expect(page.getByText('Actual hypotheses, iterations, usage and findings')).toBeVisible();
+ await page.getByLabel('Research control reason').fill('browser authorization test');
+ page.once('dialog',d=>d.accept());
+ await page.getByRole('button',{name:'pause',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('Role does not authorize');
+ await page.screenshot({path:'../docs/dashboard-agent.png',fullPage:true});
+});

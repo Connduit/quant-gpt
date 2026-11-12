@@ -136,6 +136,33 @@ def parser() -> argparse.ArgumentParser:
         choices=("equal", "fixed", "inverse_volatility", "risk_parity", "volatility_target"),
         required=True,
     )
+    agent = commands.add_parser(
+        "agent", help="Bounded research orchestration; no trading authority"
+    )
+    agent_sub = agent.add_subparsers(dest="agent_command", required=True)
+    for name in (
+        "run",
+        "list",
+        "report",
+        "pause",
+        "resume",
+        "cancel",
+        "emergency-stop",
+        "propose-code",
+    ):
+        command = agent_sub.add_parser(name)
+        command.add_argument("--root", type=Path, default=Path("data/agent"))
+        if name in ("report", "pause", "resume", "cancel", "emergency-stop"):
+            command.add_argument("--session", required=True)
+        if name in ("pause", "resume", "cancel", "emergency-stop"):
+            command.add_argument("--reason", required=True)
+        if name == "run":
+            command.add_argument("--agent-config", type=Path, required=True)
+            command.add_argument("--objective")
+            command.add_argument("--session")
+            command.add_argument("--scripted-engineering", action="store_true")
+        if name == "propose-code":
+            command.add_argument("--text", type=Path, required=True)
     dashboard = commands.add_parser("dashboard", help="Authenticated curated research dashboard")
     dashboard.add_argument("--host", default="127.0.0.1")
     dashboard.add_argument("--port", type=int, default=8000)
@@ -224,6 +251,10 @@ def main(argv: list[str] | None = None) -> int:
         settings = load_settings(args.config)
         configure_logging(settings.log_level)
         store = SnapshotStore(args.data_dir or settings.data_dir)
+        if args.command == "agent":
+            from quantlab.agent.cli import execute
+
+            return execute(args)
         if args.command == "dashboard":
             import os
 

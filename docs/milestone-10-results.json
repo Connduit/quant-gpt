@@ -1,0 +1,441 @@
+{
+  "session": {
+    "id": "54f1b7c8cab841f1a751c98f5d762c75",
+    "objective": "Evaluate bounded past-only ES momentum models against conventional controls with chronological validation and honest rejection.",
+    "status": "COMPLETED",
+    "policy_hash": "6c504c6bb1310dd823a584d92f9a6726f6d78252f7370c219706cf6fe792df15",
+    "iterations": 2,
+    "experiments": 12,
+    "spent": 0.0,
+    "elapsed": 127.51105399600056,
+    "control": null,
+    "created": "2026-11-12T08:26:50.436224+00:00"
+  },
+  "provider": "scripted_engineering_not_llm",
+  "external_llm_verified": false,
+  "live_enabled": false,
+  "holdout_accessed": false,
+  "conclusion": "No strategy is eligible without independent statistical evidence and human approvals.",
+  "recommended_next_experiment": "Collect longer verified independent sessions and certified historical margin data before eligibility assessment.",
+  "generated_code_execution": "disabled; review-only text proposals",
+  "iterations": [
+    {
+      "number": 0,
+      "status": "REJECTED",
+      "proposal": {
+        "hypothesis": {
+          "market": "futures",
+          "instruments": [
+            "ES"
+          ],
+          "relationship": "Past-only intraday momentum and volatility may predict subsequent ES returns after realistic costs.",
+          "biases": [
+            "Short historical sample",
+            "Repeated chronological discovery",
+            "Assumed historical margins"
+          ],
+          "rejection_criteria": "Reject if net return is nonpositive, benchmark excess is nonpositive, or independent-session evidence is insufficient.",
+          "evaluation": "purged_walk_forward"
+        },
+        "dataset_id": "verified-es-2013-development",
+        "feature_set": "technical",
+        "model": "ridge",
+        "target": "forward_return",
+        "horizon_minutes": 5,
+        "decision_minutes": 5,
+        "interpretation": "Engineering proposal, not observed profitability. Any conclusion must follow stored statistical evidence."
+      },
+      "counts": {
+        "unique_hypotheses": 6,
+        "attempts": 6,
+        "optuna_trials": 1
+      },
+      "recorded_history": {
+        "unique_hypotheses": 105,
+        "attempts": 106,
+        "optimizer_trials": 29,
+        "scope": "all supplied registries including failures/prunes/variants; external/unrecorded searches unknown"
+      },
+      "holdout_state": "SEALED",
+      "eligible": [],
+      "observations": [
+        {
+          "experiment_id": "5bab38270bb8d007f7579f0ca32e74c7d69b837f7349d77e34c46a95ee91d0a9",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 0,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.004304600000000103,
+            "mean_validation_return": 0.0,
+            "objective": -1.0,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": 0.0,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "2556da96c9b882648f13d9e74a2756dbfd1da2f599abb90d17f5bee376356f34",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 82,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.015560300000000027,
+            "mean_validation_return": -0.011130699999999993,
+            "objective": -1.0111307,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": -0.01773295655322321,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "7cb7448a8ee56da04c607c1f0d7ad2175be2a7c3962a30db8d22d91f03580721",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 68,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.009126400000000034,
+            "mean_validation_return": -0.004696800000000001,
+            "objective": -1.0046968,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": -0.007831355550734609,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "8e2a2d1e8c9689924c89fe52d48461521f8057e4e4e873d14707a00d1faf97c0",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 147,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.021034400000000064,
+            "mean_validation_return": -0.01660480000000003,
+            "objective": -1.0166048,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": -0.025192400000000004,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "5a7b9b4afd0ca0797ac5a0dbf2a8b4a77b89799adc970939465c4d9af5d9f8ab",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 117,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.015889299999999995,
+            "mean_validation_return": -0.011459699999999962,
+            "objective": -1.0114597,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": -0.018183799999999972,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "7835f5f08a43fd9fcba076826f0e0d6503ca8d76b2fc0af76c04d95875b0e4a8",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 4,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": 0.0,
+            "mean_validation_return": 0.0044296000000000335,
+            "objective": -0.9955704,
+            "rejection_reasons": [
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": 0.003037000000000012,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "number": 1,
+      "status": "REJECTED",
+      "proposal": {
+        "hypothesis": {
+          "market": "futures",
+          "instruments": [
+            "ES"
+          ],
+          "relationship": "Past-only intraday momentum and volatility may predict subsequent ES returns after realistic costs.",
+          "biases": [
+            "Short historical sample",
+            "Repeated chronological discovery",
+            "Assumed historical margins"
+          ],
+          "rejection_criteria": "Reject if net return is nonpositive, benchmark excess is nonpositive, or independent-session evidence is insufficient.",
+          "evaluation": "purged_walk_forward"
+        },
+        "dataset_id": "verified-es-2013-development",
+        "feature_set": "technical",
+        "model": "random_forest",
+        "target": "forward_return",
+        "horizon_minutes": 15,
+        "decision_minutes": 5,
+        "interpretation": "Engineering proposal, not observed profitability. Any conclusion must follow stored statistical evidence."
+      },
+      "counts": {
+        "unique_hypotheses": 6,
+        "attempts": 6,
+        "optuna_trials": 1
+      },
+      "recorded_history": {
+        "unique_hypotheses": 111,
+        "attempts": 112,
+        "optimizer_trials": 30,
+        "scope": "all supplied registries including failures/prunes/variants; external/unrecorded searches unknown"
+      },
+      "holdout_state": "SEALED",
+      "eligible": [],
+      "observations": [
+        {
+          "experiment_id": "e82b2baefc3441bd3e355bb72f39e14187830219c5ba438b5cfa84352932f4f1",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 112,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.016498500000000083,
+            "mean_validation_return": -0.01219389999999998,
+            "objective": -1.0121939,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": -0.018826114882283806,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "0b27f0300b875b25db385b484864586472b3b1a1e32e2fe2aec92f03710aeea4",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 82,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.015560300000000027,
+            "mean_validation_return": -0.011130699999999993,
+            "objective": -1.0111307,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": -0.01773295655322321,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "8dfb21acd1d1889e520f9930a414b4463807f31fe9872e6cdcf150d05b0a68aa",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 68,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.009126400000000034,
+            "mean_validation_return": -0.004696800000000001,
+            "objective": -1.0046968,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": -0.007831355550734609,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "998f3ca3e69c1f4bf52800d3a91b80770e9352fed20ad2dbb8f25bb050a5fcda",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 147,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.021034400000000064,
+            "mean_validation_return": -0.01660480000000003,
+            "objective": -1.0166048,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": -0.025192400000000004,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "a1d5cc0dbda1b23c051fe03b6620c807085e85723f3b2fb095681ff4718fff2b",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 117,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": -0.015889299999999995,
+            "mean_validation_return": -0.011459699999999962,
+            "objective": -1.0114597,
+            "rejection_reasons": [
+              "nonpositive_net_return",
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": -0.018183799999999972,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        },
+        {
+          "experiment_id": "fba91acbb2b90740987609d7103017fd81c569cd7da1bcdb836662359f5ba66c",
+          "status": "REJECTED",
+          "summary": {
+            "eligible": false,
+            "fills": 4,
+            "independent_sessions": 2,
+            "mean_benchmark_excess": 0.0,
+            "mean_validation_return": 0.0044296000000000335,
+            "objective": -0.9955704,
+            "rejection_reasons": [
+              "underperformed_contract_benchmark",
+              "insufficient_independent_sessions",
+              "uncertified_historical_margin_and_data_scope"
+            ],
+            "score": 0.003037000000000012,
+            "validation_windows": 2
+          },
+          "statistics": {
+            "status": "insufficient_daily_observations",
+            "daily_observations": 2,
+            "probabilistic_sharpe": null,
+            "deflated_sharpe": null,
+            "one_sided_p": 1.0,
+            "fdr_by_q": 1.0
+          }
+        }
+      ]
+    }
+  ]
+}

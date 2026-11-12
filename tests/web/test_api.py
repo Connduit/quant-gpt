@@ -195,6 +195,8 @@ def test_catalog_escape_and_id_validation(tmp_path):
 
 def test_actual_saved_artifacts_load_without_bar_or_holdout_access(tmp_path):
     workspace = Path(__file__).resolve().parents[2]
+    if not (workspace / "data/paper/milestone-8-final/report.json").is_file():
+        pytest.skip("Optional saved real research demonstrations unavailable")
     catalog = Catalog(workspace / "configs/dashboard.catalog.yaml", workspace)
     records = catalog.index()
     assert len(records) >= 9
@@ -241,3 +243,70 @@ def test_production_spa_refresh_keeps_api_paths_separate(tmp_path):
     with TestClient(app) as client:
         assert "Test app" in client.get("/research").text
         assert client.get("/api/v1/nonexistent").status_code == 404
+
+
+def test_agent_controls_are_role_checked_and_cannot_enable_trading(api):
+    client, _ = api
+    assert client.get("/api/v1/agent/sessions").json()["live_enabled"] is False
+    body = {"action": "cancel", "reason": "operator request", "confirmed": True}
+    assert client.post("/api/v1/agent/sessions/unknown/control", json=body).status_code == 403
+    headers = {"Authorization": "Bearer " + RESEARCH}
+    assert (
+        client.post(
+            "/api/v1/agent/sessions/unknown/control", json=body, headers=headers
+        ).status_code
+        == 404
+    )
+    assert (
+        client.post(
+            "/api/v1/agent/sessions",
+            json={"name": "enable-live", "confirmed": True},
+            headers=headers,
+        ).status_code
+        == 422
+    )
+
+
+def test_job_worker_has_fixed_arguments_and_no_broker_secrets(tmp_path, monkeypatch):
+    import time
+
+    import quantlab.web.jobs as module
+
+    captured = {}
+
+    class Process:
+        pid = 999999
+        returncode = 0
+
+        def __init__(self, command, **kwargs):
+            captured.update({"command": command, **kwargs})
+
+        def poll(self):
+            return 0
+
+    monkeypatch.setattr(module.subprocess, "Popen", Process)
+    monkeypatch.setenv("ALPACA_LIVE_SECRET", "forbidden")
+    monkeypatch.setenv("QUANTLAB_LLM_API_KEY", "allowed-for-agent-only")
+    manager = JobManager(
+        tmp_path,
+        {
+            "approved-agent": {
+                "arguments": ["agent", "run", "--agent-config", "reviewed.yaml"],
+                "workspace": str(tmp_path),
+            }
+        },
+    )
+    try:
+        manager.submit("approved-agent")
+        deadline = time.monotonic() + 3
+        while (
+            manager.rows()[0]["status"] not in ("COMPLETED", "FAILED")
+            and time.monotonic() < deadline
+        ):
+            time.sleep(0.01)
+        assert manager.rows()[0]["status"] == "COMPLETED"
+        assert "--output" not in captured["command"]
+        assert "ALPACA_LIVE_SECRET" not in captured["env"]
+        assert captured["env"]["QUANTLAB_LLM_API_KEY"] == "allowed-for-agent-only"
+    finally:
+        manager.close()

@@ -84,7 +84,7 @@ class JobManager:
             self._status(identity, "FAILED", "Invalid administrator job arguments")
             return
         # Allow only reviewed CLI workflows; no shell and no user-selected command.
-        if args[:2] not in (["futures", "research"], ["validate", "run"]):
+        if args[:2] not in (["futures", "research"], ["validate", "run"], ["agent", "run"]):
             self._status(identity, "FAILED", "Unsupported approved workflow")
             return
         with self.connection() as db:
@@ -109,20 +109,18 @@ class JobManager:
             "SSL_CERT_DIR",
             "REQUESTS_CA_BUNDLE",
         }
+        if args[:2] == ["agent", "run"] and "--scripted-engineering" not in args:
+            allowed.add("QUANTLAB_LLM_API_KEY")
         env = {k: v for k, v in os.environ.items() if k in allowed}
         env["CUDA_VISIBLE_DEVICES"] = ""
         env["POLARS_MAX_THREADS"] = "1"
         try:
             with (output / "worker.log").open("w") as log:
+                command = [sys.executable, "-m", "quantlab", *args]
+                if args[:2] != ["agent", "run"]:
+                    command.extend(["--output", str(output / "artifacts")])
                 process = subprocess.Popen(
-                    [
-                        sys.executable,
-                        "-m",
-                        "quantlab",
-                        *args,
-                        "--output",
-                        str(output / "artifacts"),
-                    ],
+                    command,
                     cwd=specification["workspace"],
                     env=env,
                     stdout=log,

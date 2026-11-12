@@ -2590,7 +2590,7 @@ wheels = [
 
 [[package]]
 name = "quant-research-lab"
-version = "0.9.0"
+version = "0.10.0"
 source = { editable = "." }
 dependencies = [
     { name = "duckdb" },
@@ -2601,6 +2601,9 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+agent = [
+    { name = "pydantic" },
+]
 dashboard = [
     { name = "fastapi" },
     { name = "pyyaml" },
@@ -2644,6 +2647,7 @@ requires-dist = [
     { name = "polars", specifier = ">=1.30,<3" },
     { name = "psutil", marker = "extra == 'discovery'", specifier = ">=7,<8" },
     { name = "pyarrow", specifier = ">=20,<27" },
+    { name = "pydantic", marker = "extra == 'agent'", specifier = ">=2,<3" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
     { name = "pyyaml", marker = "extra == 'dashboard'", specifier = ">=6,<7" },
     { name = "pyyaml", marker = "extra == 'ml'", specifier = ">=6,<7" },
@@ -2654,7 +2658,7 @@ requires-dist = [
     { name = "websockets", marker = "extra == 'paper'", specifier = ">=15,<17" },
     { name = "xgboost-cpu", marker = "extra == 'ml'", specifier = ">=3,<4" },
 ]
-provides-extras = ["dev", "ml", "dashboard", "paper", "futures", "discovery"]
+provides-extras = ["dev", "ml", "agent", "dashboard", "paper", "futures", "discovery"]
 
 [[package]]
 name = "requests"

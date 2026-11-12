@@ -411,7 +411,7 @@ function Artifacts() {
       {comparison.length === 2 && <Compare ids={comparison} />}
       <ArtifactDetail id={selected} kind={kind as ArtifactKind} />
       {kind === "discovery" && <Jobs />}
-      {kind === "agent" && <Jobs />}
+      {kind === "agent" && <AgentSessions />}
     </>
   );
 }
@@ -809,6 +809,126 @@ function PortfolioAnalytics({ data }: { data: Record<string, unknown> }) {
         label="Per-strategy P&L and attribution"
       />
       <JsonView data={run.risk_decision_counts} label="Risk decisions" />
+    </section>
+  );
+}
+
+function AgentSessions() {
+  const data = useQuery({
+    queryKey: ["agent-sessions"],
+    queryFn: () =>
+      request<{ items: Record<string, unknown>[] }>("/agent/sessions"),
+    refetchInterval: 3000,
+  });
+  const [selected, setSelected] = useState("");
+  const [reason, setReason] = useState("");
+  const [objective, setObjective] = useState(
+    "Evaluate bounded ES momentum after costs with chronological validation.",
+  );
+  const [message, setMessage] = useState("");
+  const detail = useQuery({
+    queryKey: ["agent-session", selected],
+    queryFn: () =>
+      request<Record<string, unknown>>("/agent/sessions/" + selected),
+    enabled: !!selected,
+    refetchInterval: 3000,
+  });
+  async function start() {
+    if (
+      !window.confirm(
+        "Start a bounded SCRIPTED engineering workflow? This does not verify a real LLM or authorize trading.",
+      )
+    )
+      return;
+    try {
+      await request("/agent/sessions", {
+        method: "POST",
+        body: JSON.stringify({
+          name: "scripted-agent-engineering",
+          objective,
+          confirmed: true,
+        }),
+      });
+      setMessage(
+        "Research worker queued; all policy and budget gates remain active.",
+      );
+      void data.refetch();
+    } catch (e) {
+      setMessage((e as Error).message);
+    }
+  }
+  async function control(action: string) {
+    if (!selected || !reason.trim()) {
+      setMessage("Select a session and provide an operator reason.");
+      return;
+    }
+    if (!window.confirm(`Record research ${action}?`)) return;
+    try {
+      await request("/agent/sessions/" + selected + "/control", {
+        method: "POST",
+        body: JSON.stringify({ action, reason, confirmed: true }),
+      });
+      setMessage(
+        "Control recorded. Inspect worker status for acknowledgement.",
+      );
+      void data.refetch();
+    } catch (e) {
+      setMessage((e as Error).message);
+    }
+  }
+  return (
+    <section className="panel">
+      <h3>Bounded research agent</h3>
+      <p className="subtle">
+        Current demonstration uses a scripted planner, not verified LLM
+        reasoning. No trading, holdout, arbitrary-code or promotion permissions.
+      </p>
+      <div className="controls">
+        <input
+          aria-label="Research objective"
+          value={objective}
+          onChange={(e) => setObjective(e.target.value)}
+          maxLength={1200}
+        />
+        <button onClick={() => void start()}>Start scripted research</button>
+      </div>
+      {data.error ? (
+        <ErrorBox error={data.error} />
+      ) : (
+        <Table rows={data.data?.items ?? []} />
+      )}
+      <div className="controls">
+        <select
+          aria-label="Research session"
+          value={selected}
+          onChange={(e) => setSelected(e.target.value)}
+        >
+          <option value="">Select session</option>
+          {data.data?.items.map((s) => (
+            <option key={String(s.id)} value={String(s.id)}>
+              {String(s.id).slice(0, 12)} · {String(s.status)}
+            </option>
+          ))}
+        </select>
+        <input
+          aria-label="Research control reason"
+          placeholder="Operator reason"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+        {["pause", "resume", "cancel", "emergency_stop"].map((a) => (
+          <button key={a} onClick={() => void control(a)}>
+            {a.replaceAll("_", " ")}
+          </button>
+        ))}
+      </div>
+      <p role="status">{message}</p>
+      {detail.data && (
+        <JsonView
+          data={detail.data}
+          label="Actual hypotheses, iterations, usage and findings"
+        />
+      )}
     </section>
   );
 }

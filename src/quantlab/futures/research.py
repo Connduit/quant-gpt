@@ -140,7 +140,7 @@ def _space(trial, name, spec):
     )
 
 
-def prepare_futures(doc, root):
+def prepare_futures(doc, root, *, holdout_vault_path=None):
     from quantlab.futures.evaluation import sealed_data
 
     root = Path(root)
@@ -246,7 +246,7 @@ def prepare_futures(doc, root):
         seal_sha256=hashlib.sha256((sealed / "seal.json").read_bytes()).hexdigest(),
     )
     sealed_data(base)
-    vault = HoldoutVault(root.parent / "holdout-vault.sqlite")
+    vault = HoldoutVault(holdout_vault_path or root.parent / "holdout-vault.sqlite")
     manifest = {
         "sources": {
             m["contract"]["identifier"]: f"{m['provider']}:{m['source']}" for m in metadata.values()
@@ -261,7 +261,9 @@ def prepare_futures(doc, root):
     return base, vault, identifier
 
 
-def run_futures_research(config_path, output, *, resume=False):
+def run_futures_research(
+    config_path, output, *, resume=False, stop_event=None, history_roots=(), holdout_vault_path=None
+):
     doc = load_futures_research(config_path)
     root = Path(output).resolve()
     if root.exists() and not resume:
@@ -273,9 +275,11 @@ def run_futures_research(config_path, output, *, resume=False):
         except BlockingIOError as exc:
             raise ValueError("Futures controller already running") from exc
         started = time.monotonic()
-        base, vault, holdout_id = prepare_futures(doc, root)
+        base, vault, holdout_id = prepare_futures(doc, root, holdout_vault_path=holdout_vault_path)
         resources = Resources(**doc.get("resources", {}))
         engine = ExperimentEngine(root / "experiments", doc["study"]["name"], resources)
+        if stop_event is not None:
+            engine.cancel = stop_event
         policy = fingerprint(
             {"configuration": doc, "code": base["source_sha256"], "seal": base["seal_sha256"]}
         )
@@ -303,6 +307,7 @@ def run_futures_research(config_path, output, *, resume=False):
             while (
                 len(optimizer.trials) < doc["study"].get("max_trials", 4)
                 and time.monotonic() < deadline
+                and not engine.cancel.is_set()
             ):
                 optimizer.sampler = optuna.samplers.RandomSampler(
                     seed=doc["study"].get("seed", 42) + len(optimizer.trials)
@@ -409,6 +414,8 @@ def run_futures_research(config_path, output, *, resume=False):
             for instrument, family in product(
                 products, ("vwap", "opening_range", "momentum", "regime", "buy_hold")
             ):
+                if engine.cancel.is_set() or time.monotonic() >= deadline:
+                    break
                 definition = {
                     **base,
                     "strategy_family": family,
@@ -435,7 +442,7 @@ def run_futures_research(config_path, output, *, resume=False):
             engine.registry.add_elapsed(doc["study"]["name"], time.monotonic() - started)
         from quantlab.statistical.pipeline import history
 
-        recorded_history = history([root.parent])
+        recorded_history = history([root.parent, *map(Path, history_roots)])
         rows = engine.registry.rows()
         results = []
         failed = []

@@ -112,3 +112,12 @@ paper deployment, and no real-money submission capability exists.
 The API reads curated actual artifacts and journal-verified paper state. No live
 controls, automatic promotions, raw holdout browsing or arbitrary execution exists.
 External streaming/brokers and real-time paper eligibility remain unverified.
+
+## Milestone 10 verification and scope
+
+[Architecture](research-agent.md) and [results](milestone-10-results.md): 303 Python
+tests, five frontend tests and six Chromium browser tests passed. Two bounded
+real-data investigations made 12 recorded attempts; all rejected, with canonical
+holdout state SEALED. The installed 0.10 wheel matched executed policy/source
+identity. Planning was scripted engineering; no external LLM or generated-code
+sandbox was verified. No eligible paper/live strategy or trading authority granted.

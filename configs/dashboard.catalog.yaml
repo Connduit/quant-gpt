@@ -68,3 +68,9 @@ artifacts:
     path: data/futures/milestone-7-final/experiments/attempts/8e4aa3484954b328-1-01e1051b/result.json
     mode: SEARCH_VALIDATION
     status: REJECTED
+  - id: bounded-agent-research
+    kind: agent
+    label: Bounded real-data research agent session
+    path: data/agent/sessions/54f1b7c8cab841f1a751c98f5d762c75/report.json
+    mode: SCRIPTED_ENGINEERING_NOT_LLM
+    status: COMPLETED_ALL_REJECTED

@@ -239,3 +239,16 @@ Open `http://127.0.0.1:8000`. The dashboard inspects curated research, models,
 validation, backtests, portfolios and journaled paper state. Default local access
 is read-only; confirmed writes require role tokens. See [operation](docs/dashboard.md),
 [verification](docs/milestone-9-results.md), and [screenshot](docs/dashboard-overview.png).
+
+## Bounded research agent
+
+```bash
+uv run --frozen --all-extras quantlab agent run --agent-config configs/agent.example.yaml \
+  --root data/agent --scripted-engineering
+```
+
+Strict plans, approved datasets/tools, persistent research memory, bounded
+Optuna/MLflow execution and statistical rejection. The real-data engineering run
+used a scripted planner; external LLM integration is unverified. No broker,
+holdout-evaluation, generated-code execution or promotion authority is available.
+See [operation](docs/research-agent.md) and [actual results](docs/milestone-10-results.md).

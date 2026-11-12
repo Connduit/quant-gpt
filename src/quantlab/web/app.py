@@ -6,6 +6,7 @@ import hmac
 import json
 import os
 import sqlite3
+import uuid
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from pathlib import Path
@@ -18,6 +19,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from quantlab.agent.memory import Memory
 from quantlab.paper.store import PaperStore
 from quantlab.web.catalog import KINDS, Catalog
 from quantlab.web.jobs import JobManager
@@ -57,6 +59,20 @@ class Control(BaseModel):
 class JobRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str = Field(min_length=1, max_length=80)
+    confirmed: Literal[True]
+
+
+class AgentStart(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    name: Literal["scripted-agent-engineering", "approved-agent-research"]
+    objective: str | None = Field(None, min_length=10, max_length=1200)
+    confirmed: Literal[True]
+
+
+class AgentControl(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    action: Literal["pause", "resume", "cancel", "emergency_stop"]
+    reason: str = Field(min_length=3, max_length=500)
     confirmed: Literal[True]
 
 
@@ -330,6 +346,75 @@ def create_app(
         )
         return {"queued": True, "applied": False, "execution": "SIMULATED"}
 
+    agent_root = catalog.workspace / "data/agent"
+
+    @app.get("/api/v1/agent/sessions")
+    def agent_sessions(assigned=access):
+        path = agent_root / "memory.sqlite"
+        return {
+            "items": Memory(path).sessions() if path.is_file() else [],
+            "execution": "research_only",
+            "live_enabled": False,
+        }
+
+    @app.get("/api/v1/agent/sessions/{identity}")
+    def agent_session(identity: str, assigned=access):
+        if not (agent_root / "memory.sqlite").is_file():
+            raise HTTPException(404, "No research sessions")
+        memory = Memory(agent_root / "memory.sqlite")
+        try:
+            session = memory.session(identity)
+        except KeyError as exc:
+            raise HTTPException(404, "Unknown research session") from exc
+        return catalog.redact(
+            {
+                "session": session,
+                "iterations": memory.records(identity),
+                "events": memory.events(identity),
+                "live_enabled": False,
+            }
+        )
+
+    @app.post("/api/v1/agent/sessions", status_code=202)
+    def start_agent(body: AgentStart, assigned=access):
+        require(assigned, ("researcher",))
+        if body.name not in ("scripted-agent-engineering", "approved-agent-research"):
+            raise HTTPException(400, "Unknown approved agent workflow")
+        name = body.name
+        if body.objective:
+            base = jobs.approved.get(name)
+            if base is None:
+                raise HTTPException(400, "Agent workflow is not configured")
+            name = "agent-objective-" + uuid.uuid4().hex
+            jobs.approved[name] = {
+                **base,
+                "arguments": [*base["arguments"], "--objective=" + body.objective],
+            }
+        identity = jobs.submit(name)
+        log("agent_start", assigned, {"job": identity, "workflow": body.name})
+        return {"job": identity, "queued": True, "live_enabled": False}
+
+    @app.post("/api/v1/agent/sessions/{identity}/control", status_code=202)
+    def agent_control(identity: str, body: AgentControl, assigned=access):
+        require(assigned, ("researcher",))
+        if not (agent_root / "memory.sqlite").is_file():
+            raise HTTPException(404, "Unknown research session")
+        memory = Memory(agent_root / "memory.sqlite")
+        try:
+            memory.session(identity)
+            memory.control(identity, body.action, body.reason)
+        except KeyError as exc:
+            raise HTTPException(404, "Unknown research session") from exc
+        if body.action == "resume":
+            base = jobs.approved.get("scripted-agent-engineering")
+            if base is None:
+                raise HTTPException(409, "No reviewed resume workflow configured")
+            name = "resume-agent-" + identity
+            jobs.approved[name] = {**base, "arguments": [*base["arguments"], "--session", identity]}
+            jobs.submit(name)
+        log("agent_control", assigned, {"session": identity, **body.model_dump()})
+        return {"control_recorded": True, "applied": False, "live_enabled": False}
+
     @app.get("/api/v1/events")
     async def events(request: Request, assigned=access):
         async def generate():
@@ -380,6 +465,23 @@ def from_environment():
             "configuration": str(configuration),
             "workspace": str(workspace),
             "wall_seconds": 1200,
+        }
+    agent_configuration = workspace / "configs/agent.example.yaml"
+    if agent_configuration.is_file():
+        approved["scripted-agent-engineering"] = {
+            "arguments": [
+                "agent",
+                "run",
+                "--agent-config",
+                str(agent_configuration),
+                "--root",
+                str(workspace / "data/agent"),
+                "--scripted-engineering",
+            ],
+            "configuration": str(agent_configuration),
+            "configuration_sha256": hashlib.sha256(agent_configuration.read_bytes()).hexdigest(),
+            "workspace": str(workspace),
+            "wall_seconds": 1000,
         }
     return create_app(
         catalog,

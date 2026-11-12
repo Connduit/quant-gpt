@@ -1,0 +1,21 @@
+objective: Evaluate bounded past-only ES momentum models against conventional controls with chronological validation and honest rejection.
+dataset_id: verified-es-2013-development
+research_template: futures-research.example.yaml
+study_wall_seconds: 300
+budgets:
+  max_iterations: 2
+  max_experiments: 12
+  max_runtime_seconds: 900
+  max_api_spend: 0.0
+  max_context_bytes: 40000
+  max_output_tokens: 1500
+  max_concurrent_jobs: 1
+# Set reviewed provider/model/pricing and a positive spend budget to use an LLM.
+# QUANTLAB_LLM_API_KEY belongs in environment settings, never this file.
+llm:
+  model: configured-model-required
+  endpoint: https://api.openai.com/v1
+  input_per_million: 0.0
+  output_per_million: 0.0
+  structured: true
+  tools: false
