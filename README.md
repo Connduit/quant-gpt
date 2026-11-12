@@ -3,6 +3,11 @@
 Milestone 1: a CPU-compatible, reproducible historical US equities data foundation.
 No strategies, predictions, backtests or trading execution are implemented yet.
 
+The [complete project blueprint and roadmap](docs/blueprint.md) preserves the
+original specification, including all core capabilities, market phases and ten
+development milestones. It describes the long-term plan; this README documents
+the current implementation.
+
 ## Installation
 
 Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/getting-started/installation/).
