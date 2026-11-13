@@ -23,7 +23,7 @@ The [machine-readable checklist](go-live-readiness.json),
 | Strategy eligibility | No validated-paper/live-qualified strategies; SANDBOX_TEST is separate | Zero eligible |
 | Independent review | No independent human statistical/operational approval recorded | Pending |
 | Capital and sizing | No real-money allocation authorized; example limits are assumptions | Pending review |
-| Security/deployment | Nonroot/read-only container configuration, role boundaries, credential separation and dependency pins implemented | Operator/TLS/host review still required |
+| Security/deployment | Local deployment with role boundaries, credential separation and dependency pins; Docker deployment removed | Operator/TLS/host review still required |
 | Obligations/operator readiness | Regulatory, tax, operating and incident preparedness not independently reviewed | Pending |
 | Activation | No future human activation authorization; LIVE broker path unavailable in this build | Disabled |
 

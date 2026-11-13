@@ -464,14 +464,10 @@ No setting or checklist makes LIVE available. Details:
 
 ## Deployment, recovery and incidents
 
-Review [production.md](production.md), [incident-response.md](incident-response.md),
-`deploy/compose.yaml`, cloud override and systemd examples before running services.
-Containers are a deployment option, not required for local research. Compose
-defaults to the dashboard; the sandbox profile remains separate and unarmed.
-The nonroot image has read-only roots, dropped capabilities, resource limits and
-persistent state. Data mounts need UID/GID 10001 ownership. Keep managed Cloud CA
-trust/proxy settings; the cloud override mounts CA at runtime. Liveness is not
-trading readiness. Research loops are not unlimited restart services.
+Follow [production.md](production.md) for local installation, `.env` settings,
+frontend build, and dashboard startup. Review [incident-response.md](incident-response.md)
+for operational procedures. Start the broker sandbox separately only with its
+reviewed configuration and approvals. Liveness is not trading readiness.
 
 Use the supported SQLite backup API rather than copying a live main file without
 its WAL. For a verified execution database:

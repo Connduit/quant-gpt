@@ -44,17 +44,6 @@ def test_readiness_does_not_infer_live_eligibility_from_test_artifacts(tmp_path)
     assert result["eligible_strategy_ids"] == [] and result["holdout_state"] == "UNKNOWN_OR_CHANGED"
 
 
-def test_deployment_separates_credentials_and_starts_no_broker_by_default():
-    root = Path(__file__).resolve().parents[2]
-    doc = yaml.safe_load((root / "deploy/compose.yaml").read_text())
-    app = doc["services"]["dashboard"]
-    broker = doc["services"]["broker-sandbox"]
-    assert broker["profiles"] == ["sandbox"]
-    assert not any("ALPACA" in key or "AUTHORIZATION_KEY" in key for key in app["environment"])
-    assert "--arm-approved-sandbox-test" not in broker["command"]
-    assert app["read_only"] and broker["read_only"]
-
-
 def test_signed_kill_reset_keeps_strategy_paused(controller):
     c = controller
     c.kill(now=T, reason="test kill")

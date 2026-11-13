@@ -34,6 +34,40 @@ them. In the managed cloud environment, use `export UV_CACHE_DIR=/workspace/.cac
 if the default cache is not writable. `uv run` activates the project's `.venv`
 automatically; the earlier onboarding research sandbox is separate.
 
+## Local environment file
+
+Keep local settings in `.env` at the repository root. This file is excluded
+from Git. To set up another computer, copy
+`deploy/environment.example` to `.env`, fill in your provider credentials, and
+generate distinct dashboard tokens with
+`python -c "import secrets; print(secrets.token_urlsafe(32))"` for each role.
+Use at least 24 characters per token. Keep the file private.
+
+Build the dashboard once (requires Node.js and npm):
+
+```bash
+cd dashboard
+npm ci
+npm run build
+cd ..
+```
+
+Start the local dashboard from the repository root:
+
+```bash
+uv run --env-file .env --frozen --all-extras quantlab dashboard
+```
+
+Enter the matching viewer, operator, or researcher token from `.env` when the
+dashboard requests access. Other CLI commands can use the same
+`uv run --env-file .env` prefix. Existing shell variables take precedence;
+unset an old value if you want the file's value to apply. Restart the dashboard
+after editing `.env`.
+
+The broker sandbox uses its separate
+`QUANTLAB_ALPACA_PAPER_KEY` and `QUANTLAB_ALPACA_PAPER_SECRET` fields, which can
+remain empty for dashboard use. Never commit `.env` or share its contents.
+
 ## Offline demonstration
 
 The built-in **SYNTH** fixture is invented test data, not historical market data.
@@ -290,7 +324,6 @@ Use the installation commands above for the Python application.
 | Dependency manifest or lockfile | Install the updated dependencies, then rebuild and restart the affected application. |
 | Build configuration or generated-code inputs | Rerun the relevant generation and build steps, then restart the affected application. |
 | Runtime environment variables or API credentials | Restart the process so it reads the new values. Rebuild only if the application embeds those variables at build time. |
-| Container image definition or files copied into an image | Rebuild the image and recreate the container. Runtime-only environment changes generally require recreating the container without rebuilding the image. |
 
 ## Alpaca credentials
 

@@ -21,47 +21,37 @@ new reviewed signatures. Rotation invalidates old authorizations. Back up privat
 authorization material separately using protected/encrypted secret storage.
 
 Research workers receive a minimal environment without broker keys/API operator
-tokens. Generated code is quarantined text, never executed. The default Docker API
-service has no broker or researcher credentials; the optional broker service has a
-separate state volume and no published order-entry port. External identity/TLS,
-host access controls and adversarial sandboxing require independent operator review.
-No verified generated-code OS sandbox exists, so execution remains unavailable.
+tokens. Generated code is quarantined text, never executed.
 
-## Build and start
+## Build and start locally
+
+Install Python 3.12+, uv, and Node.js with npm. From the repository root:
 
 ```bash
-# Trust a managed proxy using a read-only public CA secret, never disabled TLS.
-docker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt -f deploy/Dockerfile -t quantlab:0.11.0 .
-# Supply a real viewer token through environment settings/protected local file.
-docker compose -f deploy/compose.yaml config --quiet
-docker compose -f deploy/compose.yaml up -d dashboard
+uv sync --frozen --all-extras
+cd dashboard
+npm ci
+npm run build
+cd ..
+uv run --env-file .env --frozen --all-extras quantlab dashboard
 ```
 
-In managed Cloud, add `-f deploy/compose.cloud.yaml` to mount the combined CA at
-runtime. BuildKit uses the CA only during networked RUN steps; it is not copied
-into image layers. Keep inherited proxy configuration. Do not use host networking,
-TLS bypasses or alternate proxies to evade restrictions. The current attached
-instance still blocks the requested market/broker hosts; see connectivity evidence.
+Create `.env` using `deploy/environment.example` as a template and set distinct
+viewer, operator, and researcher tokens plus your provider credentials. Keep the
+file private and out of Git. Open http://127.0.0.1:8000 and enter the appropriate
+token. Existing shell variables take precedence over `.env` values.
 
-The image runs as UID/GID 10001 with pinned Python/npm lockfiles. Compose applies a
-read-only root filesystem, dropped capabilities, no-new-privileges, process/memory/
-CPU limits, persistent state volumes, safe shutdown, restart policies and an
-authenticated API liveness check. Liveness is not trading readiness: the dashboard
-must continue to show LIMITED/NOT_READY evidence. The API binds on container
-0.0.0.0 with authentication and publishes only host loopback. Remote use needs a
-reviewed TLS reverse proxy and firewall; do not publicly expose a dev proxy.
+After Python changes, restart the dashboard. After frontend changes, rerun
+`npm run build` in `dashboard/` and restart. After dependency changes, rerun
+`uv sync --frozen --all-extras` or `npm ci` as appropriate. After `.env` edits,
+restart so the process loads the new settings.
 
-Bind-mounted research reports are read-only. Named paper/dashboard/execution
-volumes are separate. Existing artifacts must be migrated deliberately with correct
-ownership for UID 10001; missing/mis-permissioned artifacts show unavailable, never
-fake values. Do not copy credentials or raw reserved holdouts into the image.
-`data/`, keys, environment files, caches and Git metadata are excluded from builds.
-
-No broker container starts by default. The `sandbox` profile requires a reviewed
-`deploy/operator-execution.yaml`, separate credentials and signed approval. Its
-command is monitoring-only. No live service exists. Research loops do not
-start automatically or restart indefinitely on completion. Review resources,
-network destinations, software source SHA and risk settings before deployment.
+Local state and research artifacts remain under `data/`. Back up these files
+and secrets separately. The dashboard binds to loopback by default. The broker
+sandbox is started separately and requires its own configuration, credentials,
+and signed approval. Starting the dashboard does not start the broker service.
+The optional `deploy/quantlab-paper.service` is a Linux systemd example for paper
+simulation; it is not needed for local dashboard use.
 
 ## Explicit PAPER sandbox engineering test
 
@@ -69,10 +59,10 @@ Use a clean sandbox account, the exact account ID, official market-data entitlem
 and current reviewed strategy definition. Obtain a signed approval:
 
 ```bash
-uv run --frozen --all-extras quantlab execution approve-sandbox-test \
+uv run --env-file .env --frozen --all-extras quantlab execution approve-sandbox-test \
   --execution-config configs/OPERATOR_SANDBOX.yaml --actor OPERATOR_ID \
   --reason 'reviewed bounded PAPER test' --minutes 15 --output data/execution/reviewed-approval.json
-uv run --frozen --all-extras quantlab execution service \
+uv run --env-file .env --frozen --all-extras quantlab execution service \
   --execution-config configs/OPERATOR_SANDBOX.yaml --arm-approved-sandbox-test
 ```
 
@@ -97,7 +87,7 @@ excluded. Store encrypted off-machine copies and authorization secrets separatel
 Test restore into a **new** destination; existing files are never overwritten.
 
 ```bash
-uv run --frozen --all-extras quantlab execution restore \
+uv run --env-file .env --frozen --all-extras quantlab execution restore \
   --database data/execution/verified-backup.sqlite --output data/execution/NEW_RESTORE.sqlite
 ```
 
