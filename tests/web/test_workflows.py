@@ -8,6 +8,7 @@ from pathlib import Path
 import exchange_calendars as xcals
 import httpx
 import numpy as np
+import polars as pl
 import pytest
 import yaml
 from fastapi.testclient import TestClient
@@ -485,3 +486,143 @@ def test_snapshot_inventory_range_filters_and_validates_dates(modern_library, tm
             client.get("/api/v1/workflows/snapshots?start=2021-01-01&end=2020-01-01").status_code
             == 400
         )
+
+
+@pytest.fixture
+def downloaded_library(modern_library):
+    """Simulates provider downloads using invented test prices; no eligibility evidence."""
+    root, sources = modern_library
+    ids = {}
+    for symbol, sid in sources.items():
+        store = SnapshotStore(root)
+        metadata = store.manifest(sid)
+        bounds = metadata["request"]
+        raw = (root / "snapshots" / sid / "source.csv").read_bytes()
+        ids[symbol] = store.write(
+            "mock-downloaded-prices",
+            DataRequest(
+                symbol, date.fromisoformat(bounds["start"]), date.fromisoformat(bounds["end"])
+            ),
+            Download(raw, "invented provider fixture, not real market data", "unadjusted", False),
+            store.read(sid),
+        )
+    return root, ids
+
+
+def test_exploratory_training_runs_without_fabricated_evidence(
+    downloaded_library, tmp_path, monkeypatch
+):
+    from quantlab.web.workflows import selected_snapshots
+
+    root, ids = downloaded_library
+    body = {
+        **payload(ids),
+        "start": "2020-01-02",
+        "end": "2020-12-31",
+        "models": ["ridge", "logistic"],
+    }
+    with pytest.raises(ValueError, match="point-in-time"):
+        selected_snapshots(root, ResearchRequest.model_validate(body))
+
+    def no_trading(*args, **kwargs):
+        pytest.fail("Exploratory ML must never enter trading or strict simulation engines")
+
+    monkeypatch.setattr("quantlab.backtesting.engine.run_backtest", no_trading)
+    monkeypatch.setattr("quantlab.research.runner.run_experiment", no_trading)
+    output = tmp_path / "exploratory-run"
+    output.mkdir()
+    result = research({**body, "research_mode": "exploratory"}, root, output)
+    assert result["status"] == "COMPLETED"
+    assert result["research_status"] == "EXPLORATORY_ML"
+    report = result["report"]
+    assert report["performance_kind"] == "exploratory_predictive_only"
+    assert not report["qualified"] and not report["promotion_allowed"]
+    assert not report["trading_simulated"]
+    assert "trading" not in report
+    assert set(report["predictive_performance"]) == {"ridge", "logistic"}
+    assert report["dataset"]["end"] == "2020-12-31"
+    assert not report["dataset"]["total_return"]
+    assert "splits" in " ".join(report["limitations"])
+    predictions = pl.read_parquet(output / "research/out_of_sample_predictions.parquet")
+    assert predictions["session_date"].max() <= date(2020, 12, 31)
+    assert (predictions["train_label_max"] < predictions["model_available_at"]).all()
+    assert (output / "research/models/fold-0/ridge/model.joblib").is_file()
+    assert not (output / "research/backtests").exists()
+    assert not (output / "inputs/actions").exists()
+    assert not (root / "actions").exists()
+    for sid in ids.values():
+        metadata = SnapshotStore(root).manifest(sid)
+        assert not metadata["point_in_time"] and not metadata["corporate_actions_included"]
+    strict_items = [s for s in snapshot_inventory(root)["items"] if s["id"] in ids.values()]
+    assert all(not s["eligible"] for s in strict_items)
+    items = [
+        s
+        for s in snapshot_inventory(root, research_mode="exploratory")["items"]
+        if s["id"] in ids.values()
+    ]
+    assert all(s["eligible"] and s["strict_blockers"] for s in items)
+
+
+def test_exploratory_mode_rejects_discovery_missing_dates_and_synthetic(modern_library):
+    from quantlab.web.workflows import selected_snapshots
+
+    for change in ({"workflow": "discovery"}, {"start": None}, {"end": None}):
+        with pytest.raises(ValueError, match="Exploratory ML requires"):
+            ResearchRequest.model_validate(
+                {
+                    **payload(),
+                    "research_mode": "exploratory",
+                    "start": "2020-01-02",
+                    "end": "2020-12-31",
+                    **change,
+                }
+            )
+    root, ids = modern_library
+    with pytest.raises(ValueError, match="Synthetic"):
+        selected_snapshots(
+            root,
+            ResearchRequest.model_validate(
+                {
+                    **payload(ids),
+                    "research_mode": "exploratory",
+                    "start": "2020-01-02",
+                    "end": "2020-12-31",
+                }
+            ),
+        )
+
+
+def test_exploratory_api_runs_a_real_worker(downloaded_library, tmp_path):
+    root, ids = downloaded_library
+    catalog = tmp_path / "exploratory-catalog.yaml"
+    catalog.write_text("artifacts: []\n")
+    app = create_app(
+        Catalog(catalog, tmp_path),
+        state_root=tmp_path / "exploratory-state",
+        workflow_library=root,
+        tokens={TOKEN: "researcher"},
+    )
+    body = {
+        **payload(ids),
+        "research_mode": "exploratory",
+        "start": "2020-01-02",
+        "end": "2020-12-31",
+    }
+    with TestClient(app) as client:
+        assert client.post("/api/v1/workflows/research", json=body).status_code == 403
+        response = client.post(
+            "/api/v1/workflows/research", json=body, headers={"Authorization": "Bearer " + TOKEN}
+        )
+        assert response.status_code == 202
+        identity = response.json()["id"]
+        deadline = time.monotonic() + 30
+        while app.state.jobs.rows()[0]["status"] in ("QUEUED", "RUNNING"):
+            assert time.monotonic() < deadline
+            time.sleep(0.05)
+        result = client.get(f"/api/v1/workflows/jobs/{identity}").json()["result"]
+        assert result["status"] == "COMPLETED", result
+        assert result["request"]["research_mode"] == "exploratory"
+        assert result["research_status"] == "EXPLORATORY_ML"
+        assert not result["live_enabled"] and not result["report"]["qualified"]
+        assert result["report"]["predictive_performance"]["ridge"]["samples"] > 0
+        assert not result["report"]["trading_simulated"]

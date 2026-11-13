@@ -172,6 +172,20 @@ def research(payload, library, output):
         raise ValueError("Budget allows at most 3,000 sessions and eight folds; adjust windows")
     if rows < request.training_sessions + request.validation_sessions + 80:
         raise ValueError("Insufficient sessions for feature warmup, purge and evaluation windows")
+    if request.research_mode == "exploratory":
+        from quantlab.web.exploratory import run_exploratory_ml
+
+        report = run_exploratory_ml(request, input_library, snapshots, output / "research")
+        return {
+            "status": "COMPLETED",
+            "workflow": request.workflow,
+            "research_status": "EXPLORATORY_ML",
+            "report": report,
+            "snapshot_ids": request.snapshot_ids,
+            "research_range": {"start": str(request.start), "end": str(request.end)},
+            "input_snapshot_ids": list(snapshots.values()),
+            "note": "Prediction metrics only; no trading simulation, qualification or promotion.",
+        }
     experiment = output / "experiment.yaml"
     experiment.write_text(yaml.safe_dump(experiment_document(request, input_library, snapshots)))
     if request.workflow == "training":

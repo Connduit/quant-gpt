@@ -14,6 +14,7 @@ interface Snapshot {
   price_basis: string;
   eligible: boolean;
   blockers: string[];
+  strict_blockers?: string[];
 }
 interface Job {
   id: string;
@@ -59,6 +60,8 @@ export function EquityWorkflows({ page }: { page: string }) {
   const [end, setEnd] = useState(latestCompletedDate);
   const [refresh, setRefresh] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [researchMode, setResearchMode] = useState("strict");
+  const exploratory = mode === "training" && researchMode === "exploratory";
   const [researchStart, setResearchStart] = useState("");
   const [researchEnd, setResearchEnd] = useState("");
   const [models, setModels] = useState(["ridge"]);
@@ -92,8 +95,10 @@ export function EquityWorkflows({ page }: { page: string }) {
     researchStart &&
     researchEnd &&
     researchStart <= researchEnd
-      ? `?start=${researchStart}&end=${researchEnd}`
-      : "";
+      ? `?start=${researchStart}&end=${researchEnd}&research_mode=${exploratory ? "exploratory" : "strict"}`
+      : exploratory
+        ? "?research_mode=exploratory"
+        : "";
   const inventory = useQuery({
     queryKey: ["workflow-snapshots", rangeQuery],
     placeholderData: (previous) => previous,
@@ -162,6 +167,7 @@ export function EquityWorkflows({ page }: { page: string }) {
             }
           : {
               workflow: mode,
+              research_mode: exploratory ? "exploratory" : "strict",
               name,
               snapshot_ids: selected,
               start: researchStart,
@@ -393,6 +399,33 @@ export function EquityWorkflows({ page }: { page: string }) {
             </>
           ) : (
             <>
+              {mode === "training" && (
+                <label>
+                  Research mode
+                  <select
+                    value={researchMode}
+                    onChange={(e) => {
+                      setResearchMode(e.target.value);
+                      setSelected([]);
+                    }}
+                  >
+                    <option value="strict">Strict research</option>
+                    <option value="exploratory">
+                      Exploratory ML — prediction only
+                    </option>
+                  </select>
+                </label>
+              )}
+              {exploratory && (
+                <p className="warning-line">
+                  Exploratory ML accepts downloaded prices without
+                  corporate-action or historical-membership evidence. Splits and
+                  dividends can distort features and targets, and a fixed stock
+                  list can introduce selection bias. Reports contain prediction
+                  metrics only, with no portfolio backtest, strategy
+                  qualification or deployment approval.
+                </p>
+              )}
               <div className="workflow-fields">
                 <label>
                   Run name
@@ -472,17 +505,19 @@ export function EquityWorkflows({ page }: { page: string }) {
                     onChange={(e) => setTest(Number(e.target.value))}
                   />
                 </label>
-                <label>
-                  Top holdings
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
-                    required
-                    value={top}
-                    onChange={(e) => setTop(Number(e.target.value))}
-                  />
-                </label>
+                {!exploratory && (
+                  <label>
+                    Top holdings
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      required
+                      value={top}
+                      onChange={(e) => setTop(Number(e.target.value))}
+                    />
+                  </label>
+                )}
                 <label>
                   Random seed
                   <input
@@ -533,16 +568,22 @@ export function EquityWorkflows({ page }: { page: string }) {
                 Training, validation and evaluation folds stay inside the
                 research range. Later snapshot data is excluded from this run;
                 this does not certify an untouched holdout or release a Phase 12
-                holdout. Purged chronological folds · fixed costs (0.5¢/share, 5
-                bps slippage, 2 bps spread) · CPU only · at most eight folds.
-                Discovery searches momentum/reversion features and bounded model
-                parameters, including doubled-cost checks.
+                holdout. Purged chronological folds · CPU only · at most eight
+                folds.
+                {!exploratory && (
+                  <>
+                    {" "}
+                    Fixed costs (0.5¢/share, 5 bps slippage, 2 bps spread).
+                    Discovery searches momentum/reversion features and bounded
+                    model parameters, including doubled-cost checks.
+                  </>
+                )}
               </p>
               {!ready && (
                 <p className="warning-line">
-                  Eligible raw-price snapshots with complete actions and
-                  point-in-time membership are required. Price downloads alone
-                  do not supply this evidence.
+                  {exploratory
+                    ? "Select one downloaded snapshot per stock plus SPY, choose a covered research date range, and select a model. A declared price basis is required."
+                    : "Eligible raw-price snapshots with complete actions and point-in-time membership are required. Price downloads alone do not supply this evidence. For price-only experiments, use Exploratory ML in Machine learning."}
                 </p>
               )}
               <button
@@ -553,7 +594,9 @@ export function EquityWorkflows({ page }: { page: string }) {
                   ? "Submitting…"
                   : mode === "discovery"
                     ? "Start bounded discovery"
-                    : "Start ML training"}
+                    : exploratory
+                      ? "Start exploratory ML"
+                      : "Start ML training"}
               </button>
             </>
           )}
@@ -624,8 +667,24 @@ export function EquityWorkflows({ page }: { page: string }) {
                         </td>
                         <td>
                           <Badge
-                            text={s.eligible ? "ELIGIBLE" : "BLOCKED_DATA"}
+                            text={
+                              s.eligible
+                                ? exploratory
+                                  ? "EXPLORATORY"
+                                  : "ELIGIBLE"
+                                : "BLOCKED_DATA"
+                            }
                           />
+                          {exploratory &&
+                            s.eligible &&
+                            s.strict_blockers?.map((reason) => (
+                              <small
+                                className="snapshot-id"
+                                key={`limitation-${reason}`}
+                              >
+                                Strict research limitation: {reason}
+                              </small>
+                            ))}
                           {s.blockers.map((reason) => (
                             <small className="snapshot-id" key={reason}>
                               {reason}

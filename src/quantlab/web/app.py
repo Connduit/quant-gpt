@@ -346,8 +346,13 @@ def create_app(
         }
 
     @app.get("/api/v1/workflows/snapshots")
-    def workflow_snapshots(start: date | None = None, end: date | None = None, assigned=access):
-        return snapshot_inventory(library, start=start, end=end)
+    def workflow_snapshots(
+        start: date | None = None,
+        end: date | None = None,
+        research_mode: Literal["strict", "exploratory"] = "strict",
+        assigned=access,
+    ):
+        return snapshot_inventory(library, start=start, end=end, research_mode=research_mode)
 
     @app.get("/api/v1/workflows/providers")
     def workflow_providers(assigned=access):

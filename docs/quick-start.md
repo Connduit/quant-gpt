@@ -113,13 +113,20 @@ it authorizes an estimated download budget; provider billing may differ.
 In **Historical snapshot library**, inspect **eligibility** and the blocker text.
 Downloading prices alone does not make a dataset research-ready.
 
-The current dashboard requires unadjusted prices, verified historical universe
+Strict research requires unadjusted prices, verified historical universe
 membership (which stocks were available at the time), and complete corporate-action
 records such as splits/dividends. Alpaca/Databento price downloads alone do not
 supply this full bundle, so newly downloaded snapshots can remain ineligible.
 There is no dashboard button that certifies or fills in missing evidence.
-An administrator must prepare a verified library following
-[the workflow documentation](dashboard-workflows.md#server-setup-and-verification).
+
+To train prediction models with downloaded prices, choose **Exploratory ML —
+prediction only** in the Machine learning / Research form. This explicit mode
+accepts prices without those evidence bundles and reports their limitations.
+It generates predictive metrics and saved models, without trading simulations,
+strategy qualification, or promotion. Splits and dividends can distort unadjusted
+prices; no missing corrections are inferred. Discovery still requires strict inputs.
+For strict research or Discovery, an administrator must prepare a verified library
+following [the workflow documentation](dashboard-workflows.md#server-setup-and-verification).
 
 Snapshot dates alone no longer block training/discovery. Choose **Research start
 date** and **Research end date** in either form. The dashboard automatically extracts

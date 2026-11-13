@@ -54,7 +54,7 @@ def prepare_research_inputs(request: ResearchRequest, library: Path, destination
         # Eligibility was checked before any source payload was opened. Copy only
         # events effective within the requested range; keep delayed dividend pay dates.
         source_ledger = library / "actions" / f"{sid}.json"
-        if source_ledger.exists():
+        if request.research_mode != "exploratory" and source_ledger.exists():
             if not source_ledger.resolve().is_relative_to(library.resolve()):
                 raise ValueError("Action ledger escapes the dashboard library")
             ledger = json.loads(source_ledger.read_text())
@@ -75,5 +75,7 @@ def prepare_research_inputs(request: ResearchRequest, library: Path, destination
             actions.write_text(json.dumps(ledger, indent=2) + "\n")
             snapshots[bounds.symbol] = {"snapshot_id": child_id, "actions": str(actions)}
         else:
-            snapshots[bounds.symbol] = child_id  # Explicit synthetic engine fixtures only.
+            snapshots[bounds.symbol] = (
+                child_id  # Price-only exploration or synthetic engine fixtures.
+            )
     return snapshots

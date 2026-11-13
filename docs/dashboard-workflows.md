@@ -31,6 +31,43 @@ downloads another immutable version without overwriting earlier data. Validation
 checks source date bounds, full XNYS sessions, OHLCV consistency, hashes and
 storage/DuckDB read-back. HTML verification pages and HTTP errors fail the job.
 
+## Exploratory ML for downloaded prices
+
+In **Machine learning** / **Research**, choose **Research mode → Exploratory ML —
+prediction only**. Select one downloaded snapshot per stock plus SPY, choose your
+research dates, models and chronological windows, then click **Start exploratory
+ML**. Switching modes clears snapshot selection so the eligibility rules are
+explicit. For a full 2020–2026 range with the default 504 training and 126
+validation sessions, use 252 evaluation sessions per fold to stay within the
+eight-fold budget. Exploratory snapshots show **EXPLORATORY**, with their strict-research
+limitations still visible. The default remains **Strict research**.
+
+Exploratory ML accepts declared unadjusted or adjusted daily prices without
+corporate-action ledgers or historical-universe membership. All selected inputs
+must share the same declared price basis. Synthetic and unspecified-basis inputs
+remain blocked. Source checksums, OHLCV/calendar validation, requested date bounds,
+availability timestamps, train-only preprocessing, purging and resource limits
+still apply. No action records, historical membership, or eligibility claims are
+invented. The original snapshots are unchanged.
+
+This path produces saved models, features, validation/out-of-sample prediction
+metrics and predictions, but **no portfolio simulation, return-after-costs report,
+strategy qualification or promotion**. Targets are next-eligible-open to horizon-
+open quoted price changes relative to SPY, not verified total returns. Logistic
+regression predicts the probability of a positive excess price change.
+
+Raw splits and dividends can distort features and targets; this mode does not
+infer corrections. Adjusted inputs retain the vendor's retrospective adjustment
+basis and are not certified point-in-time inputs. Reports show the input basis,
+large close-price-change diagnostic counts (absolute changes of at least 40%),
+source lineage, hashes and these limitations. Counts are not verified actions.
+A fixed supplied stock list also introduces possible survivorship/selection bias.
+
+Exploratory mode is available only for ML training. **Discovery** and strict
+research retain the raw-price/action/PIT evidence requirements. Old API requests
+default to strict mode; exploratory API requests must specify `research_mode:
+exploratory`, the training workflow and both research dates.
+
 ## ML training and discovery
 
 1. Open **Machine learning** / **Research**, or **Discovery**.

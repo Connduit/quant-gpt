@@ -118,3 +118,58 @@ test("Databento provider selection sends a bounded explicit cost authorization",
   expect(submitted?.maximum_download_cost).toBe(1.25);
   expect(submitted?.databento_dataset).toBe("XNAS.ITCH");
 });
+
+test("exploratory ML enables downloaded snapshots without strict evidence", async ({
+  page,
+}) => {
+  let submitted: Record<string, unknown> | undefined;
+  await page.route("**/api/v1/workflows/snapshots*", (route) => {
+    const exploratory =
+      new URL(route.request().url()).searchParams.get("research_mode") ===
+      "exploratory";
+    return route.fulfill({
+      json: {
+        items: ["AAPL", "SPY"].map((symbol, index) => ({
+          id: String(index + 1).repeat(64),
+          symbol,
+          start: "2020-01-02",
+          end: "2025-12-31",
+          rows: 1500,
+          provider: "browser-test",
+          price_basis: "unadjusted",
+          eligible: exploratory,
+          strict_blockers: ["Complete corporate-action ledger is missing"],
+          blockers: exploratory
+            ? []
+            : ["Complete corporate-action ledger is missing"],
+        })),
+        errors: [],
+      },
+    });
+  });
+  await page.route("**/api/v1/workflows/research", async (route) => {
+    submitted = route.request().postDataJSON();
+    await route.fulfill({
+      status: 202,
+      json: { id: "exploratory-form-check" },
+    });
+  });
+  await page.goto("/models");
+  await expect(
+    page.getByRole("button", { name: "Start ML training", exact: true }),
+  ).toBeDisabled();
+  await page.getByLabel("Research mode").selectOption("exploratory");
+  await page.getByRole("checkbox", { name: /^Select AAPL/ }).check();
+  await page.getByRole("checkbox", { name: /^Select SPY/ }).check();
+  await page.getByLabel("Research end date").fill("2024-12-31");
+  await page
+    .getByRole("button", { name: "Start exploratory ML", exact: true })
+    .click();
+  await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: "Queued exploratory-form-check" }),
+  ).toBeVisible();
+  expect(submitted?.research_mode).toBe("exploratory");
+  expect(submitted?.end).toBe("2024-12-31");
+});

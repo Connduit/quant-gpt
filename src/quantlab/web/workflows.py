@@ -45,6 +45,7 @@ class DownloadRequest(BaseModel):
 class ResearchRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     workflow: Literal["training", "discovery"]
+    research_mode: Literal["strict", "exploratory"] = "strict"
     name: str = Field(min_length=3, max_length=80, pattern=r"^[a-zA-Z0-9 _-]+$")
     snapshot_ids: list[str] = Field(min_length=2, max_length=12)
     models: list[MODEL_TYPES] = Field(min_length=1, max_length=5)
@@ -61,6 +62,10 @@ class ResearchRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_request(self):
+        if self.research_mode == "exploratory" and (
+            self.workflow != "training" or self.start is None or self.end is None
+        ):
+            raise ValueError("Exploratory ML requires training workflow and an explicit date range")
         if (self.start is None) != (self.end is None):
             raise ValueError("Supply both research start and end dates")
         if self.start is not None:
@@ -131,8 +136,21 @@ def research_blockers(
     return reasons
 
 
+def exploratory_blockers(metadata: dict) -> list[str]:
+    reasons = []
+    if metadata["synthetic"]:
+        reasons.append("Synthetic inputs are engineering fixtures, not eligible real research data")
+    if metadata["price_basis"] not in ("unadjusted", "adjusted"):
+        reasons.append("Exploratory ML requires a declared adjusted or unadjusted price basis")
+    return reasons
+
+
 def snapshot_inventory(
-    library: Path, *, start: date | None = None, end: date | None = None
+    library: Path,
+    *,
+    start: date | None = None,
+    end: date | None = None,
+    research_mode: Literal["strict", "exploratory"] = "strict",
 ) -> dict:
     if (start is None) != (end is None):
         raise ValueError("Supply both research start and end dates")
@@ -143,7 +161,10 @@ def snapshot_inventory(
         sid = path.parent.name
         try:
             metadata = safe_manifest(library, sid, allow_holdout=True)
-            reasons = research_blockers(library, sid, metadata, start=start, end=end)
+            strict_reasons = research_blockers(library, sid, metadata, start=start, end=end)
+            reasons = (
+                exploratory_blockers(metadata) if research_mode == "exploratory" else strict_reasons
+            )
             if start is not None and (
                 str(start) < metadata["request"]["start"] or str(end) > metadata["request"]["end"]
             ):
@@ -160,6 +181,8 @@ def snapshot_inventory(
                     "retrieved_at": metadata["retrieved_at"],
                     "eligible": not reasons,
                     "blockers": reasons,
+                    "strict_blockers": strict_reasons,
+                    "research_mode": research_mode,
                 }
             )
         except (ValueError, KeyError, TypeError, OSError) as exc:
@@ -169,6 +192,7 @@ def snapshot_inventory(
 
 def selected_snapshots(library: Path, request: ResearchRequest) -> dict:
     snapshots = {}
+    price_bases = set()
     for sid in request.snapshot_ids:
         metadata = safe_manifest(library, sid, allow_holdout=request.start is not None)
         if request.start is not None and (
@@ -176,9 +200,14 @@ def selected_snapshots(library: Path, request: ResearchRequest) -> dict:
             or str(request.end) > metadata["request"]["end"]
         ):
             raise ValueError("Research dates must be within every selected snapshot")
-        reasons = research_blockers(library, sid, metadata, start=request.start, end=request.end)
+        reasons = (
+            exploratory_blockers(metadata)
+            if request.research_mode == "exploratory"
+            else (research_blockers(library, sid, metadata, start=request.start, end=request.end))
+        )
         if reasons:
             raise ValueError(f"{metadata['request']['symbol']}: " + "; ".join(reasons))
+        price_bases.add(metadata["price_basis"])
         symbol = metadata["request"]["symbol"]
         if symbol in snapshots:
             raise ValueError("Choose one snapshot per symbol")
@@ -186,8 +215,10 @@ def selected_snapshots(library: Path, request: ResearchRequest) -> dict:
             "snapshot_id": sid,
             "actions": str(library / "actions" / f"{sid}.json"),
         }
+    if request.research_mode == "exploratory" and len(price_bases) != 1:
+        raise ValueError("Exploratory inputs must use the same declared price basis")
     if "SPY" not in snapshots:
         raise ValueError("Select a SPY benchmark snapshot plus at least one equity")
-    if request.top_n > len(snapshots) - 1:
+    if request.research_mode == "strict" and request.top_n > len(snapshots) - 1:
         raise ValueError("Top holdings cannot exceed the selected equity count")
     return snapshots

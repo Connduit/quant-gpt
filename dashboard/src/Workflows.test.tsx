@@ -38,6 +38,7 @@ function api(
     "fetch",
     vi.fn(async (url: string, options: RequestInit = {}) => {
       let data: unknown = { items: [], approved: [] };
+      const exploratory = url.includes("research_mode=exploratory");
       if (url.includes("/workflows/snapshots"))
         data = {
           items: ["AAA", "SPY"].map((symbol, index) => ({
@@ -46,13 +47,18 @@ function api(
             ...coverage,
             rows: 1200,
             provider: "test",
-            price_basis: eligible
-              ? "unadjusted"
-              : "vendor_adjustment_unspecified",
-            eligible,
-            blockers: eligible
+            price_basis:
+              eligible || exploratory
+                ? "unadjusted"
+                : "vendor_adjustment_unspecified",
+            eligible: eligible || exploratory,
+            strict_blockers: eligible
               ? []
               : ["Complete corporate-action ledger is missing"],
+            blockers:
+              eligible || exploratory
+                ? []
+                : ["Complete corporate-action ledger is missing"],
           })),
           errors: [],
         };
@@ -161,6 +167,48 @@ describe("equity dashboard workflows", () => {
     });
     expect(
       screen.getByRole("button", { name: "Start ML training" }),
+    ).toBeDisabled();
+  });
+  it("enables explicitly selected exploratory ML for downloaded prices", async () => {
+    const post = api(false, { start: "2020-01-02", end: "2025-12-31" });
+    mount("models");
+    await screen.findByText("AAA");
+    expect(
+      screen.getByRole("button", { name: "Start ML training" }),
+    ).toBeDisabled();
+    fireEvent.change(screen.getByLabelText("Research mode"), {
+      target: { value: "exploratory" },
+    });
+    await waitFor(() =>
+      expect(
+        screen.getAllByRole("checkbox", { name: /^Select / })[0],
+      ).toBeEnabled(),
+    );
+    screen
+      .getAllByRole("checkbox", { name: /^Select / })
+      .forEach((choice) => fireEvent.click(choice));
+    expect(screen.queryByLabelText("Top holdings")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/Reports contain prediction metrics only/),
+    ).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Start exploratory ML" }),
+    );
+    await screen.findByText(/Queued test-job/);
+    expect(post.mock.calls[0][1]).toMatchObject({
+      workflow: "training",
+      research_mode: "exploratory",
+      start: "2020-01-02",
+      end: "2025-12-31",
+    });
+  });
+  it("does not offer exploratory mode for Discovery", async () => {
+    api();
+    mount("discovery");
+    await screen.findByText("AAA");
+    expect(screen.queryByLabelText("Research mode")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Start bounded discovery" }),
     ).toBeDisabled();
   });
   it("keeps unverified Stooq inputs ineligible for trading research", async () => {

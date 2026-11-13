@@ -288,7 +288,10 @@ Machine learning and Discovery include bounded equity research forms, snapshot
 selection, job cancellation and downloadable reports. These require researcher
 access and eligible inputs covering the selected research date range. Larger
 snapshots are automatically sliced before fitting; Stooq-only snapshots do not satisfy the
-raw-price/action/PIT research gate. See [guided workflows](docs/dashboard-workflows.md).
+raw-price/action/PIT research gate. An explicit **Exploratory ML** mode accepts
+downloaded prices for predictive experiments without that evidence, reports the
+limitations, and produces no trading simulation or qualification. Discovery retains
+strict eligibility. See [guided workflows](docs/dashboard-workflows.md).
 
 ## Bounded research agent
 
