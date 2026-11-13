@@ -39,6 +39,7 @@ class Portfolio:
         self.commissions = ZERO
         self.spread_cost = ZERO
         self.slippage_cost = ZERO
+        self.market_impact_cost = ZERO
 
     def apply_fill(self, fill: Fill) -> Decimal:
         quantity, price, fee = fill.quantity, fill.price, fill.commission
@@ -72,6 +73,7 @@ class Portfolio:
         self.commissions += fee
         self.spread_cost += fill.spread_cost
         self.slippage_cost += fill.slippage_cost
+        self.market_impact_cost += fill.market_impact_cost
         return realized
 
     def split(self, symbol: str, ratio: Decimal) -> None:

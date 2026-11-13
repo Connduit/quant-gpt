@@ -135,3 +135,22 @@ export function downloadCSV(name: string, rows: Record<string, unknown>[]) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+export async function downloadProfitabilityBundle(identity: string) {
+  const response = await fetch(
+    `/api/v1/workflows/jobs/${encodeURIComponent(identity)}/profitability.zip`,
+    {
+      headers: bearer ? { Authorization: `Bearer ${bearer}` } : {},
+    },
+  );
+  if (!response.ok)
+    throw new Error(
+      `Unable to download profitability artifacts (HTTP ${response.status})`,
+    );
+  const url = URL.createObjectURL(await response.blob());
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `profitability-${identity}.zip`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}

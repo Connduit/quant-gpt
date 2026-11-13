@@ -166,3 +166,47 @@ def test_multi_stock_actions_do_not_share_entitlements_or_split_other_instrument
     final = {p["symbol"]: p for p in result.positions if p["session_date"] == dates[3]}
     assert final["AAA"]["quantity"] == 2
     assert final["BBB"]["quantity"] == 1
+
+
+def test_phase12c_threshold_probability_risk_and_holding(ml_feeds):
+    from quantlab.profitability.strategy import PredictionStrategy, StrategyPolicy
+
+    feeds, _, _, _ = ml_feeds
+    market, source = market_and_rows(feeds)
+    rows = []
+    for row in source:
+        symbol, day = row["symbol"], row["session_date"]
+        index = next(i for i, bar in enumerate(feeds[symbol].bars) if bar.session_date == day)
+        rows.append(
+            {
+                **row,
+                "prediction": {"AAA": 0.7, "BBB": 0.6, "CCC": 0.1}[symbol],
+                "realized_vol_long": {"AAA": 0.9, "BBB": 0.1, "CCC": 0.01}[symbol],
+                "execution_at": feeds[symbol].bars[index + 1].open_time,
+            }
+        )
+    policy = StrategyPolicy(
+        top_n=1,
+        probability_threshold=0.65,
+        volatility_adjusted=True,
+        rebalance_sessions=1,
+        holding_sessions=2,
+        maximum_position_weight=0.3,
+        cash_allocation=0.2,
+    )
+    result = run_backtest(
+        market,
+        PredictionStrategy(rows, ("AAA", "BBB", "CCC"), policy, probability=True),
+        BacktestConfig(D(10000), Costs(0, 0, 0, 0, 0), liquidate_at_end=True),
+    )
+    buys = [t for t in result.trades if t["side"] == "buy"]
+    assert buys and all(t["symbol"] == "AAA" for t in buys)  # Threshold uses raw p, not p/vol.
+    assert all(r["cash"] >= 0 and float(r["gross_exposure"]) <= 0.32 for r in result.equity)
+    assert any(s["decision"] == "EXIT" for s in result.signals)
+    assert result.equity[-1]["quantity"] == 0
+    sell = next(t for t in result.trades if t["side"] == "sell")
+    assert sell["timestamp"] <= feeds["AAA"].bars[3].open_time  # Two sessions after entry.
+    no_entry = replace(policy, probability_threshold=0.99)
+    assert not run_backtest(
+        market, PredictionStrategy(rows, ("AAA", "BBB", "CCC"), no_entry, probability=True)
+    ).trades

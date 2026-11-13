@@ -43,6 +43,9 @@ def performance(rows: list[dict], trades: list[dict], initial_cash, sessions_per
         "sharpe_ratio": mean / deviation * math.sqrt(sessions_per_year) if deviation else None,
         "sortino_ratio": mean / downside * math.sqrt(sessions_per_year) if downside else None,
         "annualized_volatility": deviation * math.sqrt(sessions_per_year),
+        "calmar_ratio": annualized / abs(maximum_drawdown)
+        if annualized is not None and maximum_drawdown
+        else None,
         "maximum_drawdown": maximum_drawdown,
         "gross_turnover": notional / statistics.mean(equity),
         "average_gross_exposure": statistics.mean(float(row["gross_exposure"]) for row in rows),
@@ -59,4 +62,6 @@ def performance(rows: list[dict], trades: list[dict], initial_cash, sessions_per
         "commissions": rows[-1]["commissions"],
         "spread_cost": rows[-1]["spread_cost"],
         "slippage_cost": rows[-1]["slippage_cost"],
+        "market_impact_cost": rows[-1].get("market_impact_cost", 0),
+        "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
     }

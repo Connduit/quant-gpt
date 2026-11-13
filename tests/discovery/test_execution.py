@@ -18,7 +18,8 @@ from quantlab.discovery.study import definition_for_number, run_single, run_stud
 def test_subprocess_mlflow_duplicate_and_exact_reproduction(study_file, tmp_path):
     root = tmp_path / "experiments"
     first = run_single(study_file, root)
-    assert first["attempt"]["status"] == "COMPLETE", first["attempt"]["reason"]
+    assert first["attempt"]["status"] == "REJECTED", first["attempt"]["reason"]
+    assert "nonpositive_net_return" in first["result"]["summary"]["rejection_reasons"]
     assert first["result"]["holdout"]["status"] == "not_accessible_to_trials"
     assert len(first["result"]["windows"]) >= 2
     duplicate = run_single(study_file, root)
@@ -34,7 +35,7 @@ def test_subprocess_mlflow_duplicate_and_exact_reproduction(study_file, tmp_path
     assert not repeated["duplicate"]
     assert repeated["result"]["summary"] == first["result"]["summary"]
     original = Registry(root).attempt(first["attempt"]["id"])
-    assert original["status"] == "COMPLETE" and original["number"] == 1
+    assert original["status"] == "REJECTED" and original["number"] == 1
     for previous, next_window in zip(
         first["result"]["windows"], first["result"]["windows"][1:], strict=False
     ):
@@ -169,7 +170,8 @@ def test_tracking_failure_preserves_result_and_can_be_retried(study_file, tmp_pa
     assert (Path(failed["attempt"]["artifact_path"]) / "result.json").exists()
     monkeypatch.setattr(engine.tracker, "finish", original)
     retry = engine.run(definition)
-    assert retry["attempt"]["status"] == "COMPLETE"
+    assert retry["attempt"]["status"] == "REJECTED"
+    assert "nonpositive_net_return" in retry["result"]["summary"]["rejection_reasons"]
     assert failed["result"]["summary"] == retry["result"]["summary"]
     assert engine.registry.attempt(failed["attempt"]["id"])["status"] == "TRACKING_FAILED"
 

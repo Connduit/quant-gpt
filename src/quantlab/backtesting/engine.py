@@ -2,8 +2,8 @@
 
 import heapq
 from dataclasses import asdict, dataclass, field, is_dataclass, replace
-from datetime import UTC, datetime, time
-from decimal import Context, Decimal, localcontext
+from datetime import UTC, datetime, time, timedelta
+from decimal import ROUND_FLOOR, Context, Decimal, localcontext
 from types import MappingProxyType
 from zoneinfo import ZoneInfo
 
@@ -28,8 +28,12 @@ class BacktestConfig:
     initial_cash: Decimal = Decimal("100000")
     costs: Costs = Costs()
     sessions_per_year: int = 252
+    liquidate_at_end: bool = False
+    whole_shares: bool = False
 
     def __post_init__(self) -> None:
+        if type(self.liquidate_at_end) is not bool or type(self.whole_shares) is not bool:
+            raise ValueError("Execution switches must be booleans")
         object.__setattr__(self, "initial_cash", decimal(self.initial_cash))
         if self.initial_cash <= 0:
             raise ValueError("initial_cash must be positive and finite")
@@ -93,6 +97,9 @@ def _replay(data, strategy, config):
         schedule(reference.close_time, 4, "close", batch)
         for bar in batch:
             schedule(bar.available_at, 5, "available", bar)
+    terminal = False
+    if config.liquidate_at_end:
+        schedule(first.bars[-1].open_time - timedelta(microseconds=1), 2, "liquidate", None)
     dividend_id = 0
     for symbol, feed in sorted(feeds.items()):
         by_date = {bar.session_date: bar for bar in feed.bars}
@@ -126,7 +133,35 @@ def _replay(data, strategy, config):
 
     while events:
         now, _, _, kind, payload = heapq.heappop(events)
-        if kind == "split":
+        if kind == "liquidate":
+            terminal = True
+            for order in orders:
+                if order.status == OrderStatus.PENDING:
+                    order.status, order.resolved_at = OrderStatus.CANCELLED, now
+                    order.reason = "terminal_liquidation"
+            for symbol, position in sorted(portfolio.positions.items()):
+                if position.quantity:
+                    signals.append(
+                        {
+                            "timestamp": now,
+                            "session_date": first.bars[-1].session_date,
+                            "symbol": symbol,
+                            "target_quantity": ZERO,
+                            "decision": "EXIT",
+                            "reason": "terminal_liquidation",
+                        }
+                    )
+                    orders.append(
+                        Order(
+                            len(orders) + 1,
+                            symbol,
+                            Side.SELL,
+                            position.quantity,
+                            now,
+                            position.quantity,
+                        )
+                    )
+        elif kind == "split":
             symbol, split = payload
             before = portfolio.positions.get(symbol, Position())
             portfolio.split(symbol, split.ratio)
@@ -230,6 +265,7 @@ def _replay(data, strategy, config):
                     "commissions": portfolio.commissions,
                     "spread_cost": portfolio.spread_cost,
                     "slippage_cost": portfolio.slippage_cost,
+                    "market_impact_cost": portfolio.market_impact_cost,
                 }
             )
             for symbol in sorted(feeds):
@@ -263,18 +299,36 @@ def _replay(data, strategy, config):
                 MappingProxyType(observed_prices.copy()),
             )
             seen = set()
-            for signal in strategy.on_bar(context):
+            for signal in () if terminal else strategy.on_bar(context):
                 if not isinstance(signal, Signal):
                     raise ValueError("Strategies must return Signal values")
                 if signal.symbol not in feeds or signal.symbol in seen:
                     raise ValueError("A callback may emit at most one target per known instrument")
                 seen.add(signal.symbol)
+                if config.whole_shares:
+                    signal = replace(
+                        signal,
+                        target_quantity=signal.target_quantity.to_integral_value(
+                            rounding=ROUND_FLOOR
+                        ),
+                    )
+                current = portfolio.positions.get(signal.symbol, Position()).quantity
+                decision = (
+                    "HOLD"
+                    if signal.target_quantity == current
+                    else "EXIT"
+                    if not signal.target_quantity
+                    else "BUY"
+                    if signal.target_quantity > current
+                    else "SELL"
+                )
                 signals.append(
                     {
                         "timestamp": now,
                         "session_date": bar.session_date,
                         "symbol": signal.symbol,
                         "target_quantity": signal.target_quantity,
+                        "decision": decision,
                     }
                 )
                 for order in orders:
@@ -322,7 +376,12 @@ def _replay(data, strategy, config):
         "performance_kind": "hypothetical_backtest",
         "execution": "next_eligible_open_strictly_after_signal",
         "position_policy": "long_only_cash_no_leverage",
-        "final_positions": "marked_at_final_close_not_liquidated",
+        "final_positions": "liquidated_at_final_open_with_costs"
+        if config.liquidate_at_end
+        else "marked_at_final_close_not_liquidated",
+        "share_assumption": "whole_share_orders; splits may create fractional entitlements"
+        if config.whole_shares
+        else "fractional_shares",
         "replay_start": first.bars[0].session_date,
         "replay_end": first.bars[-1].session_date,
     }

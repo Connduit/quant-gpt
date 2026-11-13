@@ -123,7 +123,11 @@ To train prediction models with downloaded prices, choose **Exploratory ML —
 prediction only** in the Machine learning / Research form. This explicit mode
 accepts prices without those evidence bundles and reports their limitations.
 It generates predictive metrics and saved models, without trading simulations,
-strategy qualification, or promotion. Splits and dividends can distort unadjusted
+strategy qualification, or promotion.
+To test trading performance afterwards, open the completed ML report and use
+**Evaluate strategy profitability**. This separate Phase 12C action replays saved
+predictions with costs and produces net-performance charts and downloadable trade
+logs; exploratory results remain unqualified. See [the workflow](phase12c/README.md). Splits and dividends can distort unadjusted
 prices; no missing corrections are inferred. Discovery still requires strict inputs.
 For strict research or Discovery, an administrator must prepare a verified library
 following [the workflow documentation](dashboard-workflows.md#server-setup-and-verification).

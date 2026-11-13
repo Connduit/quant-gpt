@@ -1,0 +1,106 @@
+{
+  "data_source": "Alpaca v2 SIP daily bars, adjustment=raw",
+  "request_bounds": {
+    "start": "2016-01-01T00:00:00Z",
+    "end": "2018-12-31T23:59:59Z"
+  },
+  "source_snapshots": [
+    {
+      "snapshot_id": "adaff3292f1b5dfe99cba5b0af1853d2439ee55e8de239a5e8bb51e406fb9e8a",
+      "provider": "alpaca-sip-daily-raw",
+      "request": {
+        "end": "2018-12-31",
+        "start": "2016-01-01",
+        "symbol": "SPY"
+      },
+      "retrieved_at": "2026-11-13T06:18:49.843513+00:00",
+      "price_basis": "unadjusted",
+      "row_count": 754,
+      "raw_sha256": "efa825aa4acce4adc09fedd94942ba0df8ba2145621957242ddf47a742b77fd2",
+      "parquet_sha256": "b75244b065012756d816cac580be7d17b47702a0f374157d1c1dab79a1fd9b8e",
+      "point_in_time": false,
+      "universe_membership_included": false,
+      "corporate_actions_included": false
+    },
+    {
+      "snapshot_id": "2080c1447d0d8885b92f97386f2048de8d9f4389f7ee30914707ae7b360b044e",
+      "provider": "alpaca-sip-daily-raw",
+      "request": {
+        "end": "2018-12-31",
+        "start": "2016-01-01",
+        "symbol": "AAPL"
+      },
+      "retrieved_at": "2026-11-13T06:18:49.935778+00:00",
+      "price_basis": "unadjusted",
+      "row_count": 754,
+      "raw_sha256": "0ce92c8ab56d1ebe53e2f339023eb89925883ab392d1ecd7f5922e18cb19d620",
+      "parquet_sha256": "4b7483ad259e76df21a8d61f8688939cfde318279730a332c86967dae97bbc6b",
+      "point_in_time": false,
+      "universe_membership_included": false,
+      "corporate_actions_included": false
+    },
+    {
+      "snapshot_id": "1b2f09f3559b5e86a0418e7b782ad30fcdf69006db3665a558b3a88ac44e2902",
+      "provider": "alpaca-sip-daily-raw",
+      "request": {
+        "end": "2018-12-31",
+        "start": "2016-01-01",
+        "symbol": "MSFT"
+      },
+      "retrieved_at": "2026-11-13T06:18:50.146124+00:00",
+      "price_basis": "unadjusted",
+      "row_count": 754,
+      "raw_sha256": "be277c8ebdc43b39dd409264474af42113eb05fe9383448995ec6969cbaf8793",
+      "parquet_sha256": "782a13d3ba0248b5c66de897895a2f67f5e8500a5033e04bf4ba0c79f7fc48f5",
+      "point_in_time": false,
+      "universe_membership_included": false,
+      "corporate_actions_included": false
+    },
+    {
+      "snapshot_id": "515444d6268090161899336320e7302a367cbc02bd9d20649b135bd010e583cf",
+      "provider": "alpaca-sip-daily-raw",
+      "request": {
+        "end": "2018-12-31",
+        "start": "2016-01-01",
+        "symbol": "NVDA"
+      },
+      "retrieved_at": "2026-11-13T06:18:50.357263+00:00",
+      "price_basis": "unadjusted",
+      "row_count": 754,
+      "raw_sha256": "97da5312d2d6f8ef71ce8e82e33e6ca39c4f7741c053961b3d6a833617ee2590",
+      "parquet_sha256": "bfae277ea08a1199f91c47f84ebdffaba31be9b8ce9f157ddf6355d13d5b1511",
+      "point_in_time": false,
+      "universe_membership_included": false,
+      "corporate_actions_included": false
+    }
+  ],
+  "training_request": {
+    "workflow": "training",
+    "research_mode": "exploratory",
+    "name": "Phase 12C pre-2019 demonstration",
+    "snapshot_ids": [
+      "adaff3292f1b5dfe99cba5b0af1853d2439ee55e8de239a5e8bb51e406fb9e8a",
+      "2080c1447d0d8885b92f97386f2048de8d9f4389f7ee30914707ae7b360b044e",
+      "1b2f09f3559b5e86a0418e7b782ad30fcdf69006db3665a558b3a88ac44e2902",
+      "515444d6268090161899336320e7302a367cbc02bd9d20649b135bd010e583cf"
+    ],
+    "models": [
+      "ridge"
+    ],
+    "start": "2016-01-01",
+    "end": "2018-12-31",
+    "horizon": 5,
+    "training_sessions": 252,
+    "validation_sessions": 63,
+    "test_sessions": 126,
+    "top_n": 2,
+    "max_trials": 1,
+    "seed": 42,
+    "confirmed": true
+  },
+  "protected_holdout_requested_or_read": false,
+  "live_orders_submitted": false,
+  "source_prediction_sha256": "ca5c1161d39d0088a036096c1cea3bc3da3d731ca2e44a64c631572263e217e2",
+  "source_dataset_sha256": "c76a8e3137fd3552543e6d2d16cbaf287eb3b682413e4f37b8a77b602c6079d8",
+  "offline_source_id_note": "cccc... is a standalone demonstration identity, not a retained dashboard job ID."
+}

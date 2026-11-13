@@ -155,6 +155,7 @@ def load_experiment(path: Path) -> Experiment:
             "minimum_commission",
             "slippage_bps",
             "spread_bps",
+            "market_impact_bps",
         ),
         "execution",
     )

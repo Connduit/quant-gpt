@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./api";
 import { Badge, ErrorBox, JsonView } from "./components";
 import { ResearchReport } from "./ResearchReport";
+import { StrategyEvaluation } from "./StrategyEvaluation";
+import { ProfitabilityReport } from "./ProfitabilityReport";
 
 interface Snapshot {
   id: string;
@@ -236,7 +238,7 @@ export function EquityWorkflows({ page }: { page: string }) {
     URL.revokeObjectURL(url);
   }
   const workflowJobs = (jobs.data?.items ?? []).filter((j) =>
-    /^(download|training|discovery)-/.test(j.name),
+    /^(download|training|discovery|profitability)-/.test(j.name),
   );
   return (
     <>
@@ -756,7 +758,27 @@ export function EquityWorkflows({ page }: { page: string }) {
               <h4>Workflow report</h4>
               <button onClick={download}>Download report JSON</button>
             </div>
-            <ResearchReport data={report} />
+            {report.workflow === "profitability" ? (
+              <ProfitabilityReport data={report} identity={reportId} />
+            ) : (
+              <>
+                {report.workflow === "training" &&
+                  report.status === "COMPLETED" && (
+                    <StrategyEvaluation
+                      key={reportId}
+                      sourceId={reportId}
+                      source={report}
+                      queued={(id) => {
+                        setMessage(
+                          `Queued ${id}. Follow its strategy evaluation below.`,
+                        );
+                        void query.invalidateQueries({ queryKey: ["jobs"] });
+                      }}
+                    />
+                  )}
+                <ResearchReport data={report} />
+              </>
+            )}
             <JsonView data={report} label="Raw report JSON" />
           </div>
         )}

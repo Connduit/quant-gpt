@@ -56,6 +56,10 @@ def summarize(windows: list[dict], eligibility: Eligibility, weights: ScoreWeigh
     exits = sum(w["performance"]["exit_fill_count"] for w in windows)
     reasons = []
     for condition, text in (
+        (
+            statistics.mean(returns) <= 0 or math.prod(1 + value for value in returns) <= 1,
+            "nonpositive_net_return",
+        ),
         (len(windows) < eligibility.minimum_windows, "too_few_validation_windows"),
         (fills < eligibility.minimum_fills, "too_few_fills"),
         (exits < eligibility.minimum_exit_fills, "too_few_exit_fills"),
@@ -86,7 +90,7 @@ def summarize(windows: list[dict], eligibility: Eligibility, weights: ScoreWeigh
     )
     terms = {
         "excess_return": weights.excess_return * mean_excess,
-        "predictive_skill": weights.predictive_skill * skill,
+        "predictive_skill": 0.0,  # Diagnostic only: forecasts never offset unprofitable trading.
         "sharpe": weights.sharpe * bounded_sharpe,
         "drawdown": -weights.drawdown * max_drawdown,
         "turnover": -weights.turnover * mean_turnover,
@@ -121,6 +125,8 @@ def summarize(windows: list[dict], eligibility: Eligibility, weights: ScoreWeigh
         "exit_fills": exits,
         "validation_windows": len(windows),
         "thresholds_are_heuristics": True,
+        "predictive_skill_diagnostic": skill,
+        "qualification": "NOT_QUALIFIED; independent statistical confirmation required",
     }
 
 
@@ -269,7 +275,8 @@ def evaluate_candidate(definition: dict, output: Path, *, progress_handshake=Fal
             else 0
         )
         total_cost = sum(
-            float(primary.metrics[k]) for k in ("commissions", "spread_cost", "slippage_cost")
+            float(primary.metrics[k])
+            for k in ("commissions", "spread_cost", "slippage_cost", "market_impact_cost")
         )
         window = {
             "number": fold.number,

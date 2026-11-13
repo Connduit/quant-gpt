@@ -1,0 +1,2431 @@
+{
+  "status": "COMPLETED",
+  "workflow": "profitability",
+  "report": {
+    "name": "Saved ML strategy profitability evaluation",
+    "performance_kind": "exploratory_backtest",
+    "qualified": false,
+    "model": "ridge",
+    "policy": {
+      "cash_allocation": 0.2,
+      "holding_sessions": 20,
+      "maximum_daily_loss": 0.05,
+      "maximum_drawdown": 0.2,
+      "maximum_position_weight": 0.4,
+      "minimum_dollar_volume": 1000000,
+      "minimum_prediction": 0,
+      "probability_threshold": 0.55,
+      "rebalance_sessions": 5,
+      "top_n": 2,
+      "volatility_adjusted": false,
+      "whole_shares": true
+    },
+    "evaluation_start": "2017-06-29",
+    "evaluation_end": "2018-12-31",
+    "data_limitations": [
+      "SPY: Certified point-in-time universe membership is missing",
+      "SPY: Complete corporate-action ledger is missing",
+      "AAPL: Certified point-in-time universe membership is missing",
+      "AAPL: Complete corporate-action ledger is missing",
+      "MSFT: Certified point-in-time universe membership is missing",
+      "MSFT: Complete corporate-action ledger is missing",
+      "NVDA: Certified point-in-time universe membership is missing",
+      "NVDA: Complete corporate-action ledger is missing"
+    ],
+    "limitations": [
+      "Hypothetical executable cash simulation, not live profit or future profitability.",
+      "Fixed-bps impact is an assumption, not calibrated capacity.",
+      "Full next-open fills; no book/queue, tax, financing, interest or cash-in-lieu.",
+      "Missing events are UNKNOWN and can invalidate exploratory results.",
+      "SPY/equal-weight: same cash; no stock cap/drawdown stop. Compare exposure.",
+      "Regimes/bootstrap are descriptive diagnostics, not independent confirmation.",
+      "Final positions liquidated at the last scheduled open, with transaction costs."
+    ],
+    "statistical_validation": {
+      "deflated_sharpe_diagnostic": {
+        "annualized_sharpe": 1.372659505734845,
+        "assumption": "moment/normal approximation; effective-n substitution is heuristic",
+        "daily_sharpe": 0.08646942111769616,
+        "effective_n": 379.0,
+        "kurtosis": 9.145115362981683,
+        "null_dispersion_assumption": "independent Gaussian null SRs; conservative count",
+        "probability": 0.26614325664699895,
+        "reference_daily_sharpe": 0.11929742406788166,
+        "skewness": -0.3380110276237907,
+        "tested_variants": 56
+      },
+      "final_holdout": "NOT_READ_OR_EVALUATED",
+      "history_scope": "Includes retained repeats/failures; external hypotheses unknown",
+      "independent_confirmation": "NOT_PERFORMED",
+      "multiple_testing": "External search family unknown; no FDR qualification claimed",
+      "qualified": false,
+      "recorded_variants_lower_bound": 56,
+      "status": "NOT_VALIDATED"
+    },
+    "trade_count": 140,
+    "parameter_sensitivity": {
+      "holding_longer": {
+        "net": {
+          "annualized_return": 0.24332629018635468,
+          "annualized_volatility": 0.1558729371176174,
+          "average_exit_pnl": 490.5872992778481,
+          "average_gross_exposure": 0.5369881372149022,
+          "calmar_ratio": 1.8866651097378875,
+          "commissions": "136.100",
+          "dividend_income": "0",
+          "exit_fill_count": 79,
+          "fill_count": 141,
+          "final_equity": "138756.39664295",
+          "gross_turnover": 30.368929969517932,
+          "market_impact_cost": "391.22140815",
+          "maximum_drawdown": -0.12897163833180747,
+          "profit_factor": 2.298708037715431,
+          "realized_pnl": "38756.39664294999999999999999999993",
+          "sessions": 379,
+          "sharpe_ratio": 1.4757000508893632,
+          "slippage_cost": "1956.10704075",
+          "sortino_ratio": 2.1525025447583928,
+          "spread_cost": "391.22140815",
+          "time_in_market": 0.8153034300791556,
+          "total_return": 0.3875639664295001,
+          "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+          "unrealized_pnl": "0",
+          "win_rate": 0.7974683544303798
+        },
+        "policy": {
+          "cash_allocation": 0.2,
+          "holding_sessions": 21,
+          "maximum_daily_loss": 0.05,
+          "maximum_drawdown": 0.2,
+          "maximum_position_weight": 0.4,
+          "minimum_dollar_volume": 1000000,
+          "minimum_prediction": 0,
+          "probability_threshold": 0.55,
+          "rebalance_sessions": 5,
+          "top_n": 2,
+          "volatility_adjusted": false,
+          "whole_shares": true
+        }
+      },
+      "holding_shorter": {
+        "net": {
+          "annualized_return": 0.20459940460779583,
+          "annualized_volatility": 0.16126007505606127,
+          "average_exit_pnl": 414.1999172201282,
+          "average_gross_exposure": 0.577921086562986,
+          "calmar_ratio": 1.4927469047425321,
+          "commissions": "146.050",
+          "dividend_income": "0",
+          "exit_fill_count": 78,
+          "fill_count": 147,
+          "final_equity": "132307.59354317",
+          "gross_turnover": 32.63498334405572,
+          "market_impact_cost": "415.49993669",
+          "maximum_drawdown": -0.13706235394478006,
+          "profit_factor": 1.9388988576679438,
+          "realized_pnl": "32307.59354317000000000000000000000",
+          "sessions": 379,
+          "sharpe_ratio": 1.2353713786597582,
+          "slippage_cost": "2077.49968345",
+          "sortino_ratio": 1.7710815256953238,
+          "spread_cost": "415.49993669",
+          "time_in_market": 0.820580474934037,
+          "total_return": 0.3230759354316999,
+          "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+          "unrealized_pnl": "0",
+          "win_rate": 0.7564102564102564
+        },
+        "policy": {
+          "cash_allocation": 0.2,
+          "holding_sessions": 19,
+          "maximum_daily_loss": 0.05,
+          "maximum_drawdown": 0.2,
+          "maximum_position_weight": 0.4,
+          "minimum_dollar_volume": 1000000,
+          "minimum_prediction": 0,
+          "probability_threshold": 0.55,
+          "rebalance_sessions": 5,
+          "top_n": 2,
+          "volatility_adjusted": false,
+          "whole_shares": true
+        }
+      },
+      "rebalance_longer": {
+        "net": {
+          "annualized_return": 0.20519504944917957,
+          "annualized_volatility": 0.15044078511879275,
+          "average_exit_pnl": 514.3809476711111,
+          "average_gross_exposure": 0.5330096677238654,
+          "calmar_ratio": 1.576405093452948,
+          "commissions": "131.820",
+          "dividend_income": "0",
+          "exit_fill_count": 63,
+          "fill_count": 125,
+          "final_equity": "132405.99970328",
+          "gross_turnover": 29.663693649138217,
+          "market_impact_cost": "368.24867096",
+          "maximum_drawdown": -0.1301664466204696,
+          "profit_factor": 2.2429047657305357,
+          "realized_pnl": "32405.99970327999999999999999999998",
+          "sessions": 379,
+          "sharpe_ratio": 1.3163327493945218,
+          "slippage_cost": "1841.24335480",
+          "sortino_ratio": 1.8929631325243286,
+          "spread_cost": "368.24867096",
+          "time_in_market": 0.783641160949868,
+          "total_return": 0.3240599970328,
+          "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+          "unrealized_pnl": "0",
+          "win_rate": 0.7301587301587301
+        },
+        "policy": {
+          "cash_allocation": 0.2,
+          "holding_sessions": 20,
+          "maximum_daily_loss": 0.05,
+          "maximum_drawdown": 0.2,
+          "maximum_position_weight": 0.4,
+          "minimum_dollar_volume": 1000000,
+          "minimum_prediction": 0,
+          "probability_threshold": 0.55,
+          "rebalance_sessions": 6,
+          "top_n": 2,
+          "volatility_adjusted": false,
+          "whole_shares": true
+        }
+      },
+      "rebalance_shorter": {
+        "net": {
+          "annualized_return": 0.2726190961889318,
+          "annualized_volatility": 0.15664836553094005,
+          "average_exit_pnl": 508.1639873254651,
+          "average_gross_exposure": 0.5538766618255377,
+          "calmar_ratio": 2.0975829307084473,
+          "commissions": "158.570",
+          "dividend_income": "0",
+          "exit_fill_count": 86,
+          "fill_count": 164,
+          "final_equity": "143702.10290999",
+          "gross_turnover": 34.01173549190826,
+          "market_impact_cost": "434.88054143",
+          "maximum_drawdown": -0.12996820874055082,
+          "profit_factor": 2.4994708778829495,
+          "realized_pnl": "43702.10290999000000000000000000002",
+          "sessions": 379,
+          "sharpe_ratio": 1.6178856603372993,
+          "slippage_cost": "2174.40270715",
+          "sortino_ratio": 2.4434847229561707,
+          "spread_cost": "434.88054143",
+          "time_in_market": 0.7941952506596306,
+          "total_return": 0.43702102909990015,
+          "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+          "unrealized_pnl": "0",
+          "win_rate": 0.7558139534883721
+        },
+        "policy": {
+          "cash_allocation": 0.2,
+          "holding_sessions": 20,
+          "maximum_daily_loss": 0.05,
+          "maximum_drawdown": 0.2,
+          "maximum_position_weight": 0.4,
+          "minimum_dollar_volume": 1000000,
+          "minimum_prediction": 0,
+          "probability_threshold": 0.55,
+          "rebalance_sessions": 4,
+          "top_n": 2,
+          "volatility_adjusted": false,
+          "whole_shares": true
+        }
+      }
+    },
+    "prediction_diagnostics": {
+      "ridge": {
+        "calibration": null,
+        "directional_accuracy": 0.5361930294906166,
+        "error_target": "excess_price_change",
+        "mean_absolute_error": 0.040097573400882054,
+        "mean_squared_error": 0.004864990118315232,
+        "rank_ic_sessions": 373,
+        "rank_information_coefficient": -0.1032171581769437,
+        "samples": 1119
+      }
+    },
+    "equity_curves": {
+      "baseline": [
+        {
+          "date": "2017-06-29",
+          "drawdown": 0.0,
+          "equal_weight_equity": 100000.0,
+          "gross_equity": 100000.0,
+          "net_equity": 100000.0,
+          "spy_equity": 100000.0
+        },
+        {
+          "date": "2018-04-02",
+          "drawdown": -0.06872099294034928,
+          "equal_weight_equity": 117234.2117655,
+          "gross_equity": 127840.59,
+          "net_equity": 126240.610688,
+          "spy_equity": 104971.58332
+        },
+        {
+          "date": "2018-12-31",
+          "drawdown": -0.12134903313871648,
+          "equal_weight_equity": 117854.15975667,
+          "gross_equity": 138627.9694,
+          "net_equity": 135289.10925723,
+          "spy_equity": 102285.48496
+        }
+      ],
+      "high": [
+        {
+          "date": "2017-06-29",
+          "drawdown": 0.0,
+          "equal_weight_equity": 100000.0,
+          "gross_equity": 100000.0,
+          "net_equity": 100000.0,
+          "spy_equity": 100000.0
+        },
+        {
+          "date": "2018-04-02",
+          "drawdown": -0.0698279320989913,
+          "equal_weight_equity": 116123.814377,
+          "gross_equity": 127840.59,
+          "net_equity": 124674.274517,
+          "spy_equity": 104913.96664
+        },
+        {
+          "date": "2018-12-31",
+          "drawdown": -0.122353251919186,
+          "equal_weight_equity": 115626.85600154,
+          "gross_equity": 138627.9694,
+          "net_equity": 132084.96865176,
+          "spy_equity": 102168.56992
+        }
+      ],
+      "low": [
+        {
+          "date": "2017-06-29",
+          "drawdown": 0.0,
+          "equal_weight_equity": 100000.0,
+          "gross_equity": 100000.0,
+          "net_equity": 100000.0,
+          "spy_equity": 100000.0
+        },
+        {
+          "date": "2018-04-02",
+          "drawdown": -0.068165810421144,
+          "equal_weight_equity": 117731.14725,
+          "gross_equity": 127840.59,
+          "net_equity": 127038.66593825,
+          "spy_equity": 105000.39166
+        },
+        {
+          "date": "2018-12-31",
+          "drawdown": -0.12073112835288169,
+          "equal_weight_equity": 118866.932036835,
+          "gross_equity": 138627.9694,
+          "net_equity": 136986.61085337,
+          "spy_equity": 102343.94248
+        }
+      ]
+    },
+    "scenarios": {
+      "baseline": {
+        "assumptions": {
+          "commission_fixed": "0",
+          "commission_per_share": "0.005",
+          "market_impact_bps": "1",
+          "minimum_commission": "0",
+          "slippage_bps": "5",
+          "spread_bps": "2"
+        },
+        "strategies": {
+          "cash": {
+            "net": {
+              "annualized_return": 0.0,
+              "annualized_volatility": 0.0,
+              "average_exit_pnl": null,
+              "average_gross_exposure": 0.0,
+              "calmar_ratio": null,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 0,
+              "fill_count": 0,
+              "final_equity": "100000",
+              "gross_turnover": 0.0,
+              "market_impact_cost": "0",
+              "maximum_drawdown": 0.0,
+              "profit_factor": null,
+              "realized_pnl": "0",
+              "sessions": 379,
+              "sharpe_ratio": null,
+              "slippage_cost": "0",
+              "sortino_ratio": null,
+              "spread_cost": "0",
+              "time_in_market": 0.0,
+              "total_return": 0.0,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": null
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.0,
+              "annualized_volatility": 0.0,
+              "average_exit_pnl": null,
+              "average_gross_exposure": 0.0,
+              "calmar_ratio": null,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 0,
+              "fill_count": 0,
+              "final_equity": "100000",
+              "gross_turnover": 0.0,
+              "market_impact_cost": "0",
+              "maximum_drawdown": 0.0,
+              "profit_factor": null,
+              "realized_pnl": "0",
+              "sessions": 379,
+              "sharpe_ratio": null,
+              "slippage_cost": "0",
+              "sortino_ratio": null,
+              "spread_cost": "0",
+              "time_in_market": 0.0,
+              "total_return": 0.0,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": null
+            },
+            "costs": {
+              "commissions": 0.0,
+              "market_impact_cost": 0.0,
+              "slippage_cost": 0.0,
+              "spread_cost": 0.0,
+              "total": 0.0
+            },
+            "excess_total_return_vs_spy": -0.02285484960000006,
+            "monthly_returns": [
+              {
+                "net_return": 0.0,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.0,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.0,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.0,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 0,
+              "rejected": 0
+            },
+            "risk_reduced_orders": 0
+          },
+          "equal_weight": {
+            "net": {
+              "annualized_return": 0.11541833870584281,
+              "annualized_volatility": 0.18778445647795888,
+              "average_exit_pnl": 140.58393509188977,
+              "average_gross_exposure": 0.6630728933963634,
+              "calmar_ratio": 0.5384904759519644,
+              "commissions": "106.470",
+              "dividend_income": "0",
+              "exit_fill_count": 127,
+              "fill_count": 248,
+              "final_equity": "117854.15975667",
+              "gross_turnover": 24.69818229688951,
+              "market_impact_cost": "302.24690619",
+              "maximum_drawdown": -0.21433682462406,
+              "profit_factor": 1.4588228824028282,
+              "realized_pnl": "17854.15975667000000000000000000007",
+              "sessions": 379,
+              "sharpe_ratio": 0.675771565943417,
+              "slippage_cost": "1511.23453095",
+              "sortino_ratio": 0.9367124051452147,
+              "spread_cost": "302.24690619",
+              "time_in_market": 0.8311345646437994,
+              "total_return": 0.17854159756669996,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7244094488188977
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.12899856581300997,
+              "annualized_volatility": 0.18753978816301967,
+              "average_exit_pnl": 153.99056923076924,
+              "average_gross_exposure": 0.6629347956776179,
+              "calmar_ratio": 0.6092371897705744,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 130,
+              "fill_count": 252,
+              "final_equity": "120018.774",
+              "gross_turnover": 24.701397044192976,
+              "market_impact_cost": "0.000",
+              "maximum_drawdown": -0.21173783869232943,
+              "profit_factor": 1.5176394958449966,
+              "realized_pnl": "20018.77400000000000000000000000001",
+              "sessions": 379,
+              "sharpe_ratio": 0.740961679024055,
+              "slippage_cost": "0.000",
+              "sortino_ratio": 1.0293360871326247,
+              "spread_cost": "0.000",
+              "time_in_market": 0.8311345646437994,
+              "total_return": 0.20018774000000006,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7307692307692307
+            },
+            "costs": {
+              "commissions": 106.47,
+              "market_impact_cost": 302.24690619,
+              "slippage_cost": 1511.23453095,
+              "spread_cost": 302.24690619,
+              "total": 2222.1983433299997
+            },
+            "excess_total_return_vs_spy": 0.1556867479666999,
+            "monthly_returns": [
+              {
+                "net_return": -0.005856467830000045,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.05633076405754234,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.12753803696999988,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.04523444790719422,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.005986964371075731,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.006320056005828632,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": -0.0016578457426451958,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 248,
+              "rejected": 3
+            },
+            "risk_reduced_orders": 12
+          },
+          "mean_reversion": {
+            "net": {
+              "annualized_return": 0.22866843697732717,
+              "annualized_volatility": 0.11778286866131066,
+              "average_exit_pnl": 981.1752065135136,
+              "average_gross_exposure": 0.2433745518534752,
+              "calmar_ratio": 3.81622246919073,
+              "commissions": "109.380",
+              "dividend_income": "0",
+              "exit_fill_count": 37,
+              "fill_count": 75,
+              "final_equity": "136303.4826410",
+              "gross_turnover": 24.557459095546715,
+              "market_impact_cost": "295.4853370",
+              "maximum_drawdown": -0.05992010131050318,
+              "profit_factor": 3.3752376684010708,
+              "realized_pnl": "36303.48264100000000000000000000002",
+              "sessions": 379,
+              "sharpe_ratio": 1.8077761358528324,
+              "slippage_cost": "1477.4266850",
+              "sortino_ratio": 2.8881886832578005,
+              "spread_cost": "295.4853370",
+              "time_in_market": 0.43007915567282323,
+              "total_return": 0.36303482641000007,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7837837837837838
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.24377987344464966,
+              "annualized_volatility": 0.11798767087898501,
+              "average_exit_pnl": 1049.527972972973,
+              "average_gross_exposure": 0.2432783298581213,
+              "calmar_ratio": 4.1046100463942015,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 37,
+              "fill_count": 76,
+              "final_equity": "138832.535",
+              "gross_turnover": 24.52955327439773,
+              "market_impact_cost": "0.000",
+              "maximum_drawdown": -0.059391725569352016,
+              "profit_factor": 3.583203422138597,
+              "realized_pnl": "38832.53500000000000000000000000006",
+              "sessions": 379,
+              "sharpe_ratio": 1.9085218668659125,
+              "slippage_cost": "0.000",
+              "sortino_ratio": 3.0746413590215704,
+              "spread_cost": "0.000",
+              "time_in_market": 0.43007915567282323,
+              "total_return": 0.3883253500000001,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7837837837837838
+            },
+            "costs": {
+              "commissions": 109.38,
+              "market_impact_cost": 295.485337,
+              "slippage_cost": 1477.426685,
+              "spread_cost": 295.485337,
+              "total": 2177.7773589999997
+            },
+            "excess_total_return_vs_spy": 0.34017997681,
+            "monthly_returns": [
+              {
+                "net_return": -0.007372608119999957,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.07443516822567409,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.08730699064999947,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.2535878442160733,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.0028496416914678877,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.0016350656861763564,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": -0.0007622048156678737,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 75,
+              "rejected": 2
+            },
+            "risk_reduced_orders": 17
+          },
+          "ml": {
+            "net": {
+              "annualized_return": 0.22258106415244583,
+              "annualized_volatility": 0.1552333843266782,
+              "average_exit_pnl": 446.69758553455694,
+              "average_gross_exposure": 0.5590674966500339,
+              "calmar_ratio": 1.7249567111200887,
+              "commissions": "150.970",
+              "dividend_income": "0",
+              "exit_fill_count": 79,
+              "fill_count": 140,
+              "final_equity": "135289.10925723",
+              "gross_turnover": 32.988234461553844,
+              "market_impact_cost": "419.07280611",
+              "maximum_drawdown": -0.12903573911017996,
+              "profit_factor": 2.038270573667061,
+              "realized_pnl": "35289.10925723000000000000000000000",
+              "sessions": 379,
+              "sharpe_ratio": 1.372659505734845,
+              "slippage_cost": "2095.36403055",
+              "sortino_ratio": 1.996457948761451,
+              "spread_cost": "419.07280611",
+              "time_in_market": 0.8126649076517151,
+              "total_return": 0.3528910925723001,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7848101265822784
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.2425610144143277,
+              "annualized_volatility": 0.15515819469554212,
+              "average_exit_pnl": 488.9616379746836,
+              "average_gross_exposure": 0.5588525294412151,
+              "calmar_ratio": 1.8881927292199219,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 79,
+              "fill_count": 141,
+              "final_equity": "138627.9694",
+              "gross_turnover": 32.93570567198817,
+              "market_impact_cost": "0.0000",
+              "maximum_drawdown": -0.1284620000176243,
+              "profit_factor": 2.1427113203849952,
+              "realized_pnl": "38627.96940000000000000000000000005",
+              "sessions": 379,
+              "sharpe_ratio": 1.477807171132584,
+              "slippage_cost": "0.0000",
+              "sortino_ratio": 2.1585006589590248,
+              "spread_cost": "0.0000",
+              "time_in_market": 0.8126649076517151,
+              "total_return": 0.38627969399999995,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7974683544303798
+            },
+            "costs": {
+              "commissions": 150.97,
+              "market_impact_cost": 419.07280611,
+              "slippage_cost": 2095.36403055,
+              "spread_cost": 419.07280611,
+              "total": 3084.47964277
+            },
+            "excess_total_return_vs_spy": 0.33003624297230005,
+            "monthly_returns": [
+              {
+                "net_return": -0.0009169556599999407,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.04259413355184316,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.11898117119000085,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.20903829966463605,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.004771536450881223,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.004059057131713923,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.00036028648773430333,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 140,
+              "rejected": 1
+            },
+            "risk_reduced_orders": 22
+          },
+          "momentum": {
+            "net": {
+              "annualized_return": 0.021981356893567217,
+              "annualized_volatility": 0.14599359851746777,
+              "average_exit_pnl": 43.73910071052632,
+              "average_gross_exposure": 0.5526033173866344,
+              "calmar_ratio": 0.21079503164475444,
+              "commissions": "123.160",
+              "dividend_income": "0",
+              "exit_fill_count": 76,
+              "fill_count": 139,
+              "final_equity": "103324.1716540",
+              "gross_turnover": 33.02359956013424,
+              "market_impact_cost": "347.6554780",
+              "maximum_drawdown": -0.10427834433314176,
+              "profit_factor": 1.102429565825738,
+              "realized_pnl": "3324.171653999999999999999999999994",
+              "sessions": 379,
+              "sharpe_ratio": 0.2218086713914111,
+              "slippage_cost": "1738.2773900",
+              "sortino_ratio": 0.3061204241105976,
+              "spread_cost": "347.6554780",
+              "time_in_market": 0.7651715039577837,
+              "total_return": 0.03324171654000008,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.6578947368421053
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.03844582674528027,
+              "annualized_volatility": 0.14592505894457516,
+              "average_exit_pnl": 77.83726666666666,
+              "average_gross_exposure": 0.5523427387593819,
+              "calmar_ratio": 0.40561316841925155,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 75,
+              "fill_count": 138,
+              "final_equity": "105837.795",
+              "gross_turnover": 33.02331750101324,
+              "market_impact_cost": "0.000",
+              "maximum_drawdown": -0.09478446396380735,
+              "profit_factor": 1.185096572934119,
+              "realized_pnl": "5837.794999999999999999999999999970",
+              "sessions": 379,
+              "sharpe_ratio": 0.3313769898603847,
+              "slippage_cost": "0.000",
+              "sortino_ratio": 0.45943821504930016,
+              "spread_cost": "0.000",
+              "time_in_market": 0.7651715039577837,
+              "total_return": 0.0583779499999999,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.6533333333333333
+            },
+            "costs": {
+              "commissions": 123.16,
+              "market_impact_cost": 347.655478,
+              "slippage_cost": 1738.27739,
+              "spread_cost": 347.655478,
+              "total": 2556.748346
+            },
+            "excess_total_return_vs_spy": 0.010386866940000017,
+            "monthly_returns": [
+              {
+                "net_return": -0.007935329860000007,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.0033826227573721113,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.026943485539999035,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.006132986954668906,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.003710419520519662,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.004383731547740996,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0017693201421054756,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 139,
+              "rejected": 0
+            },
+            "risk_reduced_orders": 25
+          },
+          "spy_buy_hold": {
+            "net": {
+              "annualized_return": 0.01513875789633634,
+              "annualized_volatility": 0.11637717658459815,
+              "average_exit_pnl": 2285.48496,
+              "average_gross_exposure": 0.8106100274972075,
+              "calmar_ratio": 0.09061393793851868,
+              "commissions": "3.300",
+              "dividend_income": "0",
+              "exit_fill_count": 1,
+              "fill_count": 2,
+              "final_equity": "102285.484960",
+              "gross_turnover": 1.5006840695132353,
+              "market_impact_cost": "16.230720",
+              "maximum_drawdown": -0.16706875609586624,
+              "profit_factor": null,
+              "realized_pnl": "2285.484960",
+              "sessions": 379,
+              "sharpe_ratio": 0.18733011728300156,
+              "slippage_cost": "81.15360",
+              "sortino_ratio": 0.2471965145886921,
+              "spread_cost": "16.230720",
+              "time_in_market": 0.9947229551451188,
+              "total_return": 0.02285484960000006,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 1.0
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.015910122980968847,
+              "annualized_volatility": 0.11632686163669406,
+              "average_exit_pnl": 2402.4,
+              "average_gross_exposure": 0.8101779885568853,
+              "calmar_ratio": 0.095277944404108,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 1,
+              "fill_count": 2,
+              "final_equity": "102402.40",
+              "gross_turnover": 1.4999005202681328,
+              "market_impact_cost": "0.00",
+              "maximum_drawdown": -0.1669864214690474,
+              "profit_factor": null,
+              "realized_pnl": "2402.40",
+              "sessions": 379,
+              "sharpe_ratio": 0.19389078381265662,
+              "slippage_cost": "0.00",
+              "sortino_ratio": 0.2559025301221612,
+              "spread_cost": "0.00",
+              "time_in_market": 0.9947229551451188,
+              "total_return": 0.024024000000000045,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 1.0
+            },
+            "costs": {
+              "commissions": 3.3,
+              "market_impact_cost": 16.23072,
+              "slippage_cost": 81.1536,
+              "spread_cost": 16.23072,
+              "total": 116.91504
+            },
+            "excess_total_return_vs_spy": 0.0,
+            "monthly_returns": [
+              {
+                "net_return": -0.002193166800000035,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.016536266791323362,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.08080183320000067,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": -0.05361480876511171,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.0043839274207642664,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.005290137089969138,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 2,
+              "rejected": 0
+            },
+            "risk_reduced_orders": 1
+          }
+        }
+      },
+      "high": {
+        "assumptions": {
+          "commission_fixed": "0",
+          "commission_per_share": "0.010",
+          "market_impact_bps": "2",
+          "minimum_commission": "0",
+          "slippage_bps": "10",
+          "spread_bps": "4"
+        },
+        "strategies": {
+          "cash": {
+            "net": {
+              "annualized_return": 0.0,
+              "annualized_volatility": 0.0,
+              "average_exit_pnl": null,
+              "average_gross_exposure": 0.0,
+              "calmar_ratio": null,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 0,
+              "fill_count": 0,
+              "final_equity": "100000",
+              "gross_turnover": 0.0,
+              "market_impact_cost": "0",
+              "maximum_drawdown": 0.0,
+              "profit_factor": null,
+              "realized_pnl": "0",
+              "sessions": 379,
+              "sharpe_ratio": null,
+              "slippage_cost": "0",
+              "sortino_ratio": null,
+              "spread_cost": "0",
+              "time_in_market": 0.0,
+              "total_return": 0.0,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": null
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.0,
+              "annualized_volatility": 0.0,
+              "average_exit_pnl": null,
+              "average_gross_exposure": 0.0,
+              "calmar_ratio": null,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 0,
+              "fill_count": 0,
+              "final_equity": "100000",
+              "gross_turnover": 0.0,
+              "market_impact_cost": "0",
+              "maximum_drawdown": 0.0,
+              "profit_factor": null,
+              "realized_pnl": "0",
+              "sessions": 379,
+              "sharpe_ratio": null,
+              "slippage_cost": "0",
+              "sortino_ratio": null,
+              "spread_cost": "0",
+              "time_in_market": 0.0,
+              "total_return": 0.0,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": null
+            },
+            "costs": {
+              "commissions": 0.0,
+              "market_impact_cost": 0.0,
+              "slippage_cost": 0.0,
+              "spread_cost": 0.0,
+              "total": 0.0
+            },
+            "excess_total_return_vs_spy": -0.021685699199999853,
+            "monthly_returns": [
+              {
+                "net_return": 0.0,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.0,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.0,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.0,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 0,
+              "rejected": 0
+            },
+            "risk_reduced_orders": 0
+          },
+          "equal_weight": {
+            "net": {
+              "annualized_return": 0.10135727128856181,
+              "annualized_volatility": 0.18802388729836128,
+              "average_exit_pnl": 121.13841861658915,
+              "average_gross_exposure": 0.6631001244137504,
+              "calmar_ratio": 0.46717000337664094,
+              "commissions": "211.000",
+              "dividend_income": "0",
+              "exit_fill_count": 129,
+              "fill_count": 253,
+              "final_equity": "115626.85600154",
+              "gross_turnover": 24.7081404575625,
+              "market_impact_cost": "598.67129978",
+              "maximum_drawdown": -0.21696014417870435,
+              "profit_factor": 1.3989269175926418,
+              "realized_pnl": "15626.85600153999999999999999999990",
+              "sessions": 379,
+              "sharpe_ratio": 0.6076589266487985,
+              "slippage_cost": "2993.3564989",
+              "sortino_ratio": 0.8400681704824154,
+              "spread_cost": "598.67129978",
+              "time_in_market": 0.8311345646437994,
+              "total_return": 0.1562685600153999,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7131782945736435
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.12899856581300997,
+              "annualized_volatility": 0.18753978816301967,
+              "average_exit_pnl": 153.99056923076924,
+              "average_gross_exposure": 0.6629347956776179,
+              "calmar_ratio": 0.6092371897705744,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 130,
+              "fill_count": 252,
+              "final_equity": "120018.774",
+              "gross_turnover": 24.701397044192976,
+              "market_impact_cost": "0.000",
+              "maximum_drawdown": -0.21173783869232943,
+              "profit_factor": 1.5176394958449966,
+              "realized_pnl": "20018.77400000000000000000000000001",
+              "sessions": 379,
+              "sharpe_ratio": 0.740961679024055,
+              "slippage_cost": "0.000",
+              "sortino_ratio": 1.0293360871326247,
+              "spread_cost": "0.000",
+              "time_in_market": 0.8311345646437994,
+              "total_return": 0.20018774000000006,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7307692307692307
+            },
+            "costs": {
+              "commissions": 211.0,
+              "market_impact_cost": 598.67129978,
+              "slippage_cost": 2993.3564989,
+              "spread_cost": 598.67129978,
+              "total": 4401.69909846
+            },
+            "excess_total_return_vs_spy": 0.13458286081540005,
+            "monthly_returns": [
+              {
+                "net_return": -0.006453135659999942,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.05624781159882497,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.11980795302999869,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.03255969640753409,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.005938292547146423,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.0063695268294732856,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": -0.0018523936903075782,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 253,
+              "rejected": 1
+            },
+            "risk_reduced_orders": 11
+          },
+          "mean_reversion": {
+            "net": {
+              "annualized_return": 0.2137888983392624,
+              "annualized_volatility": 0.11763309655104032,
+              "average_exit_pnl": 914.2840558378379,
+              "average_gross_exposure": 0.24350914845328578,
+              "calmar_ratio": 3.5183346192341256,
+              "commissions": "216.940",
+              "dividend_income": "0",
+              "exit_fill_count": 37,
+              "fill_count": 75,
+              "final_equity": "133828.510066",
+              "gross_turnover": 24.589315498636957,
+              "market_impact_cost": "585.618562",
+              "maximum_drawdown": -0.06076423122761421,
+              "profit_factor": 3.1775382435312927,
+              "realized_pnl": "33828.51006600000000000000000000000",
+              "sessions": 379,
+              "sharpe_ratio": 1.70628054433783,
+              "slippage_cost": "2928.092810",
+              "sortino_ratio": 2.7030086104012505,
+              "spread_cost": "585.618562",
+              "time_in_market": 0.43007915567282323,
+              "total_return": 0.33828510065999984,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7837837837837838
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.24377987344464966,
+              "annualized_volatility": 0.11798767087898501,
+              "average_exit_pnl": 1049.527972972973,
+              "average_gross_exposure": 0.2432783298581213,
+              "calmar_ratio": 4.1046100463942015,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 37,
+              "fill_count": 76,
+              "final_equity": "138832.535",
+              "gross_turnover": 24.52955327439773,
+              "market_impact_cost": "0.000",
+              "maximum_drawdown": -0.059391725569352016,
+              "profit_factor": 3.583203422138597,
+              "realized_pnl": "38832.53500000000000000000000000006",
+              "sessions": 379,
+              "sharpe_ratio": 1.9085218668659125,
+              "slippage_cost": "0.000",
+              "sortino_ratio": 3.0746413590215704,
+              "spread_cost": "0.000",
+              "time_in_market": 0.43007915567282323,
+              "total_return": 0.3883253500000001,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7837837837837838
+            },
+            "costs": {
+              "commissions": 216.94,
+              "market_impact_cost": 585.618562,
+              "slippage_cost": 2928.09281,
+              "spread_cost": 585.618562,
+              "total": 4316.269934
+            },
+            "excess_total_return_vs_spy": 0.31659940146,
+            "monthly_returns": [
+              {
+                "net_return": -0.007974516239999896,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.0732340801615694,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.08057777174999936,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.2384903110607579,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.002797336704183521,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.001679555235557589,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": -0.0007628541546971235,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 75,
+              "rejected": 2
+            },
+            "risk_reduced_orders": 18
+          },
+          "ml": {
+            "net": {
+              "annualized_return": 0.20325132532254553,
+              "annualized_volatility": 0.1552739072007844,
+              "average_exit_pnl": 406.1388436931646,
+              "average_gross_exposure": 0.5591175240354047,
+              "calmar_ratio": 1.5690008009135135,
+              "commissions": "298.380",
+              "dividend_income": "0",
+              "exit_fill_count": 79,
+              "fill_count": 141,
+              "final_equity": "132084.96865176",
+              "gross_turnover": 33.0234451212797,
+              "market_impact_cost": "827.34567832",
+              "maximum_drawdown": -0.12954188755302565,
+              "profit_factor": 1.9376723534077334,
+              "realized_pnl": "32084.96865176000000000000000000001",
+              "sessions": 379,
+              "sharpe_ratio": 1.2696302134717565,
+              "slippage_cost": "4136.7283916",
+              "sortino_ratio": 1.8391497230485043,
+              "spread_cost": "827.34567832",
+              "time_in_market": 0.8126649076517151,
+              "total_return": 0.3208496865175998,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7721518987341772
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.2425610144143277,
+              "annualized_volatility": 0.15515819469554212,
+              "average_exit_pnl": 488.9616379746836,
+              "average_gross_exposure": 0.5588525294412151,
+              "calmar_ratio": 1.8881927292199219,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 79,
+              "fill_count": 141,
+              "final_equity": "138627.9694",
+              "gross_turnover": 32.93570567198817,
+              "market_impact_cost": "0.0000",
+              "maximum_drawdown": -0.1284620000176243,
+              "profit_factor": 2.1427113203849952,
+              "realized_pnl": "38627.96940000000000000000000000005",
+              "sessions": 379,
+              "sharpe_ratio": 1.477807171132584,
+              "slippage_cost": "0.0000",
+              "sortino_ratio": 2.1585006589590248,
+              "spread_cost": "0.0000",
+              "time_in_market": 0.8126649076517151,
+              "total_return": 0.38627969399999995,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7974683544303798
+            },
+            "costs": {
+              "commissions": 298.38,
+              "market_impact_cost": 827.34567832,
+              "slippage_cost": 4136.7283916,
+              "spread_cost": 827.34567832,
+              "total": 6089.79974824
+            },
+            "excess_total_return_vs_spy": 0.29916398731759997,
+            "monthly_returns": [
+              {
+                "net_return": -0.001518611320000085,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.04133642822783545,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.11032371425999932,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.1896077419168769,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.004703220763508757,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.004117089231827835,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0003579104699327207,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 141,
+              "rejected": 0
+            },
+            "risk_reduced_orders": 27
+          },
+          "momentum": {
+            "net": {
+              "annualized_return": 0.0053889527196702,
+              "annualized_volatility": 0.1459969633268407,
+              "average_exit_pnl": 10.821079733333322,
+              "average_gross_exposure": 0.5525889018645952,
+              "calmar_ratio": 0.044442682970143164,
+              "commissions": "243.500",
+              "dividend_income": "0",
+              "exit_fill_count": 75,
+              "fill_count": 136,
+              "final_equity": "100811.580980",
+              "gross_turnover": 33.00554821516603,
+              "market_impact_cost": "686.549860",
+              "maximum_drawdown": -0.12125624196204643,
+              "profit_factor": 1.0243539730184417,
+              "realized_pnl": "811.580979999999999999999999999979",
+              "sessions": 379,
+              "sharpe_ratio": 0.10968701489745003,
+              "slippage_cost": "3432.749300",
+              "sortino_ratio": 0.1506362178059673,
+              "spread_cost": "686.549860",
+              "time_in_market": 0.7651715039577837,
+              "total_return": 0.00811580980000004,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.6133333333333333
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.03844582674528027,
+              "annualized_volatility": 0.14592505894457516,
+              "average_exit_pnl": 77.83726666666666,
+              "average_gross_exposure": 0.5523427387593819,
+              "calmar_ratio": 0.40561316841925155,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 75,
+              "fill_count": 138,
+              "final_equity": "105837.795",
+              "gross_turnover": 33.02331750101324,
+              "market_impact_cost": "0.000",
+              "maximum_drawdown": -0.09478446396380735,
+              "profit_factor": 1.185096572934119,
+              "realized_pnl": "5837.794999999999999999999999999970",
+              "sessions": 379,
+              "sharpe_ratio": 0.3313769898603847,
+              "slippage_cost": "0.000",
+              "sortino_ratio": 0.45943821504930016,
+              "spread_cost": "0.000",
+              "time_in_market": 0.7651715039577837,
+              "total_return": 0.0583779499999999,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.6533333333333333
+            },
+            "costs": {
+              "commissions": 243.5,
+              "market_impact_cost": 686.54986,
+              "slippage_cost": 3432.7493,
+              "spread_cost": 686.54986,
+              "total": 5049.34902
+            },
+            "excess_total_return_vs_spy": -0.013569889399999813,
+            "monthly_returns": [
+              {
+                "net_return": -0.00822845971999997,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.0024746201522449773,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.019194561319998638,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": -0.010870104630122834,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.003648862502899271,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.004454153722717088,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0017719709097525256,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 136,
+              "rejected": 3
+            },
+            "risk_reduced_orders": 30
+          },
+          "spy_buy_hold": {
+            "net": {
+              "annualized_return": 0.014367097307171159,
+              "annualized_volatility": 0.11643135640099463,
+              "average_exit_pnl": 2168.56992,
+              "average_gross_exposure": 0.8110425282824041,
+              "calmar_ratio": 0.08595271656875525,
+              "commissions": "6.600",
+              "dividend_income": "0",
+              "exit_fill_count": 1,
+              "fill_count": 2,
+              "final_equity": "102168.569920",
+              "gross_turnover": 1.5014684541024046,
+              "market_impact_cost": "32.461440",
+              "maximum_drawdown": -0.16715117195485774,
+              "profit_factor": null,
+              "realized_pnl": "2168.569920",
+              "sessions": 379,
+              "sharpe_ratio": 0.1807655433222714,
+              "slippage_cost": "162.30720",
+              "sortino_ratio": 0.23848974611829352,
+              "spread_cost": "32.461440",
+              "time_in_market": 0.9947229551451188,
+              "total_return": 0.021685699199999853,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 1.0
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.015910122980968847,
+              "annualized_volatility": 0.11632686163669406,
+              "average_exit_pnl": 2402.4,
+              "average_gross_exposure": 0.8101779885568853,
+              "calmar_ratio": 0.095277944404108,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 1,
+              "fill_count": 2,
+              "final_equity": "102402.40",
+              "gross_turnover": 1.4999005202681328,
+              "market_impact_cost": "0.00",
+              "maximum_drawdown": -0.1669864214690474,
+              "profit_factor": null,
+              "realized_pnl": "2402.40",
+              "sessions": 379,
+              "sharpe_ratio": 0.19389078381265662,
+              "slippage_cost": "0.00",
+              "sortino_ratio": 0.2559025301221612,
+              "spread_cost": "0.00",
+              "time_in_market": 0.9947229551451188,
+              "total_return": 0.024024000000000045,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 1.0
+            },
+            "costs": {
+              "commissions": 6.6,
+              "market_impact_cost": 32.46144,
+              "slippage_cost": 162.3072,
+              "spread_cost": 32.46144,
+              "total": 233.83008
+            },
+            "excess_total_return_vs_spy": 0.0,
+            "monthly_returns": [
+              {
+                "net_return": -0.002769333599999979,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.016545820897751362,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.0802256664000005,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": -0.054192349821766905,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.004383489509343223,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.005296380972427764,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 2,
+              "rejected": 0
+            },
+            "risk_reduced_orders": 1
+          }
+        }
+      },
+      "low": {
+        "assumptions": {
+          "commission_fixed": "0.0",
+          "commission_per_share": "0.0025",
+          "market_impact_bps": "0.5",
+          "minimum_commission": "0.0",
+          "slippage_bps": "2.5",
+          "spread_bps": "1.0"
+        },
+        "strategies": {
+          "cash": {
+            "net": {
+              "annualized_return": 0.0,
+              "annualized_volatility": 0.0,
+              "average_exit_pnl": null,
+              "average_gross_exposure": 0.0,
+              "calmar_ratio": null,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 0,
+              "fill_count": 0,
+              "final_equity": "100000",
+              "gross_turnover": 0.0,
+              "market_impact_cost": "0",
+              "maximum_drawdown": 0.0,
+              "profit_factor": null,
+              "realized_pnl": "0",
+              "sessions": 379,
+              "sharpe_ratio": null,
+              "slippage_cost": "0",
+              "sortino_ratio": null,
+              "spread_cost": "0",
+              "time_in_market": 0.0,
+              "total_return": 0.0,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": null
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.0,
+              "annualized_volatility": 0.0,
+              "average_exit_pnl": null,
+              "average_gross_exposure": 0.0,
+              "calmar_ratio": null,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 0,
+              "fill_count": 0,
+              "final_equity": "100000",
+              "gross_turnover": 0.0,
+              "market_impact_cost": "0",
+              "maximum_drawdown": 0.0,
+              "profit_factor": null,
+              "realized_pnl": "0",
+              "sessions": 379,
+              "sharpe_ratio": null,
+              "slippage_cost": "0",
+              "sortino_ratio": null,
+              "spread_cost": "0",
+              "time_in_market": 0.0,
+              "total_return": 0.0,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": null
+            },
+            "costs": {
+              "commissions": 0.0,
+              "market_impact_cost": 0.0,
+              "slippage_cost": 0.0,
+              "spread_cost": 0.0,
+              "total": 0.0
+            },
+            "excess_total_return_vs_spy": -0.023439424800000053,
+            "monthly_returns": [
+              {
+                "net_return": 0.0,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.0,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.0,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.0,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 0,
+              "rejected": 0
+            },
+            "risk_reduced_orders": 0
+          },
+          "equal_weight": {
+            "net": {
+              "annualized_return": 0.1217825213908851,
+              "annualized_volatility": 0.18767812753876814,
+              "average_exit_pnl": 146.25528710724805,
+              "average_gross_exposure": 0.6629537772370746,
+              "calmar_ratio": 0.5715775067928919,
+              "commissions": "53.4700",
+              "dividend_income": "0",
+              "exit_fill_count": 129,
+              "fill_count": 253,
+              "final_equity": "118866.932036835",
+              "gross_turnover": 24.702964523412856,
+              "market_impact_cost": "151.839437595",
+              "maximum_drawdown": -0.2130638801274809,
+              "profit_factor": 1.4858341585821218,
+              "realized_pnl": "18866.93203683500000000000000000004",
+              "sessions": 379,
+              "sharpe_ratio": 0.7063761919597257,
+              "slippage_cost": "759.197187975",
+              "sortino_ratio": 0.9799755696936909,
+              "spread_cost": "151.839437595",
+              "time_in_market": 0.8311345646437994,
+              "total_return": 0.18866932036835005,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7364341085271318
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.12899856581300997,
+              "annualized_volatility": 0.18753978816301967,
+              "average_exit_pnl": 153.99056923076924,
+              "average_gross_exposure": 0.6629347956776179,
+              "calmar_ratio": 0.6092371897705744,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 130,
+              "fill_count": 252,
+              "final_equity": "120018.774",
+              "gross_turnover": 24.701397044192976,
+              "market_impact_cost": "0.000",
+              "maximum_drawdown": -0.21173783869232943,
+              "profit_factor": 1.5176394958449966,
+              "realized_pnl": "20018.77400000000000000000000000001",
+              "sessions": 379,
+              "sharpe_ratio": 0.740961679024055,
+              "slippage_cost": "0.000",
+              "sortino_ratio": 1.0293360871326247,
+              "spread_cost": "0.000",
+              "time_in_market": 0.8311345646437994,
+              "total_return": 0.20018774000000006,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7307692307692307
+            },
+            "costs": {
+              "commissions": 53.47,
+              "market_impact_cost": 151.839437595,
+              "slippage_cost": 759.197187975,
+              "spread_cost": 151.839437595,
+              "total": 1116.346063165
+            },
+            "excess_total_return_vs_spy": 0.16522989556835,
+            "monthly_returns": [
+              {
+                "net_return": -0.005558133915000041,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.05632846351846155,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.1310818138150016,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.050913652619978045,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.0060092493934560684,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.00629877968774934,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": -0.0015512656603949848,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 253,
+              "rejected": 0
+            },
+            "risk_reduced_orders": 13
+          },
+          "mean_reversion": {
+            "net": {
+              "annualized_return": 0.23623155849206182,
+              "annualized_volatility": 0.11786206470003144,
+              "average_exit_pnl": 1015.3324411283784,
+              "average_gross_exposure": 0.2433108522726052,
+              "calmar_ratio": 3.9613868869378885,
+              "commissions": "54.9150",
+              "dividend_income": "0",
+              "exit_fill_count": 37,
+              "fill_count": 75,
+              "final_equity": "137567.30032175",
+              "gross_turnover": 24.540243655988004,
+              "market_impact_cost": "148.43423975",
+              "maximum_drawdown": -0.05963354886416217,
+              "profit_factor": 3.479921988133944,
+              "realized_pnl": "37567.30032175000000000000000000001",
+              "sessions": 379,
+              "sharpe_ratio": 1.8587441886362943,
+              "slippage_cost": "742.17119875",
+              "sortino_ratio": 2.982109648284006,
+              "spread_cost": "148.43423975",
+              "time_in_market": 0.43007915567282323,
+              "total_return": 0.37567300321749997,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7837837837837838
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.24377987344464966,
+              "annualized_volatility": 0.11798767087898501,
+              "average_exit_pnl": 1049.527972972973,
+              "average_gross_exposure": 0.2432783298581213,
+              "calmar_ratio": 4.1046100463942015,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 37,
+              "fill_count": 76,
+              "final_equity": "138832.535",
+              "gross_turnover": 24.52955327439773,
+              "market_impact_cost": "0.000",
+              "maximum_drawdown": -0.059391725569352016,
+              "profit_factor": 3.583203422138597,
+              "realized_pnl": "38832.53500000000000000000000000006",
+              "sessions": 379,
+              "sharpe_ratio": 1.9085218668659125,
+              "slippage_cost": "0.000",
+              "sortino_ratio": 3.0746413590215704,
+              "spread_cost": "0.000",
+              "time_in_market": 0.43007915567282323,
+              "total_return": 0.3883253500000001,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7837837837837838
+            },
+            "costs": {
+              "commissions": 54.915,
+              "market_impact_cost": 148.43423975,
+              "slippage_cost": 742.17119875,
+              "spread_cost": 148.43423975,
+              "total": 1093.95467825
+            },
+            "excess_total_return_vs_spy": 0.3522335784174999,
+            "monthly_returns": [
+              {
+                "net_return": -0.007071654059999988,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.07503516618761363,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.09088141464749988,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.26106557939849484,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.002876133072952843,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.001612819790339484,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": -0.0007628061972872654,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 75,
+              "rejected": 2
+            },
+            "risk_reduced_orders": 19
+          },
+          "ml": {
+            "net": {
+              "annualized_return": 0.2327594162441112,
+              "annualized_volatility": 0.1551763297159126,
+              "average_exit_pnl": 474.18731863294875,
+              "average_gross_exposure": 0.558914708338329,
+              "calmar_ratio": 1.8086858813580133,
+              "commissions": "75.9300",
+              "dividend_income": "0",
+              "exit_fill_count": 78,
+              "fill_count": 140,
+              "final_equity": "136986.610853370",
+              "gross_turnover": 32.96027625645379,
+              "market_impact_cost": "210.872478090",
+              "maximum_drawdown": -0.12868979552676596,
+              "profit_factor": 2.0916498203473814,
+              "realized_pnl": "36986.61085337000000000000000000001",
+              "sessions": 379,
+              "sharpe_ratio": 1.4265765020315635,
+              "slippage_cost": "1054.362390450",
+              "sortino_ratio": 2.079462256389463,
+              "spread_cost": "210.872478090",
+              "time_in_market": 0.8126649076517151,
+              "total_return": 0.36986610853369983,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7948717948717948
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.2425610144143277,
+              "annualized_volatility": 0.15515819469554212,
+              "average_exit_pnl": 488.9616379746836,
+              "average_gross_exposure": 0.5588525294412151,
+              "calmar_ratio": 1.8881927292199219,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 79,
+              "fill_count": 141,
+              "final_equity": "138627.9694",
+              "gross_turnover": 32.93570567198817,
+              "market_impact_cost": "0.0000",
+              "maximum_drawdown": -0.1284620000176243,
+              "profit_factor": 2.1427113203849952,
+              "realized_pnl": "38627.96940000000000000000000000005",
+              "sessions": 379,
+              "sharpe_ratio": 1.477807171132584,
+              "slippage_cost": "0.0000",
+              "sortino_ratio": 2.1585006589590248,
+              "spread_cost": "0.0000",
+              "time_in_market": 0.8126649076517151,
+              "total_return": 0.38627969399999995,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.7974683544303798
+            },
+            "costs": {
+              "commissions": 75.93,
+              "market_impact_cost": 210.87247809,
+              "slippage_cost": 1054.36239045,
+              "spread_cost": 210.87247809,
+              "total": 1552.03734663
+            },
+            "excess_total_return_vs_spy": 0.3464266837336998,
+            "monthly_returns": [
+              {
+                "net_return": -0.0006161278300000905,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.04320100565186613,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.12329037825749944,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.2195120113631699,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.004805145496138078,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.004026433274041105,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.00035792083770650834,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 140,
+              "rejected": 1
+            },
+            "risk_reduced_orders": 24
+          },
+          "momentum": {
+            "net": {
+              "annualized_return": 0.030148552060235017,
+              "annualized_volatility": 0.14594656840042003,
+              "average_exit_pnl": 60.11214723796052,
+              "average_gross_exposure": 0.5524867933344126,
+              "calmar_ratio": 0.3105953352728427,
+              "commissions": "61.9200",
+              "dividend_income": "0",
+              "exit_fill_count": 76,
+              "fill_count": 139,
+              "final_equity": "104568.523190085",
+              "gross_turnover": 33.024372293552226,
+              "market_impact_cost": "174.857672845",
+              "maximum_drawdown": -0.09706698277921977,
+              "profit_factor": 1.1427244005649226,
+              "realized_pnl": "4568.52319008500000000000000000002",
+              "sessions": 379,
+              "sharpe_ratio": 0.27637678735756493,
+              "slippage_cost": "874.288364225",
+              "sortino_ratio": 0.38228198091280857,
+              "spread_cost": "174.857672845",
+              "time_in_market": 0.7651715039577837,
+              "total_return": 0.045685231900850054,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.6447368421052632
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.03844582674528027,
+              "annualized_volatility": 0.14592505894457516,
+              "average_exit_pnl": 77.83726666666666,
+              "average_gross_exposure": 0.5523427387593819,
+              "calmar_ratio": 0.40561316841925155,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 75,
+              "fill_count": 138,
+              "final_equity": "105837.795",
+              "gross_turnover": 33.02331750101324,
+              "market_impact_cost": "0.000",
+              "maximum_drawdown": -0.09478446396380735,
+              "profit_factor": 1.185096572934119,
+              "realized_pnl": "5837.794999999999999999999999999970",
+              "sessions": 379,
+              "sharpe_ratio": 0.3313769898603847,
+              "slippage_cost": "0.000",
+              "sortino_ratio": 0.45943821504930016,
+              "spread_cost": "0.000",
+              "time_in_market": 0.7651715039577837,
+              "total_return": 0.0583779499999999,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 0.6533333333333333
+            },
+            "costs": {
+              "commissions": 61.92,
+              "market_impact_cost": 174.857672845,
+              "slippage_cost": 874.288364225,
+              "spread_cost": 174.857672845,
+              "total": 1285.923709915
+            },
+            "excess_total_return_vs_spy": 0.02224580710085,
+            "monthly_returns": [
+              {
+                "net_return": -0.007788764930000025,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.003837580275667163,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.03071320479500117,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": 0.014525890457399715,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.0037388569004728834,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.004347699912120034,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0017697410449651156,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 139,
+              "rejected": 2
+            },
+            "risk_reduced_orders": 24
+          },
+          "spy_buy_hold": {
+            "net": {
+              "annualized_return": 0.015524477348543954,
+              "annualized_volatility": 0.11635153609791335,
+              "average_exit_pnl": 2343.94248,
+              "average_gross_exposure": 0.8103939503427675,
+              "calmar_ratio": 0.09294559302916927,
+              "commissions": "1.6500",
+              "dividend_income": "0",
+              "exit_fill_count": 1,
+              "fill_count": 2,
+              "final_equity": "102343.942480",
+              "gross_turnover": 1.500292190556099,
+              "market_impact_cost": "8.115360",
+              "maximum_drawdown": -0.1670275786359433,
+              "profit_factor": null,
+              "realized_pnl": "2343.942480",
+              "sessions": 379,
+              "sharpe_ratio": 0.19061097963899135,
+              "slippage_cost": "40.57680",
+              "sortino_ratio": 0.2515496639487257,
+              "spread_cost": "8.115360",
+              "time_in_market": 0.9947229551451188,
+              "total_return": 0.023439424800000053,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 1.0
+            },
+            "gross_zero_cost_rerun": {
+              "annualized_return": 0.015910122980968847,
+              "annualized_volatility": 0.11632686163669406,
+              "average_exit_pnl": 2402.4,
+              "average_gross_exposure": 0.8101779885568853,
+              "calmar_ratio": 0.095277944404108,
+              "commissions": "0",
+              "dividend_income": "0",
+              "exit_fill_count": 1,
+              "fill_count": 2,
+              "final_equity": "102402.40",
+              "gross_turnover": 1.4999005202681328,
+              "market_impact_cost": "0.00",
+              "maximum_drawdown": -0.1669864214690474,
+              "profit_factor": null,
+              "realized_pnl": "2402.40",
+              "sessions": 379,
+              "sharpe_ratio": 0.19389078381265662,
+              "slippage_cost": "0.00",
+              "sortino_ratio": 0.2559025301221612,
+              "spread_cost": "0.00",
+              "time_in_market": 0.9947229551451188,
+              "total_return": 0.024024000000000045,
+              "turnover_definition": "sum_absolute_executed_notional_over_mean_equity; two_way",
+              "unrealized_pnl": "0",
+              "win_rate": 1.0
+            },
+            "costs": {
+              "commissions": 1.65,
+              "market_impact_cost": 8.11536,
+              "slippage_cost": 40.5768,
+              "spread_cost": 8.11536,
+              "total": 58.45752
+            },
+            "excess_total_return_vs_spy": 0.0,
+            "monthly_returns": [
+              {
+                "net_return": -0.0019050833999999517,
+                "period": "2017-06",
+                "sessions": 2
+              },
+              {
+                "net_return": 0.016531493874557546,
+                "period": "2017-07",
+                "sessions": 20
+              }
+            ],
+            "yearly_returns": [
+              {
+                "net_return": 0.08108991659999853,
+                "period": "2017",
+                "sessions": 128
+              },
+              {
+                "net_return": -0.05332626908713445,
+                "period": "2018",
+                "sessions": 251
+              }
+            ],
+            "regimes": [
+              {
+                "conditional_mean_daily_return": 0.004384146139172533,
+                "regime": "SPY_up",
+                "sessions": 209
+              },
+              {
+                "conditional_mean_daily_return": -0.005287016258733241,
+                "regime": "SPY_down",
+                "sessions": 167
+              },
+              {
+                "conditional_mean_daily_return": 0.0,
+                "regime": "SPY_flat",
+                "sessions": 3
+              }
+            ],
+            "order_status_counts": {
+              "cancelled": 0,
+              "expired": 0,
+              "filled": 2,
+              "rejected": 0
+            },
+            "risk_reduced_orders": 1
+          }
+        }
+      }
+    },
+    "trade_preview": [
+      {
+        "commission": "1.380",
+        "market_impact_cost": "3.986820",
+        "order_id": 1,
+        "price": "144.551115",
+        "quantity": "276",
+        "realized_pnl": "0",
+        "reference_price": "144.45",
+        "side": "buy",
+        "slippage_cost": "19.934100",
+        "spread_cost": "3.986820",
+        "symbol": "AAPL",
+        "timestamp": "2017-06-30T13:30:00+00:00"
+      },
+      {
+        "commission": "2.905",
+        "market_impact_cost": "3.996118",
+        "order_id": 2,
+        "price": "68.828146",
+        "quantity": "581",
+        "realized_pnl": "0",
+        "reference_price": "68.78",
+        "side": "buy",
+        "slippage_cost": "19.98059",
+        "spread_cost": "3.996118",
+        "symbol": "MSFT",
+        "timestamp": "2017-06-30T13:30:00+00:00"
+      },
+      {
+        "commission": "0.020",
+        "market_impact_cost": "0.027784",
+        "order_id": 4,
+        "price": "69.411378",
+        "quantity": "4",
+        "realized_pnl": "2.292928",
+        "reference_price": "69.46",
+        "side": "sell",
+        "slippage_cost": "0.13892",
+        "spread_cost": "0.027784",
+        "symbol": "MSFT",
+        "timestamp": "2017-07-10T13:30:00+00:00"
+      }
+    ]
+  }
+}

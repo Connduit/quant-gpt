@@ -68,6 +68,31 @@ research retain the raw-price/action/PIT evidence requirements. Old API requests
 default to strict mode; exploratory API requests must specify `research_mode:
 exploratory`, the training workflow and both research dates.
 
+## Evaluate saved predictions as a trading strategy (Phase 12C)
+
+Open a completed ML job's **View report**, then **Evaluate strategy profitability**.
+Set the model/date range, starting capital, top holdings, score or probability
+threshold, volatility ranking, holding/rebalance schedule, target weights, share
+assumptions and risk/cost settings. Choose strict or exploratory evidence mode
+explicitly and click **Evaluate strategy** with researcher access.
+
+The queued `profitability` job verifies saved source/model/prediction hashes and
+clocks, then runs the existing cash backtester. Open its report for net equity,
+drawdown, annualized return, Sharpe/Sortino, benchmarks, turnover, costs, period and
+regime results, nearby-parameter sensitivity and validation status. Cost scenario
+selection changes both metrics and chart data. The ZIP contains full trades,
+orders/rejections, signals, positions, actions, equity and reports for all scenarios.
+Prediction diagnostics remain available separately. No refitting or broker order
+is performed by this step.
+
+Only raw executable prices are accepted. Saved source jobs or execution manifests
+containing protected 2019 dates are rejected before prediction/price reads; choose
+a physically separate permitted-date training run. Missing action/PIT evidence
+requires exploratory mode and remains prominently disclosed; unknown events are
+not certified absent. No backtest is automatically qualified or promoted.
+See [Phase 12C usage and assumptions](phase12c/README.md) and
+[the actual exploratory demonstration](phase12c/results.md).
+
 ## ML training and discovery
 
 1. Open **Machine learning** / **Research**, or **Discovery**.

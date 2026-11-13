@@ -222,3 +222,42 @@ def selected_snapshots(library: Path, request: ResearchRequest) -> dict:
     if request.research_mode == "strict" and request.top_n > len(snapshots) - 1:
         raise ValueError("Top holdings cannot exceed the selected equity count")
     return snapshots
+
+
+class ProfitabilityRequest(BaseModel):
+    """Saved job IDs and bounded strategy inputs only; never browser filesystem paths."""
+
+    model_config = ConfigDict(extra="forbid")
+    source_job_id: str = Field(pattern=r"^[a-f0-9]{32}$")
+    model: MODEL_TYPES = "ridge"
+    start: date
+    end: date
+    research_mode: Literal["strict", "exploratory"] = "strict"
+    initial_cash: float = Field(default=100000, ge=100, le=100000000, allow_inf_nan=False)
+    top_n: int = Field(default=2, ge=1, le=11)
+    minimum_prediction: float | None = Field(default=0, ge=-1, le=1, allow_inf_nan=False)
+    probability_threshold: float = Field(default=0.55, ge=0, le=1, allow_inf_nan=False)
+    volatility_adjusted: bool = False
+    rebalance_sessions: int = Field(default=5, ge=1, le=126)
+    holding_sessions: int = Field(default=20, ge=1, le=252)
+    cash_allocation: float = Field(default=0.2, ge=0, le=0.95, allow_inf_nan=False)
+    maximum_position_weight: float = Field(default=0.4, gt=0, le=1, allow_inf_nan=False)
+    maximum_drawdown: float = Field(default=0.2, gt=0, le=1, allow_inf_nan=False)
+    maximum_daily_loss: float = Field(default=0.05, gt=0, le=1, allow_inf_nan=False)
+    minimum_dollar_volume: float = Field(default=1000000, ge=0, le=1e12, allow_inf_nan=False)
+    whole_shares: bool = True
+    commission_per_share: float = Field(default=0.005, ge=0, le=1, allow_inf_nan=False)
+    spread_bps: float = Field(default=2, ge=0, le=100, allow_inf_nan=False)
+    slippage_bps: float = Field(default=5, ge=0, le=100, allow_inf_nan=False)
+    market_impact_bps: float = Field(default=1, ge=0, le=100, allow_inf_nan=False)
+    confirmed: Literal[True]
+
+    @model_validator(mode="after")
+    def validate_dates(self):
+        from quantlab.profitability.inputs import permitted_dates
+
+        DataRequest("SPY", self.start, self.end)
+        permitted_dates(self.start, self.end)
+        if (self.end - self.start).days > 3653:
+            raise ValueError("Profitability evaluation permits at most ten years")
+        return self

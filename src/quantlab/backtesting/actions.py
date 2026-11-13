@@ -47,17 +47,21 @@ class CorporateActions:
     def __post_init__(self) -> None:
         if not self.source.strip() or self.coverage_start > self.coverage_end:
             raise ValueError("Corporate actions require a source and valid coverage dates")
-        if self.coverage_method not in ("provided_events", "factor_file_proxy"):
+        if self.coverage_method not in (
+            "provided_events",
+            "factor_file_proxy",
+            "unverified_events",
+        ):
             raise ValueError("Unsupported action coverage method")
         if self.complete is not True and not (
             self.complete is False
-            and self.coverage_method == "factor_file_proxy"
+            and self.coverage_method in ("factor_file_proxy", "unverified_events")
             and self.limitations
         ):
             raise ValueError("Corporate-action coverage must be explicitly complete")
-        if self.coverage_method == "factor_file_proxy" and self.complete:
+        if self.coverage_method in ("factor_file_proxy", "unverified_events") and self.complete:
             raise ValueError(
-                "Factor-file proxies cannot claim independently complete event coverage"
+                "Proxy or unverified events cannot claim independently complete event coverage"
             )
         if self.coverage_method == "provided_events" and any(
             d.pay_date is None for d in self.dividends

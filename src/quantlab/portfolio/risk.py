@@ -92,7 +92,9 @@ def size_position(
     return max(decimal(0), (units / lot_size).to_integral_value(rounding=ROUND_FLOOR) * lot_size)
 
 
-def constrain(targets, prices, equity, limits, sectors=None, correlation_groups=()):
+def constrain(
+    targets, prices, equity, limits, sectors=None, correlation_groups=(), *, whole_shares=True
+):
     """Scale entire target book; no greedy ticker priority or unobserved-price fills."""
     if equity <= 0:
         return {s: decimal(0) for s in targets}, ["nonpositive_equity"]
@@ -130,6 +132,8 @@ def constrain(targets, prices, equity, limits, sectors=None, correlation_groups=
         reasons.append("gross_net_leverage")
     return {
         s: (q * decimal(scales[s])).to_integral_value(rounding=ROUND_FLOOR)
+        if whole_shares
+        else q * decimal(scales[s])
         for s, q in targets.items()
     }, sorted(set(reasons))
 

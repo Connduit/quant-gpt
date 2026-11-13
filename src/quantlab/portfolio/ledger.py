@@ -26,7 +26,10 @@ def distribute_fill(fill, quantities):
     total = sum(quantities.values(), ZERO)
     if total != fill.quantity or total <= 0:
         raise ArithmeticError("Fill attribution must equal actual quantity")
-    remaining = {k: getattr(fill, k) for k in ("commission", "spread_cost", "slippage_cost")}
+    remaining = {
+        k: getattr(fill, k)
+        for k in ("commission", "spread_cost", "slippage_cost", "market_impact_cost")
+    }
     result = {}
     entries = [(s, q) for s, q in sorted(quantities.items()) if q]
     for i, (name, quantity) in enumerate(entries):

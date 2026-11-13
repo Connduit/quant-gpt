@@ -70,14 +70,27 @@ class JobManager:
 
     def submit_workflow(self, workflow, payload, library, workspace):
         """Persist a typed request before enqueueing; callers supply no command/path arguments."""
-        from quantlab.web.workflows import DownloadRequest, ResearchRequest
+        from quantlab.web.workflows import DownloadRequest, ProfitabilityRequest, ResearchRequest
 
-        if workflow not in ("download", "training", "discovery"):
+        if workflow not in ("download", "training", "discovery", "profitability"):
             raise ValueError("Unsupported dashboard workflow")
-        model = DownloadRequest if workflow == "download" else ResearchRequest
+        model = {"download": DownloadRequest, "profitability": ProfitabilityRequest}.get(
+            workflow, ResearchRequest
+        )
         checked = model.model_validate(payload)
-        if workflow != "download" and checked.workflow != workflow:
+        if workflow in ("training", "discovery") and checked.workflow != workflow:
             raise ValueError("Workflow does not match request")
+        source = None
+        if workflow == "profitability":
+            with self.connection() as connection:
+                row = connection.execute(
+                    "SELECT name,status FROM jobs WHERE id=?", (checked.source_job_id,)
+                ).fetchone()
+            if not row or not row[0].startswith("training-") or row[1] != "COMPLETED":
+                raise ValueError("Select a completed saved training job")
+            source = (self.root / checked.source_job_id / "artifacts").resolve()
+            if not source.is_relative_to(self.root.resolve()):
+                raise ValueError("Source job escaped its trusted directory")
         name = f"{workflow}-{uuid.uuid4().hex}"
         directory = self.root / "requests"
         directory.mkdir(exist_ok=True)
@@ -88,6 +101,14 @@ class JobManager:
                     "workflow": workflow,
                     "payload": checked.model_dump(mode="json"),
                     "library": str(Path(library).resolve()),
+                    **(
+                        {
+                            "source_artifacts": str(source),
+                            "registry_root": str(self.root.parent / "profitability-registry"),
+                        }
+                        if source
+                        else {}
+                    ),
                 }
             )
         )

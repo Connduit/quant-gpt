@@ -14,7 +14,7 @@ from typing import Any, Literal
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -26,6 +26,7 @@ from quantlab.web.credentials import ProviderKeyStore
 from quantlab.web.jobs import JobManager
 from quantlab.web.workflows import (
     DownloadRequest,
+    ProfitabilityRequest,
     ResearchRequest,
     selected_snapshots,
     snapshot_inventory,
@@ -423,6 +424,30 @@ def create_app(
             {"id": identity, "request": body.model_dump(mode="json")},
         )
         return {"id": identity, "status": "QUEUED"}
+
+    @app.post("/api/v1/workflows/profitability", status_code=202)
+    def workflow_profitability(body: ProfitabilityRequest, assigned=access):
+        require(assigned, ("researcher",))
+        identity = jobs.submit_workflow(
+            "profitability", body.model_dump(mode="json"), library, catalog.workspace
+        )
+        log(
+            "profitability_evaluation",
+            assigned,
+            {"id": identity, "request": body.model_dump(mode="json")},
+        )
+        return {"id": identity, "status": "QUEUED"}
+
+    @app.get("/api/v1/workflows/jobs/{identity}/profitability.zip")
+    def profitability_artifacts(identity: str, assigned=access):
+        if not any(row["id"] == identity and row["status"] == "COMPLETED" for row in jobs.rows()):
+            raise HTTPException(404, "Completed profitability job not found")
+        path = (jobs.root / identity / "artifacts/profitability.zip").resolve()
+        if not path.is_relative_to(jobs.root.resolve()) or not path.is_file():
+            raise HTTPException(404, "Profitability artifacts not available")
+        return FileResponse(
+            path, media_type="application/zip", filename=f"profitability-{identity}.zip"
+        )
 
     @app.get("/api/v1/workflows/jobs/{identity}")
     def workflow_result(identity: str, assigned=access):

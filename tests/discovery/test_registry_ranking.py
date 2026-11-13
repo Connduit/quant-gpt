@@ -92,3 +92,26 @@ def test_robustness_variants_are_bounded_and_do_not_mutate_original(study_file, 
     for _, definition in scenarios:
         alpha = definition["model"]["parameters"]["alpha"]
         assert 0.1 <= alpha <= 10
+
+
+def test_prediction_skill_cannot_qualify_negative_net_returns():
+    values = windows()
+    for window in values:
+        window["performance"]["total_return"] = -0.01
+        window["benchmark"]["total_return"] = -0.1
+        window["predictive_skill"] = 1e6
+    result = summarize(values, Eligibility(), ScoreWeights())
+    assert not result["eligible"]
+    assert "nonpositive_net_return" in result["rejection_reasons"]
+    assert result["score_terms"]["predictive_skill"] == 0
+
+
+def test_positive_average_cannot_hide_compounded_net_loss():
+    values = windows()
+    for index, window in enumerate(values):
+        window["performance"]["total_return"] = 1.0 if index % 2 == 0 else -0.7
+    # Two windows: average +15%, but compounded wealth falls 40%.
+    values = values[:2]
+    result = summarize(values, Eligibility(), ScoreWeights())
+    assert "nonpositive_net_return" in result["rejection_reasons"]
+    assert not result["eligible"]

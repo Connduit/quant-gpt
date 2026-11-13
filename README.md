@@ -293,6 +293,15 @@ downloaded prices for predictive experiments without that evidence, reports the
 limitations, and produces no trading simulation or qualification. Discovery retains
 strict eligibility. See [guided workflows](docs/dashboard-workflows.md).
 
+**Phase 12C:** completed ML jobs now expose **Evaluate strategy** to replay saved
+out-of-sample predictions as long-only next-open trades. The dashboard leads with
+net equity/drawdown, SPY/equal-weight/momentum/mean-reversion/cash comparisons,
+low/baseline/high cost scenarios, turnover, trade logs and validation status.
+Exploratory backtests explicitly retain incomplete evidence and never qualify or
+promote a strategy. Protected 2019 inputs and adjusted cash-execution prices are
+rejected. See the [implementation and usage](docs/phase12c/README.md) and
+[actual exploratory demonstration](docs/phase12c/results.md).
+
 ## Bounded research agent
 
 ```bash

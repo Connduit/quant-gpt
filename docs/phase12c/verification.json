@@ -1,0 +1,38 @@
+{
+  "baseline": {
+    "command": ".venv/bin/pytest -q",
+    "passed": 363,
+    "skipped": 11,
+    "warnings": 633,
+    "seconds": 164.97
+  },
+  "final_python": {
+    "command": ".venv/bin/pytest -q",
+    "passed": 378,
+    "skipped": 11,
+    "warnings": 701,
+    "seconds": 186.46
+  },
+  "frontend": {
+    "command": "npm --prefix dashboard test",
+    "passed": 22
+  },
+  "browser": {
+    "command": "npm --prefix dashboard run test:e2e -- e2e/profitability.spec.ts e2e/workflows.spec.ts e2e/research-report.spec.ts",
+    "passed": 7,
+    "checks": [
+      "saved-job strategy submission",
+      "profitability-first metrics",
+      "cost scenario metrics/curves",
+      "desktop/mobile overflow",
+      "existing ML/download forms",
+      "original JSON download integrity"
+    ]
+  },
+  "production_build": "npm --prefix dashboard run build: PASS",
+  "lint": "ruff check src tests examples/phase12c_profitability.py: PASS",
+  "format": "targeted Prettier and Ruff format checks: PASS",
+  "protected_holdouts_read_or_consumed": false,
+  "live_orders_submitted": false,
+  "data_evidence": "Exploratory real bounded price observations; no verified complete events/PIT membership. Synthetic fixtures are tests only."
+}

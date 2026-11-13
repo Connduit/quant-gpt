@@ -268,6 +268,31 @@ def execute(specification, output):
     try:
         if specification["workflow"] == "download":
             result = acquire(payload, library, output)
+        elif specification["workflow"] == "profitability":
+            import zipfile
+
+            from quantlab.profitability.runner import run_profitability
+            from quantlab.web.workflows import ProfitabilityRequest
+
+            checked = ProfitabilityRequest.model_validate(payload)
+            report = run_profitability(
+                Path(specification["source_artifacts"]),
+                checked,
+                output / "profitability",
+                Path(specification["registry_root"]),
+            )
+            with zipfile.ZipFile(
+                output / "profitability.zip", "w", zipfile.ZIP_DEFLATED
+            ) as archive:
+                for path in sorted((output / "profitability").rglob("*")):
+                    if path.is_file():
+                        archive.write(path, path.relative_to(output / "profitability"))
+            result = {
+                "status": "COMPLETED",
+                "workflow": "profitability",
+                "report": report,
+                "note": "Net simulated performance; NOT independently validated or approved.",
+            }
         else:
             result = research(payload, library, output)
     except (ValueError, FileNotFoundError) as exc:

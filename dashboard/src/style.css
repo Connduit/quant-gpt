@@ -714,3 +714,25 @@ footer span {
     min-width: 0;
   }
 }
+.strategy-evaluation {
+  border: 1px solid #40536d;
+  margin: 16px 20px;
+  border-radius: 8px;
+}
+.strategy-evaluation summary {
+  cursor: pointer;
+}
+.profitability-report .result-intro label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 20px 10px 0;
+}
+.profitability-report .result-intro .badge + .badge {
+  margin-left: 10px;
+}
+.profitability-report pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}

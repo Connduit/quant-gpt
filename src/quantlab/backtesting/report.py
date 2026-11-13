@@ -123,7 +123,9 @@ def export_report(
                     "Caller-declared raw prices; review action coverage and payment-date limits."
                 ),
                 "Full market fills at next eligible open; no volume/queue/latency model.",
-                "Fractional shares allowed; no taxes, interest, FX, borrow or cash-in-lieu.",
+                "Whole-share orders; splits may create fractions; no cash-in-lieu."
+                if result.metadata["configuration"].get("whole_shares")
+                else "Fractional shares allowed; no taxes, interest, FX, borrow or cash-in-lieu.",
                 "Data is not certified point-in-time or survivorship-free.",
             ],
         }

@@ -64,7 +64,12 @@ class DailyData:
 
     @classmethod
     def from_snapshot(
-        cls, store: SnapshotStore, snapshot_id: str, actions: CorporateActions | None = None
+        cls,
+        store: SnapshotStore,
+        snapshot_id: str,
+        actions: CorporateActions | None = None,
+        *,
+        allow_unverified_actions: bool = False,
     ) -> "DailyData":
         metadata = store.manifest(snapshot_id)
         frame = store.read(snapshot_id)
@@ -87,6 +92,8 @@ class DailyData:
             actions = CorporateActions(
                 request["symbol"], start, end, "synthetic assumption: no corporate actions"
             )
+        if actions.coverage_method == "unverified_events" and not allow_unverified_actions:
+            raise ValueError("Unverified actions require explicit exploratory simulation")
         if (
             actions.symbol != request["symbol"]
             or actions.coverage_start > start

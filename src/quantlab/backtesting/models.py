@@ -93,6 +93,7 @@ class Fill:
     commission: Decimal
     spread_cost: Decimal
     slippage_cost: Decimal
+    market_impact_cost: Decimal = ZERO
 
 
 @dataclass(frozen=True)
@@ -102,6 +103,7 @@ class Costs:
     minimum_commission: Decimal = ZERO
     slippage_bps: Decimal = Decimal("1")
     spread_bps: Decimal = ZERO
+    market_impact_bps: Decimal = ZERO
 
     def __post_init__(self) -> None:
         for name in self.__dataclass_fields__:
@@ -109,7 +111,7 @@ class Costs:
             if value < 0:
                 raise ValueError(f"{name} cannot be negative")
             object.__setattr__(self, name, value)
-        if self.slippage_bps + self.spread_bps / 2 >= 10000:
+        if self.slippage_bps + self.spread_bps / 2 + self.market_impact_bps >= 10000:
             raise ValueError("Execution price impact must be below 100%")
 
     def fill(self, order: Order, opening: OpeningEvent) -> Fill:
@@ -121,8 +123,9 @@ class Costs:
             raise ValueError("Invalid order for this bar")
         spread = opening.price * self.spread_bps / 20000
         slippage = opening.price * self.slippage_bps / 10000
+        impact = opening.price * self.market_impact_bps / 10000
         direction = 1 if order.side == Side.BUY else -1
-        price = opening.price + direction * (spread + slippage)
+        price = opening.price + direction * (spread + slippage + impact)
         commission = max(
             self.minimum_commission,
             self.commission_fixed + order.quantity * self.commission_per_share,
@@ -138,4 +141,5 @@ class Costs:
             commission,
             spread * order.quantity,
             slippage * order.quantity,
+            impact * order.quantity,
         )
