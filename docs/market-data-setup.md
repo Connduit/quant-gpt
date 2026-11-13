@@ -105,7 +105,7 @@ The existing all-extras install includes everything. A dedicated `market-data`
 extra also installs the official Databento SDK without requiring futures features.
 Alpaca uses the existing HTTP client; no brokerage SDK is needed.
 
-`deploy/environment.example` lists the required names. Put settings in the root
+`.env.example` lists the required names. Put settings in the root
 `.env` file and start the dashboard with `uv run --env-file .env --frozen
 --all-extras quantlab dashboard`. Broker sandbox credentials remain separate. Only download workers receive credentials
 for their selected provider. ML/discovery/agent jobs receive none of these keys.

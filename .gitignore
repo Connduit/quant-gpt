@@ -19,3 +19,6 @@ __pycache__/
 /deploy/operator-execution.yaml
 .env.*
 /work/
+
+# Share the settings template; keep actual credentials private.
+!.env.example

@@ -38,7 +38,7 @@ automatically; the earlier onboarding research sandbox is separate.
 
 Keep local settings in `.env` at the repository root. This file is excluded
 from Git. To set up another computer, copy
-`deploy/environment.example` to `.env`, fill in your provider credentials, and
+`.env.example` to `.env`, fill in your provider credentials, and
 generate distinct dashboard tokens with
 `python -c "import secrets; print(secrets.token_urlsafe(32))"` for each role.
 Use at least 24 characters per token. Keep the file private.

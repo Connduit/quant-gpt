@@ -36,7 +36,7 @@ cd ..
 uv run --env-file .env --frozen --all-extras quantlab dashboard
 ```
 
-Create `.env` using `deploy/environment.example` as a template and set distinct
+Create `.env` using `.env.example` as a template and set distinct
 viewer, operator, and researcher tokens plus your provider credentials. Keep the
 file private and out of Git. Open http://127.0.0.1:8000 and enter the appropriate
 token. Existing shell variables take precedence over `.env` values.
