@@ -55,7 +55,12 @@ storage/DuckDB read-back. HTML verification pages and HTTP errors fail the job.
 ## Exploratory ML for downloaded prices
 
 In **Machine learning** / **Research**, choose **Research mode → Exploratory ML —
-prediction only**. Select one downloaded snapshot per stock plus SPY, choose your
+prediction only**. Click **Use training snapshots** to select eligible snapshots
+(one per symbol, including SPY) and fill their shared research date range. Training
+snapshots are preferred and protected test snapshots are excluded. You can also
+select snapshots manually. If Start is disabled, the requirements directly above
+it identify the missing selection, benchmark, date coverage or model. Select one
+downloaded snapshot per stock plus SPY, choose your
 research dates, models and chronological windows, then click **Start exploratory
 ML**. Switching modes clears snapshot selection so the eligibility rules are
 explicit. For a full 2020–2026 range with the default 504 training and 126

@@ -210,6 +210,45 @@ describe("equity dashboard workflows", () => {
       end: "2025-12-31",
     });
   });
+  it("fills exploratory training snapshots and dates with one click", async () => {
+    const post = api(false, { start: "2020-01-02", end: "2024-12-31" });
+    mount("models");
+    await screen.findByText("AAA");
+    fireEvent.change(screen.getByLabelText("Research mode"), {
+      target: { value: "exploratory" },
+    });
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Use training snapshots" }),
+      ).toBeEnabled(),
+    );
+    expect(
+      screen.getByText(/Select training snapshots below/),
+    ).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Use training snapshots" }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Start exploratory ML" }),
+      ).toBeEnabled(),
+    );
+    expect(screen.getByLabelText("Research start date")).toHaveValue(
+      "2020-01-02",
+    );
+    expect(screen.getByLabelText("Research end date")).toHaveValue(
+      "2024-12-31",
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Start exploratory ML" }),
+    );
+    await waitFor(() => expect(post).toHaveBeenCalled());
+    expect(post.mock.calls[0][1]).toMatchObject({
+      research_mode: "exploratory",
+      start: "2020-01-02",
+      end: "2024-12-31",
+    });
+  });
   it("does not offer exploratory mode for Discovery", async () => {
     api();
     mount("discovery");

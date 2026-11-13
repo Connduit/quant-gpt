@@ -15,6 +15,7 @@ interface Snapshot {
   start: string;
   end: string;
   rows: number;
+  retrieved_at?: string;
   provider: string;
   price_basis: string;
   eligible: boolean;
@@ -121,15 +122,93 @@ export function EquityWorkflows({ page }: { page: string }) {
   });
   const items = inventory.data?.items ?? [];
   const chosen = items.filter((s) => selected.includes(s.id));
-  const ready =
-    chosen.length >= 2 &&
-    chosen.every((s) => s.eligible) &&
-    chosen.some((s) => s.symbol === "SPY") &&
-    new Set(chosen.map((s) => s.symbol)).size === chosen.length &&
-    !!researchStart &&
-    !!researchEnd &&
-    researchStart <= researchEnd &&
-    chosen.every((s) => researchStart >= s.start && researchEnd <= s.end);
+  const readinessProblems: string[] = [];
+  if (!chosen.length)
+    readinessProblems.push(
+      "Select training snapshots below, or click Use training snapshots.",
+    );
+  else {
+    if (!chosen.some((s) => s.symbol === "SPY"))
+      readinessProblems.push("Select a SPY benchmark snapshot.");
+    if (!chosen.some((s) => s.symbol !== "SPY"))
+      readinessProblems.push(
+        "Select at least one stock snapshot in addition to SPY.",
+      );
+    if (new Set(chosen.map((s) => s.symbol)).size !== chosen.length)
+      readinessProblems.push("Select only one snapshot per symbol.");
+    chosen
+      .filter((s) => !s.eligible)
+      .forEach((s) =>
+        readinessProblems.push(`${s.symbol}: ${s.blockers.join("; ")}`),
+      );
+    if (exploratory && new Set(chosen.map((s) => s.price_basis)).size > 1)
+      readinessProblems.push(
+        "Selected snapshots must use the same price basis.",
+      );
+    if (!researchStart || !researchEnd)
+      readinessProblems.push("Choose both research dates.");
+    else if (researchStart > researchEnd)
+      readinessProblems.push(
+        "Research start must be on or before research end.",
+      );
+    else if (chosen.some((s) => researchStart < s.start || researchEnd > s.end))
+      readinessProblems.push(
+        "Research dates must be covered by every selected snapshot. Use training snapshots to reset the range.",
+      );
+  }
+  if (chosen.length > 12)
+    readinessProblems.push("Select at most 12 snapshots.");
+  if (!models.length) readinessProblems.push("Select at least one model.");
+  const ready = readinessProblems.length === 0 && !inventory.error;
+  async function useTrainingSnapshots() {
+    setMessage("");
+    try {
+      const data = await request<{ items: Snapshot[] }>(
+        `/workflows/snapshots?research_mode=${exploratory ? "exploratory" : "strict"}`,
+      );
+      const candidates = data.items
+        .filter((s) => s.eligible && s.dataset_role !== "protected_test")
+        .sort(
+          (a, b) =>
+            Number(b.dataset_role === "training") -
+              Number(a.dataset_role === "training") ||
+            (b.retrieved_at ?? "").localeCompare(a.retrieved_at ?? ""),
+        );
+      const benchmark = candidates.find((s) => s.symbol === "SPY");
+      if (!benchmark)
+        throw new Error(
+          "No eligible SPY training snapshot. Download a training pair in Data library, or inspect the SPY row's blocker below.",
+        );
+      const bySymbol = new Map<string, Snapshot>();
+      bySymbol.set("SPY", benchmark);
+      candidates
+        .filter(
+          (s) =>
+            s.price_basis === benchmark.price_basis &&
+            s.start <= benchmark.end &&
+            s.end >= benchmark.start,
+        )
+        .forEach((s) => {
+          if (!bySymbol.has(s.symbol) && bySymbol.size < 12)
+            bySymbol.set(s.symbol, s);
+        });
+      const snapshots = [...bySymbol.values()];
+      const first = snapshots
+        .map((s) => s.start)
+        .sort()
+        .at(-1)!;
+      const last = snapshots.map((s) => s.end).sort()[0];
+      if (snapshots.length < 2 || first > last)
+        throw new Error(
+          "No shared training range for SPY and a stock. Select compatible snapshots below or download a training pair.",
+        );
+      setSelected(snapshots.map((s) => s.id));
+      setResearchStart(first);
+      setResearchEnd(last);
+    } catch (error) {
+      setMessage((error as Error).message);
+    }
+  }
   const toggle = (values: string[], value: string) =>
     values.includes(value)
       ? values.filter((v) => v !== value)
@@ -594,7 +673,24 @@ export function EquityWorkflows({ page }: { page: string }) {
                   </>
                 )}
               </p>
-              {!ready && (
+              <button
+                type="button"
+                onClick={() => void useTrainingSnapshots()}
+                disabled={pending || inventory.isFetching}
+              >
+                Use training snapshots
+              </button>
+              {inventory.isFetching && (
+                <p role="status">Checking snapshot eligibility…</p>
+              )}
+              {!!readinessProblems.length && (
+                <ul aria-label="Training requirements" className="warning-line">
+                  {readinessProblems.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              )}
+              {!ready && !exploratory && (
                 <p className="warning-line">
                   {exploratory
                     ? "Select one downloaded snapshot per stock plus SPY, choose a covered research date range, and select a model. A declared price basis is required."
