@@ -212,3 +212,14 @@ checks passed. Browser tests stub submission/eligibility responses; a separate
 actual browser-to-backend download exercised the real worker/provider and recorded
 the Stooq 404 above. The synthetic ML/discovery engine tests establish integration,
 not real-data strategy performance.
+
+### Unexplained price jumps in exploratory backtests
+
+Exploratory strategy evaluation continues when an incomplete action ledger leaves
+an overnight raw-price jump of 40% or more unexplained. The report prominently
+marks simulated profit/loss unreliable and lists each symbol, date and gap in
+`unexplained_discontinuities` and `data_limitations`. Prices and share counts are
+not corrected by guessing a split. Returns and baseline comparisons may therefore
+be distorted; this run cannot establish profitability. Strict evaluation retains
+the blocking check. After updating, submit a new evaluation to replace an older
+failed run; saved job results are unchanged.

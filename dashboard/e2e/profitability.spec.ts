@@ -173,3 +173,47 @@ test("protected source explains rejection before an evaluation request", async (
   ).toBeDisabled();
   expect(submissions).toBe(0);
 });
+
+test("exploratory discontinuity warning is prominent above profitability metrics", async ({
+  page,
+}) => {
+  const warning =
+    "Unreliable profit/loss: unexplained raw-price jumps may be missing corporate actions.";
+  await page.route("**/api/v1/jobs", (route) =>
+    route.fulfill({
+      json: {
+        items: [
+          {
+            id: "gap-evaluation",
+            name: "profitability-gap",
+            status: "COMPLETED",
+            detail: "Completed",
+            created: "2026-11-13",
+          },
+        ],
+        approved: [],
+      },
+    }),
+  );
+  await page.route("**/api/v1/workflows/jobs/gap-evaluation", (route) =>
+    route.fulfill({
+      json: {
+        result: {
+          ...fixture,
+          report: { ...fixture.report, profitability_warning: warning },
+        },
+      },
+    }),
+  );
+  await page.goto("/models");
+  await page.getByRole("button", { name: "View report", exact: true }).click();
+  await expect(
+    page.getByRole("alert").filter({ hasText: warning }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "Strategy profitability evaluation",
+      exact: true,
+    }),
+  ).toBeVisible();
+});

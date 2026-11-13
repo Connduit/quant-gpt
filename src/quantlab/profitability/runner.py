@@ -79,7 +79,7 @@ def summary(result, benchmark, gross):
     }
 
 
-def prepare_market(feeds, rows, request):
+def prepare_market(feeds, rows, request, *, warnings=None):
     reference = feeds["SPY"].bars
     opens = [b.open_time for b in reference]
     by_day = {b.session_date: i for i, b in enumerate(reference)}
@@ -109,7 +109,7 @@ def prepare_market(feeds, rows, request):
     )
     if not 3 <= len(trimmed[0].bars) <= 3000:
         raise ValueError("Evaluation requires 3–3,000 trading sessions")
-    # Missing event evidence plus an unexplained discontinuity is not a valid cash replay.
+    # Exploratory replay may continue, but unknown events make profit figures unreliable.
     for feed in trimmed:
         splits = {s.date for s in feed.actions.splits}
         for previous, current in zip(feed.bars, feed.bars[1:], strict=False):
@@ -118,9 +118,17 @@ def prepare_market(feeds, rows, request):
                 and current.session_date not in splits
                 and abs(float(current.open / previous.close - 1)) >= 0.4
             ):
-                raise ValueError(
-                    "Unexplained raw-price discontinuity; supply corporate-action evidence"
-                )
+                if request.research_mode != "exploratory":
+                    raise ValueError(
+                        "Unexplained raw-price discontinuity; supply corporate-action evidence"
+                    )
+                if warnings is not None:
+                    warnings.append(
+                        f"{feed.instrument.symbol} {current.session_date}: unexplained raw-price "
+                        f"gap of {float(current.open / previous.close - 1):.1%}. "
+                        "Possible missing corporate action; no split or dividend was inferred. "
+                        "Simulated profit/loss is unreliable until event evidence is supplied."
+                    )
     return MarketData(trimmed)
 
 
@@ -156,7 +164,9 @@ def run_profitability(source: Path, request, output: Path, registry_root: Path):
         }
         source_result, rows, versions = load_saved_predictions(source, request)
         feeds, blockers = load_execution_feeds(source, source_result, request)
-        market = prepare_market(feeds, rows, request)
+        discontinuities = []
+        market = prepare_market(feeds, rows, request, warnings=discontinuities)
+        blockers.extend(discontinuities)
         universe = tuple(sorted(set(feeds) - {"SPY"}))
         if request.top_n > len(universe):
             raise ValueError("Top holdings cannot exceed the execution stock count")
@@ -323,6 +333,14 @@ def run_profitability(source: Path, request, output: Path, registry_root: Path):
         report = {
             "name": "Saved ML strategy profitability evaluation",
             "screening_summary": screening,
+            "profitability_warning": (
+                "Unreliable profit/loss: unexplained raw-price jumps may be missing corporate "
+                "actions. This exploratory replay leaves prices and share counts unchanged; "
+                "do not treat its returns or baseline comparisons as evidence of profitability."
+                if discontinuities
+                else None
+            ),
+            "unexplained_discontinuities": discontinuities,
             "performance_kind": "exploratory_backtest"
             if blockers or request.research_mode == "exploratory"
             else "development_backtest",

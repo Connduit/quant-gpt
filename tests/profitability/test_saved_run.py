@@ -205,3 +205,51 @@ def test_fold_clock_evidence_is_cross_checked(saved_run, tmp_path):
     (source / "result.json").write_text(json.dumps(result))
     with pytest.raises(ValueError, match="fold evidence"):
         run_profitability(source, request, tmp_path / "clock-mismatch", tmp_path / "registry")
+
+
+def test_unexplained_gap_continues_only_in_exploratory_mode(saved_run, tmp_path, monkeypatch):
+    from dataclasses import replace
+    from decimal import Decimal
+
+    from quantlab.profitability import runner
+
+    source, request = saved_run
+    original_loader = runner.load_execution_feeds
+    captured = {}
+
+    def feeds_with_gap(*args):
+        feeds, blockers = original_loader(*args)
+        symbol = next(symbol for symbol in feeds if symbol != "SPY")
+        feed = feeds[symbol]
+        # Invented 4:1 discontinuity after the first out-of-sample prediction.
+        bars = tuple(
+            replace(
+                bar,
+                **{
+                    field: getattr(bar, field) / Decimal(4)
+                    for field in ("open", "high", "low", "close")
+                },
+            )
+            if index >= len(feed.bars) - 20
+            else bar
+            for index, bar in enumerate(feed.bars)
+        )
+        feeds[symbol] = replace(feed, bars=bars)
+        captured["feeds"] = feeds
+        return feeds, blockers
+
+    monkeypatch.setattr(runner, "load_execution_feeds", feeds_with_gap)
+    report = runner.run_profitability(source, request, tmp_path / "gap", tmp_path / "registry")
+    assert report["performance_kind"] == "exploratory_backtest"
+    assert "Unreliable profit/loss" in report["profitability_warning"]
+    assert report["unexplained_discontinuities"]
+    assert all(
+        warning in report["data_limitations"] for warning in report["unexplained_discontinuities"]
+    )
+    assert not report["qualified"] and not report["promotion_allowed"]
+    assert report["scenarios"]["baseline"]["strategies"]["ml"]["net"]
+    _, rows, _ = runner.load_saved_predictions(source, request)
+    with pytest.raises(ValueError, match="Unexplained raw-price discontinuity"):
+        runner.prepare_market(
+            captured["feeds"], rows, request.model_copy(update={"research_mode": "strict"})
+        )

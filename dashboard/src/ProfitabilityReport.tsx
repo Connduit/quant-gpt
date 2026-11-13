@@ -101,6 +101,11 @@ export function ProfitabilityReport({
           Evaluation: {String(report.evaluation_start)} –{" "}
           {String(report.evaluation_end)} · Model: {String(report.model)}
         </p>
+        {typeof report.profitability_warning === "string" && (
+          <p role="alert" className="warning-line">
+            {report.profitability_warning}
+          </p>
+        )}
         {typeof obj(report.screening_summary).conclusion === "string" && (
           <p>
             Baseline-cost screening:{" "}
