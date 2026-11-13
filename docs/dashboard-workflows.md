@@ -6,7 +6,10 @@ no command-line input. Existing curated result panels remain below the new forms
 ## Download and create snapshots
 
 Open **Data library**, enter US symbols (include SPY for benchmark research),
-choose dates and click **Download & create snapshots**. At most 12 symbols and
+choose dates and click **Download & create snapshots**. The form defaults to
+one year ending yesterday (UTC), with the end-date picker allowing completed dates
+after 2018. Switching to Databento selects a 31-calendar-day window ending on the
+chosen end date. The separate training/discovery cutoff remains December 31, 2018. At most 12 symbols and
 ten years for Alpaca (31 calendar days for Databento) are accepted per request.
 Select Alpaca/SIP or IEX, or Databento/dataset and estimated cost cap. See
 [provider setup](market-data-setup.md) for secrets, allowlist and entitlement details.

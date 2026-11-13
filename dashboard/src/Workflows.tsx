@@ -30,6 +30,12 @@ const modelNames = [
   "xgboost",
 ];
 
+function daysBefore(date: string, days: number) {
+  const value = new Date(`${date}T00:00:00Z`);
+  value.setUTCDate(value.getUTCDate() - days);
+  return value.toISOString().slice(0, 10);
+}
+
 export function EquityWorkflows({ page }: { page: string }) {
   const mode =
     page === "datasets"
@@ -43,8 +49,9 @@ export function EquityWorkflows({ page }: { page: string }) {
   const [feed, setFeed] = useState("sip");
   const [dataset, setDataset] = useState("XNAS.ITCH");
   const [cost, setCost] = useState(0);
-  const [start, setStart] = useState("2016-01-04");
-  const [end, setEnd] = useState("2018-12-31");
+  const latestCompletedDate = daysBefore(new Date().toISOString().slice(0, 10), 1);
+  const [start, setStart] = useState(() => daysBefore(latestCompletedDate, 365));
+  const [end, setEnd] = useState(latestCompletedDate);
   const [refresh, setRefresh] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [models, setModels] = useState(["ridge"]);
@@ -197,7 +204,9 @@ export function EquityWorkflows({ page }: { page: string }) {
         </h3>
         <p className="subtle">
           Researcher access required. Downloads support completed historical dates.
-          Reserved holdout snapshots cannot be used for training or discovery.
+          Downloads can include dates after 2018. Training and discovery currently
+          require snapshots ending by December 31, 2018 to preserve the reserved
+          holdout.
         </p>
         <form onSubmit={(event) => void submit(event)}>
           {mode === "download" ? (
@@ -211,8 +220,8 @@ export function EquityWorkflows({ page }: { page: string }) {
                       setProvider(e.target.value);
                       setStart(
                         e.target.value === "databento"
-                          ? "2018-12-03"
-                          : "2016-01-04",
+                          ? daysBefore(end, 30)
+                          : daysBefore(end, 365),
                       );
                     }}
                   >
@@ -276,6 +285,7 @@ export function EquityWorkflows({ page }: { page: string }) {
                     required
                     type="date"
                     min="1990-01-01"
+                    max={end}
                     value={start}
                     onChange={(e) => setStart(e.target.value)}
                   />
@@ -286,11 +296,16 @@ export function EquityWorkflows({ page }: { page: string }) {
                     required
                     type="date"
                     min={start}
+                    max={latestCompletedDate}
                     value={end}
                     onChange={(e) => setEnd(e.target.value)}
                   />
                 </label>
               </div>
+              <p className="subtle">
+                Download through {latestCompletedDate}. Today and future dates
+                are unavailable; weekends and exchange holidays have no bars.
+              </p>
               <label className="workflow-check">
                 <input
                   type="checkbox"

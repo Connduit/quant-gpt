@@ -8,8 +8,8 @@ test("historical form submits a bounded snapshot request", async ({ page }) => {
   });
   await page.goto("/datasets");
   await page.getByLabel("US equity symbols").fill("AAPL, SPY");
-  await page.getByLabel("Start date", { exact: true }).fill("2018-01-02");
-  await page.getByLabel("End date", { exact: true }).fill("2018-01-10");
+  await page.getByLabel("Start date", { exact: true }).fill("2020-01-02");
+  await page.getByLabel("End date", { exact: true }).fill("2024-01-10");
   await page
     .getByRole("button", { name: "Download & create snapshots", exact: true })
     .click();
@@ -22,8 +22,8 @@ test("historical form submits a bounded snapshot request", async ({ page }) => {
     databento_dataset: "XNAS.ITCH",
     maximum_download_cost: 0,
     symbols: ["AAPL", "SPY"],
-    start: "2018-01-02",
-    end: "2018-01-10",
+    start: "2020-01-02",
+    end: "2024-01-10",
     refresh: false,
     confirmed: true,
   });
@@ -99,9 +99,10 @@ test("Databento provider selection sends a bounded explicit cost authorization",
     await route.fulfill({ status: 202, json: { id: "databento-form-check" } });
   });
   await page.goto("/datasets");
+  await page.getByLabel("End date", { exact: true }).fill("2024-01-31");
   await page.getByLabel("Historical data provider").selectOption("databento");
   await expect(page.getByLabel("Start date", { exact: true })).toHaveValue(
-    "2018-12-03",
+    "2024-01-01",
   );
   await page.getByLabel("Maximum estimated download cost (USD)").fill("1.25");
   await page

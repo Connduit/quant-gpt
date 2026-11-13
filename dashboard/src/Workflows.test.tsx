@@ -86,7 +86,11 @@ describe("equity dashboard workflows", () => {
       provider: "databento",
       maximum_download_cost: 2.5,
       databento_dataset: "XNAS.ITCH",
-      start: "2018-12-03",
+      start: (() => {
+        const date = new Date();
+        date.setUTCDate(date.getUTCDate() - 31);
+        return date.toISOString().slice(0, 10);
+      })(),
     });
     expect(JSON.stringify(post.mock.calls[0][1])).not.toContain("api_key");
   });
@@ -97,7 +101,12 @@ describe("equity dashboard workflows", () => {
     fireEvent.change(screen.getByLabelText("US equity symbols"), {
       target: { value: "AAPL, SPY" },
     });
-    expect(screen.getByLabelText("End date")).not.toHaveAttribute("max");
+    const yesterday = new Date();
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+    const latest = yesterday.toISOString().slice(0, 10);
+    expect(screen.getByLabelText("End date")).toHaveValue(latest);
+    expect(screen.getByLabelText("End date")).toHaveAttribute("max", latest);
+    expect(screen.getByText(/Downloads can include dates after 2018/)).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Start date"), {
       target: { value: "2024-01-02" },
     });
