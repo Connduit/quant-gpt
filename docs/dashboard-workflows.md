@@ -49,7 +49,12 @@ Saved keys are encrypted on the server and apply immediately to new jobs.
 Follow **Equity workflow jobs**. Open **View report** for per-symbol outcomes and
 download its JSON report. Partial downloads retain successful snapshots and report
 failed symbols. **Historical snapshot library** shows dates, counts, provider,
-price basis, identity and research blockers.
+price basis, identity and research blockers. The library shows eight snapshots
+per page in a table with a bounded height. Search by symbol, provider, dates or
+snapshot ID; filter by dataset role or eligibility, and sort by download time,
+symbol or coverage. **Hide snapshots** collapses it entirely. Research selections
+remain checked across pages and filters; **Selected only** shows the current
+selection. Unavailable manifests are grouped under a collapsed summary.
 
 An exact prior request reuses a checksum-verified cache. **Fetch a fresh version**
 downloads another immutable version without overwriting earlier data. Validation

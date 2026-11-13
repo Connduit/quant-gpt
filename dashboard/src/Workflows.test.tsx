@@ -170,6 +170,74 @@ describe("equity dashboard workflows", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("pages and filters the library while retaining selections across pages", async () => {
+    const items = Array.from({ length: 18 }, (_, index) => ({
+      id: index.toString(16).padStart(64, "0"),
+      symbol: index === 0 ? "SPY" : `STK${String(index).padStart(2, "0")}`,
+      start: "2020-01-02",
+      end: "2024-12-31",
+      rows: 1200,
+      provider: "alpaca",
+      price_basis: "unadjusted",
+      retrieved_at: "2026-01-01",
+      dataset_role: index === 17 ? "protected_test" : "training",
+      eligible: index !== 17,
+      blockers: index === 17 ? ["Protected test snapshot"] : [],
+    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async (url: string) =>
+          new Response(
+            JSON.stringify(
+              url.includes("/workflows/snapshots")
+                ? { items, errors: [] }
+                : { items: [], approved: [] },
+            ),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+      ),
+    );
+    mount("models");
+    await screen.findByText("SPY");
+    expect(screen.getAllByRole("checkbox", { name: /^Select / })).toHaveLength(
+      8,
+    );
+    fireEvent.click(screen.getByRole("checkbox", { name: /^Select SPY / }));
+    fireEvent.click(screen.getByRole("button", { name: "Next snapshots" }));
+    expect(screen.getByText("Page 2 of 3")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox", { name: /^Select STK08 / }));
+    fireEvent.click(screen.getByRole("button", { name: "Previous snapshots" }));
+    expect(
+      screen.getByRole("checkbox", { name: /^Select SPY / }),
+    ).toBeChecked();
+    fireEvent.change(screen.getByLabelText("Snapshot eligibility"), {
+      target: { value: "selected" },
+    });
+    expect(screen.getAllByRole("checkbox", { name: /^Select / })).toHaveLength(
+      2,
+    );
+    expect(screen.getByText(/2 selected across all pages/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
+    fireEvent.change(screen.getByLabelText("Dataset role"), {
+      target: { value: "protected_test" },
+    });
+    expect(
+      screen.getByRole("checkbox", { name: /^Select STK17 / }),
+    ).toBeDisabled();
+    fireEvent.change(screen.getByLabelText("Search snapshots"), {
+      target: { value: "missing" },
+    });
+    expect(
+      screen.getByText(/No snapshots match these filters/),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Hide snapshots" }));
+    expect(screen.queryByLabelText("Search snapshots")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Equity workflow jobs" }),
+    ).toBeInTheDocument();
+  });
+
   it("defaults the standard download form to SPY and the Magnificent Seven", async () => {
     api();
     mount("datasets");

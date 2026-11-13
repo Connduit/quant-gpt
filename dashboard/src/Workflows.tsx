@@ -72,6 +72,12 @@ export function EquityWorkflows({ page }: { page: string }) {
   const [end, setEnd] = useState(latestCompletedDate);
   const [refresh, setRefresh] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [snapshotSearch, setSnapshotSearch] = useState("");
+  const [snapshotRole, setSnapshotRole] = useState("all");
+  const [snapshotEligibility, setSnapshotEligibility] = useState("all");
+  const [snapshotSort, setSnapshotSort] = useState("newest");
+  const [snapshotPage, setSnapshotPage] = useState(0);
+  const [libraryOpen, setLibraryOpen] = useState(true);
   const [researchMode, setResearchMode] = useState("strict");
   const exploratory = mode === "training" && researchMode === "exploratory";
   const [researchStart, setResearchStart] = useState("");
@@ -135,6 +141,45 @@ export function EquityWorkflows({ page }: { page: string }) {
     if (job && !["QUEUED", "RUNNING"].includes(job.status)) void inspect(job);
   }, [mode, focusedJob, jobs.data, reportId]);
   const items = inventory.data?.items ?? [];
+  const matchingSnapshots = items
+    .filter((s) => {
+      const term = snapshotSearch.trim().toLowerCase();
+      return (
+        (!term ||
+          [s.symbol, s.id, s.provider, s.start, s.end].some((value) =>
+            value.toLowerCase().includes(term),
+          )) &&
+        (snapshotRole === "all" ||
+          (s.dataset_role ?? "research") === snapshotRole) &&
+        (snapshotEligibility === "all" ||
+          (snapshotEligibility === "eligible"
+            ? s.eligible
+            : snapshotEligibility === "selected"
+              ? selected.includes(s.id)
+              : !s.eligible))
+      );
+    })
+    .sort((a, b) => {
+      if (snapshotSort === "symbol")
+        return a.symbol.localeCompare(b.symbol) || b.end.localeCompare(a.end);
+      if (snapshotSort === "coverage")
+        return b.end.localeCompare(a.end) || a.symbol.localeCompare(b.symbol);
+      return (
+        (b.retrieved_at ?? "").localeCompare(a.retrieved_at ?? "") ||
+        b.end.localeCompare(a.end) ||
+        a.symbol.localeCompare(b.symbol)
+      );
+    });
+  const snapshotPageSize = 8;
+  const snapshotPages = Math.max(
+    1,
+    Math.ceil(matchingSnapshots.length / snapshotPageSize),
+  );
+  const currentSnapshotPage = Math.min(snapshotPage, snapshotPages - 1);
+  const visibleSnapshots = matchingSnapshots.slice(
+    currentSnapshotPage * snapshotPageSize,
+    (currentSnapshotPage + 1) * snapshotPageSize,
+  );
   const chosen = items.filter((s) => selected.includes(s.id));
   const readinessProblems: string[] = [];
   if (!chosen.length)
@@ -741,114 +786,263 @@ export function EquityWorkflows({ page }: { page: string }) {
           </section>
           <section className="panel">
             <div className="panel-title">
-              <h3>Historical snapshot library</h3>
+              <h3>
+                Historical snapshot library <small>({items.length})</small>
+              </h3>
+              <button
+                type="button"
+                aria-expanded={libraryOpen}
+                aria-controls="snapshot-library-content"
+                onClick={() => setLibraryOpen(!libraryOpen)}
+              >
+                {libraryOpen ? "Hide snapshots" : "Show snapshots"}
+              </button>
               <button onClick={() => void inventory.refetch()}>
                 Refresh snapshots
               </button>
             </div>
-            {inventory.error ? (
-              <ErrorBox error={inventory.error} />
-            ) : inventory.isPending ? (
-              <p>Loading snapshots…</p>
-            ) : (
-              <>
-                {!items.length && (
-                  <p className="empty">
-                    No historical snapshots yet. Download data from the Data
-                    library to get started.
-                  </p>
-                )}
-                {!!items.length && (
-                  <div className="table-scroll">
-                    <table>
-                      <thead>
-                        <tr>
-                          {mode !== "download" && <th>Select</th>}
-                          <th>Symbol</th>
-                          <th>Coverage</th>
-                          <th>Rows</th>
-                          <th>Price basis</th>
-                          <th>Research eligibility</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {items.map((s) => (
-                          <tr key={s.id}>
-                            {mode !== "download" && (
-                              <td>
-                                <input
-                                  type="checkbox"
-                                  aria-label={`Select ${s.symbol} ${s.id.slice(0, 8)}`}
-                                  disabled={!s.eligible}
-                                  checked={selected.includes(s.id)}
-                                  onChange={() => selectSnapshot(s.id)}
-                                />
-                              </td>
-                            )}
-                            <td>
-                              <strong>{s.symbol}</strong>
-                              {s.dataset_role &&
-                                s.dataset_role !== "research" && (
-                                  <small className="snapshot-id">
-                                    {s.dataset_role === "protected_test"
-                                      ? "Protected test · sealed"
-                                      : "Training snapshot"}
-                                  </small>
-                                )}
-                              <small className="snapshot-id" title={s.id}>
-                                {s.id.slice(0, 12)}…
-                              </small>
-                            </td>
-                            <td>
-                              {s.start} – {s.end}
-                            </td>
-                            <td>{s.rows.toLocaleString()}</td>
-                            <td>
-                              {s.price_basis}
-                              <small className="snapshot-id">
-                                {s.provider}
-                              </small>
-                            </td>
-                            <td>
-                              <Badge
-                                text={
-                                  s.dataset_role === "protected_test"
-                                    ? "PROTECTED TEST"
-                                    : s.eligible
-                                      ? exploratory
-                                        ? "EXPLORATORY"
-                                        : "ELIGIBLE"
-                                      : "BLOCKED_DATA"
-                                }
-                              />
-                              {exploratory &&
-                                s.eligible &&
-                                s.strict_blockers?.map((reason) => (
-                                  <small
-                                    className="snapshot-id"
-                                    key={`limitation-${reason}`}
-                                  >
-                                    Strict research limitation: {reason}
-                                  </small>
-                                ))}
-                              {s.blockers.map((reason) => (
-                                <small className="snapshot-id" key={reason}>
-                                  {reason}
-                                </small>
+            {libraryOpen && (
+              <div id="snapshot-library-content">
+                {inventory.error ? (
+                  <ErrorBox error={inventory.error} />
+                ) : inventory.isPending ? (
+                  <p>Loading snapshots…</p>
+                ) : (
+                  <>
+                    {!items.length && (
+                      <p className="empty">
+                        No historical snapshots yet. Download data from the Data
+                        library to get started.
+                      </p>
+                    )}
+                    {!!items.length && (
+                      <>
+                        <div className="snapshot-tools">
+                          <label>
+                            Search snapshots
+                            <input
+                              type="search"
+                              placeholder="Symbol, provider, dates or ID…"
+                              value={snapshotSearch}
+                              onChange={(event) => {
+                                setSnapshotSearch(event.target.value);
+                                setSnapshotPage(0);
+                              }}
+                            />
+                          </label>
+                          <label>
+                            Dataset role
+                            <select
+                              aria-label="Dataset role"
+                              value={snapshotRole}
+                              onChange={(event) => {
+                                setSnapshotRole(event.target.value);
+                                setSnapshotPage(0);
+                              }}
+                            >
+                              <option value="all">All datasets</option>
+                              <option value="training">Training</option>
+                              <option value="protected_test">
+                                Protected test
+                              </option>
+                              <option value="research">
+                                Research / legacy
+                              </option>
+                            </select>
+                          </label>
+                          <label>
+                            Snapshot eligibility
+                            <select
+                              aria-label="Snapshot eligibility"
+                              value={snapshotEligibility}
+                              onChange={(event) => {
+                                setSnapshotEligibility(event.target.value);
+                                setSnapshotPage(0);
+                              }}
+                            >
+                              <option value="all">All snapshots</option>
+                              <option value="eligible">Eligible</option>
+                              <option value="blocked">
+                                Blocked / protected
+                              </option>
+                              {mode !== "download" && (
+                                <option value="selected">Selected only</option>
+                              )}
+                            </select>
+                          </label>
+                          <label>
+                            Sort snapshots
+                            <select
+                              aria-label="Sort snapshots"
+                              value={snapshotSort}
+                              onChange={(event) => {
+                                setSnapshotSort(event.target.value);
+                                setSnapshotPage(0);
+                              }}
+                            >
+                              <option value="newest">
+                                Newest download first
+                              </option>
+                              <option value="symbol">Symbol A–Z</option>
+                              <option value="coverage">
+                                Latest coverage first
+                              </option>
+                            </select>
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSnapshotSearch("");
+                              setSnapshotRole("all");
+                              setSnapshotEligibility("all");
+                              setSnapshotPage(0);
+                            }}
+                          >
+                            Clear filters
+                          </button>
+                        </div>
+                        <p className="subtle" role="status">
+                          {matchingSnapshots.length
+                            ? `Showing ${currentSnapshotPage * snapshotPageSize + 1}–${Math.min((currentSnapshotPage + 1) * snapshotPageSize, matchingSnapshots.length)} of ${matchingSnapshots.length}`
+                            : "No snapshots match these filters"}{" "}
+                          · {items.length} total
+                          {mode !== "download" &&
+                            ` · ${selected.length} selected across all pages`}
+                        </p>
+                        <div
+                          className="table-scroll snapshot-table"
+                          role="region"
+                          aria-label="Historical snapshots"
+                          tabIndex={0}
+                        >
+                          <table>
+                            <thead>
+                              <tr>
+                                {mode !== "download" && <th>Select</th>}
+                                <th>Symbol</th>
+                                <th>Coverage</th>
+                                <th>Rows</th>
+                                <th>Price basis</th>
+                                <th>Research eligibility</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {visibleSnapshots.map((s) => (
+                                <tr key={s.id}>
+                                  {mode !== "download" && (
+                                    <td>
+                                      <input
+                                        type="checkbox"
+                                        aria-label={`Select ${s.symbol} ${s.id.slice(0, 8)}`}
+                                        disabled={!s.eligible}
+                                        checked={selected.includes(s.id)}
+                                        onChange={() => selectSnapshot(s.id)}
+                                      />
+                                    </td>
+                                  )}
+                                  <td>
+                                    <strong>{s.symbol}</strong>
+                                    {s.dataset_role &&
+                                      s.dataset_role !== "research" && (
+                                        <small className="snapshot-id">
+                                          {s.dataset_role === "protected_test"
+                                            ? "Protected test · sealed"
+                                            : "Training snapshot"}
+                                        </small>
+                                      )}
+                                    <small className="snapshot-id" title={s.id}>
+                                      {s.id.slice(0, 12)}…
+                                    </small>
+                                  </td>
+                                  <td>
+                                    {s.start} – {s.end}
+                                  </td>
+                                  <td>{s.rows.toLocaleString()}</td>
+                                  <td>
+                                    {s.price_basis}
+                                    <small className="snapshot-id">
+                                      {s.provider}
+                                    </small>
+                                  </td>
+                                  <td>
+                                    <Badge
+                                      text={
+                                        s.dataset_role === "protected_test"
+                                          ? "PROTECTED TEST"
+                                          : s.eligible
+                                            ? exploratory
+                                              ? "EXPLORATORY"
+                                              : "ELIGIBLE"
+                                            : "BLOCKED_DATA"
+                                      }
+                                    />
+                                    {exploratory &&
+                                      s.eligible &&
+                                      s.strict_blockers?.map((reason) => (
+                                        <small
+                                          className="snapshot-id"
+                                          key={`limitation-${reason}`}
+                                        >
+                                          Strict research limitation: {reason}
+                                        </small>
+                                      ))}
+                                    {s.blockers.map((reason) => (
+                                      <small
+                                        className="snapshot-id"
+                                        key={reason}
+                                      >
+                                        {reason}
+                                      </small>
+                                    ))}
+                                  </td>
+                                </tr>
                               ))}
-                            </td>
-                          </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <nav
+                          className="snapshot-pagination"
+                          aria-label="Snapshot pages"
+                        >
+                          <button
+                            type="button"
+                            disabled={currentSnapshotPage === 0}
+                            onClick={() =>
+                              setSnapshotPage(currentSnapshotPage - 1)
+                            }
+                          >
+                            Previous snapshots
+                          </button>
+                          <span>
+                            Page {currentSnapshotPage + 1} of {snapshotPages}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={currentSnapshotPage >= snapshotPages - 1}
+                            onClick={() =>
+                              setSnapshotPage(currentSnapshotPage + 1)
+                            }
+                          >
+                            Next snapshots
+                          </button>
+                        </nav>
+                      </>
+                    )}
+                    {!!inventory.data?.errors?.length && (
+                      <details>
+                        <summary>
+                          Unavailable snapshots ({inventory.data.errors.length})
+                        </summary>
+                        {inventory.data.errors.map((e) => (
+                          <p className="warning-line" key={e.id}>
+                            {e.id.slice(0, 12)}: {e.error}
+                          </p>
                         ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      </details>
+                    )}
+                  </>
                 )}
-                {inventory.data?.errors?.map((e) => (
-                  <p className="warning-line" key={e.id}>
-                    {e.id.slice(0, 12)}: {e.error}
-                  </p>
-                ))}
-              </>
+              </div>
             )}
           </section>
         </>

@@ -736,3 +736,45 @@ footer span {
   overflow-wrap: anywhere;
   max-width: 100%;
 }
+
+.snapshot-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 16px 20px;
+}
+.snapshot-tools label {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 160px;
+  min-width: 0;
+}
+.snapshot-tools input,
+.snapshot-tools select {
+  width: 100%;
+  min-width: 0;
+}
+.snapshot-table {
+  max-height: 440px;
+  overflow: auto;
+}
+.snapshot-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--panel, #111b2b);
+  z-index: 1;
+}
+.snapshot-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 20px;
+}
+
+#snapshot-library-content > .subtle,
+#snapshot-library-content > details {
+  margin: 16px 20px;
+}
