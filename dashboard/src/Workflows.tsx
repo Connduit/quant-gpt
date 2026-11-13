@@ -856,11 +856,12 @@ export function EquityWorkflows({ page }: { page: string }) {
                     </td>
                     <td>{job.detail}</td>
                     <td>
-                      <button onClick={() => void inspect(job)}>
-                        View report
-                      </button>
-                      {["QUEUED", "RUNNING"].includes(job.status) && (
+                      {["QUEUED", "RUNNING"].includes(job.status) ? (
                         <button onClick={() => void cancel(job)}>Cancel</button>
+                      ) : (
+                        <button onClick={() => void inspect(job)}>
+                          View report
+                        </button>
                       )}
                     </td>
                   </tr>

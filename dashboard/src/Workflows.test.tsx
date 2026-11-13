@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -75,6 +76,52 @@ function api(
   return post;
 }
 describe("equity dashboard workflows", () => {
+  it("shows only Cancel for queued/running jobs and reports after completion", async () => {
+    const fetchMock = vi.fn(
+      async (url: string) =>
+        new Response(
+          JSON.stringify(
+            url.endsWith("/jobs")
+              ? {
+                  items: ["QUEUED", "RUNNING", "COMPLETED"].map((status) => ({
+                    id: status.toLowerCase(),
+                    name: "training-example",
+                    status,
+                    detail: "",
+                    created: "2026-01-01",
+                  })),
+                  approved: [],
+                }
+              : { items: [], errors: [] },
+          ),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    mount("models");
+    for (const status of ["QUEUED", "RUNNING"]) {
+      const row = (await screen.findByText(status)).closest("tr")!;
+      expect(
+        within(row).queryByRole("button", { name: "View report" }),
+      ).not.toBeInTheDocument();
+      expect(within(row).getByRole("button", { name: "Cancel" })).toBeEnabled();
+    }
+    const completed = (await screen.findByText("COMPLETED")).closest("tr")!;
+    expect(
+      within(completed).getByRole("button", { name: "View report" }),
+    ).toBeEnabled();
+    expect(
+      within(completed).queryByRole("button", { name: "Cancel" }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole("button", { name: "Cancel" })[0]);
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/v1/jobs/queued/cancel",
+        expect.objectContaining({ method: "POST" }),
+      ),
+    );
+  });
+
   it("defaults the standard download form to SPY and the Magnificent Seven", async () => {
     api();
     mount("datasets");
