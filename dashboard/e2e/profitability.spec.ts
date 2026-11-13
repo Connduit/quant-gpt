@@ -66,6 +66,10 @@ test("saved ML report launches strategy evaluation and presents net profitabilit
   await page
     .getByRole("button", { name: "Evaluate strategy", exact: true })
     .click();
+  await expect(page).toHaveURL(new RegExp(`/backtests[?]job=${evaluated}$`));
+  await expect(
+    page.getByRole("heading", { name: "ML strategy backtests" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("row").filter({ hasText: "profitability" }),
   ).toBeVisible();
@@ -73,11 +77,10 @@ test("saved ML report launches strategy evaluation and presents net profitabilit
   expect(submitted?.research_mode).toBe("exploratory");
   expect(submitted?.start).toBe("2016-01-01");
   expect(submitted?.commission_per_share).toBe(0.005);
-  await page
-    .getByRole("row")
-    .filter({ hasText: "profitability" })
-    .getByRole("button", { name: "View report" })
-    .click();
+  // Completed evaluations open automatically on the Backtests tab.
+  await expect(
+    page.getByRole("heading", { name: "Train equity ML models" }),
+  ).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Strategy profitability evaluation" }),
   ).toBeVisible();
@@ -205,11 +208,63 @@ test("exploratory discontinuity warning is prominent above profitability metrics
       },
     }),
   );
-  await page.goto("/models");
+  await page.goto("/backtests");
   await page.getByRole("button", { name: "View report", exact: true }).click();
   await expect(
     page.getByRole("alert").filter({ hasText: warning }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "Strategy profitability evaluation",
+      exact: true,
+    }),
+  ).toBeVisible();
+});
+
+test("running backtest exposes only Cancel then opens its report and survives refresh", async ({
+  page,
+}) => {
+  let completed = false;
+  let reportReads = 0;
+  await page.route("**/api/v1/jobs", (route) =>
+    route.fulfill({
+      json: {
+        items: [
+          {
+            id: "tracked",
+            name: "profitability-tracked",
+            status: completed ? "COMPLETED" : "RUNNING",
+            detail: "",
+            created: "2026-11-13",
+          },
+        ],
+        approved: [],
+      },
+    }),
+  );
+  await page.route("**/api/v1/workflows/jobs/tracked", (route) => {
+    reportReads += 1;
+    return route.fulfill({ json: { result: fixture } });
+  });
+  await page.goto("/backtests?job=tracked");
+  await expect(
+    page.getByRole("button", { name: "Cancel", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "View report", exact: true }),
+  ).toHaveCount(0);
+  expect(reportReads).toBe(0);
+  completed = true;
+  await expect(
+    page.getByRole("heading", {
+      name: "Strategy profitability evaluation",
+      exact: true,
+    }),
+  ).toBeVisible({ timeout: 10000 });
+  await expect(
+    page.getByRole("button", { name: "Cancel", exact: true }),
+  ).toHaveCount(0);
+  await page.reload();
   await expect(
     page.getByRole("heading", {
       name: "Strategy profitability evaluation",

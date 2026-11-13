@@ -101,7 +101,8 @@ export function StrategyEvaluation({
         Turn this saved out-of-sample prediction run into next-open, long-only
         trades. Compare net returns with SPY, equal-weight, momentum, mean
         reversion and cash. Low and high costs are 0.5× and 2× your baseline
-        assumptions. Final liquidation costs are included.
+        assumptions. Final liquidation costs are included. This is a backtest;
+        submitting opens the Backtests tab to track progress and view results.
       </p>
       {sourceBlocked && (
         <p role="alert" className="warning-line" id="strategy-source-blocker">

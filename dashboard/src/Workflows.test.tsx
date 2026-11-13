@@ -122,6 +122,54 @@ describe("equity dashboard workflows", () => {
     );
   });
 
+  it("lists profitability jobs only in Backtests without training controls", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async (url: string) =>
+          new Response(
+            JSON.stringify(
+              url.endsWith("/jobs")
+                ? {
+                    items: [
+                      {
+                        id: "running-backtest",
+                        name: "profitability-running",
+                        status: "RUNNING",
+                        detail: "",
+                        created: "2026-01-01",
+                      },
+                      {
+                        id: "training-job",
+                        name: "training-example",
+                        status: "COMPLETED",
+                        detail: "",
+                        created: "2026-01-01",
+                      },
+                    ],
+                    approved: [],
+                  }
+                : { items: [], errors: [] },
+            ),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+      ),
+    );
+    mount("backtests");
+    expect(await screen.findByText("profitability")).toBeInTheDocument();
+    expect(screen.queryByText("training-job")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Train equity ML models" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Historical snapshot library" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeEnabled();
+    expect(
+      screen.queryByRole("button", { name: "View report" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("defaults the standard download form to SPY and the Magnificent Seven", async () => {
     api();
     mount("datasets");

@@ -367,9 +367,9 @@ function Artifacts() {
         </div>
       )}
       {kind === "live" && <LiveReadiness />}
-      {["datasets", "research", "models", "discovery"].includes(kind) && (
-        <EquityWorkflows key={kind} page={kind} />
-      )}
+      {["datasets", "research", "models", "discovery", "backtests"].includes(
+        kind,
+      ) && <EquityWorkflows key={kind} page={kind} />}
       <section className="panel">
         <div className="panel-title">
           <h3>Saved {title.toLowerCase()}</h3>

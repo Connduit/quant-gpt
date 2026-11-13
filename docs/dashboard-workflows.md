@@ -223,3 +223,13 @@ not corrected by guessing a split. Returns and baseline comparisons may therefor
 be distorted; this run cannot establish profitability. Strict evaluation retains
 the blocking check. After updating, submit a new evaluation to replace an older
 failed run; saved job results are unchanged.
+
+### Backtests tab
+
+A saved-ML profitability evaluation is a backtest: it replays predictions as
+next-open trades with transaction costs and compares returns with benchmarks.
+Launch it from a completed ML training report. Submission takes you to
+**Backtests**, where **ML strategy backtests** lists queued, running and finished
+profitability jobs separately from training jobs. Active jobs offer only **Cancel**.
+The selected report opens when the job finishes; the `?job=` URL also reopens it
+after refresh. Completed jobs remain accessible through **View report** in Backtests.

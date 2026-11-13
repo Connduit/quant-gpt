@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./api";
 import { Badge, ErrorBox, JsonView } from "./components";
@@ -45,12 +45,17 @@ function daysBefore(date: string, days: number) {
 }
 
 export function EquityWorkflows({ page }: { page: string }) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const focusedJob = searchParams.get("job");
   const mode =
-    page === "datasets"
-      ? "download"
-      : page === "discovery"
-        ? "discovery"
-        : "training";
+    page === "backtests"
+      ? "backtest"
+      : page === "datasets"
+        ? "download"
+        : page === "discovery"
+          ? "discovery"
+          : "training";
   const query = useQueryClient();
   const [symbols, setSymbols] = useState(DEFAULT_EQUITY_SYMBOLS);
   const [provider, setProvider] = useState("alpaca");
@@ -113,6 +118,7 @@ export function EquityWorkflows({ page }: { page: string }) {
       request<{ items: Snapshot[]; errors: { id: string; error: string }[] }>(
         `/workflows/snapshots${rangeQuery}`,
       ),
+    enabled: mode !== "backtest",
     refetchInterval: 5000,
   });
   const jobs = useQuery({
@@ -120,6 +126,14 @@ export function EquityWorkflows({ page }: { page: string }) {
     queryFn: () => request<{ items: Job[]; approved: string[] }>("/jobs"),
     refetchInterval: 3000,
   });
+  useEffect(() => {
+    if (mode !== "backtest" || !focusedJob || reportId === focusedJob) return;
+    const job = jobs.data?.items.find(
+      (item) =>
+        item.id === focusedJob && item.name.startsWith("profitability-"),
+    );
+    if (job && !["QUEUED", "RUNNING"].includes(job.status)) void inspect(job);
+  }, [mode, focusedJob, jobs.data, reportId]);
   const items = inventory.data?.items ?? [];
   const chosen = items.filter((s) => selected.includes(s.id));
   const readinessProblems: string[] = [];
@@ -320,7 +334,9 @@ export function EquityWorkflows({ page }: { page: string }) {
     URL.revokeObjectURL(url);
   }
   const workflowJobs = (jobs.data?.items ?? []).filter((j) =>
-    /^(download|download_pair|training|discovery|profitability)-/.test(j.name),
+    mode === "backtest"
+      ? j.name.startsWith("profitability-")
+      : /^(download|download_pair|training|discovery)-/.test(j.name),
   );
   return (
     <>
@@ -333,504 +349,544 @@ export function EquityWorkflows({ page }: { page: string }) {
           }}
         />
       )}
-      <section className="panel equity-workflow">
-        <h3>
-          {mode === "download"
-            ? "Download historical data & create snapshots"
-            : mode === "discovery"
-              ? "Start equity discovery"
-              : "Train equity ML models"}
-        </h3>
-        <p className="subtle">
-          Researcher access required. Downloads support completed historical
-          dates. Downloads can include dates after 2018. Training and discovery
-          use only the selected research date range; dates outside it are
-          excluded before features, labels or models are computed.
-        </p>
-        <form onSubmit={(event) => void submit(event)}>
-          {mode === "download" ? (
-            <>
-              <div className="workflow-fields">
-                <label>
-                  Historical data provider
-                  <select
-                    value={provider}
-                    onChange={(e) => {
-                      setProvider(e.target.value);
-                      setStart(
-                        e.target.value === "databento"
-                          ? daysBefore(end, 30)
-                          : daysBefore(end, 365),
-                      );
-                    }}
-                  >
-                    <option value="alpaca">Alpaca</option>
-                    <option value="databento">Databento</option>
-                  </select>
-                </label>
-                {provider === "alpaca" ? (
-                  <label>
-                    Alpaca feed
-                    <select
-                      value={feed}
-                      onChange={(e) => setFeed(e.target.value)}
-                    >
-                      <option value="sip">SIP — consolidated</option>
-                      <option value="iex">IEX — single venue</option>
-                    </select>
-                  </label>
-                ) : (
-                  <>
+      {mode !== "backtest" && (
+        <>
+          <section className="panel equity-workflow">
+            <h3>
+              {mode === "download"
+                ? "Download historical data & create snapshots"
+                : mode === "discovery"
+                  ? "Start equity discovery"
+                  : "Train equity ML models"}
+            </h3>
+            <p className="subtle">
+              Researcher access required. Downloads support completed historical
+              dates. Downloads can include dates after 2018. Training and
+              discovery use only the selected research date range; dates outside
+              it are excluded before features, labels or models are computed.
+            </p>
+            <form onSubmit={(event) => void submit(event)}>
+              {mode === "download" ? (
+                <>
+                  <div className="workflow-fields">
                     <label>
-                      Databento dataset
+                      Historical data provider
                       <select
-                        value={dataset}
-                        onChange={(e) => setDataset(e.target.value)}
+                        value={provider}
+                        onChange={(e) => {
+                          setProvider(e.target.value);
+                          setStart(
+                            e.target.value === "databento"
+                              ? daysBefore(end, 30)
+                              : daysBefore(end, 365),
+                          );
+                        }}
                       >
-                        <option value="XNAS.ITCH">
-                          XNAS.ITCH — Nasdaq venue
-                        </option>
-                        <option value="DBEQ.BASIC">
-                          DBEQ.BASIC — check historical coverage
+                        <option value="alpaca">Alpaca</option>
+                        <option value="databento">Databento</option>
+                      </select>
+                    </label>
+                    {provider === "alpaca" ? (
+                      <label>
+                        Alpaca feed
+                        <select
+                          value={feed}
+                          onChange={(e) => setFeed(e.target.value)}
+                        >
+                          <option value="sip">SIP — consolidated</option>
+                          <option value="iex">IEX — single venue</option>
+                        </select>
+                      </label>
+                    ) : (
+                      <>
+                        <label>
+                          Databento dataset
+                          <select
+                            value={dataset}
+                            onChange={(e) => setDataset(e.target.value)}
+                          >
+                            <option value="XNAS.ITCH">
+                              XNAS.ITCH — Nasdaq venue
+                            </option>
+                            <option value="DBEQ.BASIC">
+                              DBEQ.BASIC — check historical coverage
+                            </option>
+                          </select>
+                        </label>
+                        <label>
+                          Maximum estimated download cost (USD)
+                          <input
+                            type="number"
+                            min={0}
+                            max={100}
+                            step="0.01"
+                            required
+                            value={cost}
+                            onChange={(e) => setCost(Number(e.target.value))}
+                          />
+                        </label>
+                      </>
+                    )}
+                    <label>
+                      US equity symbols
+                      <input
+                        required
+                        value={symbols}
+                        onChange={(e) => setSymbols(e.target.value)}
+                        placeholder={DEFAULT_EQUITY_SYMBOLS}
+                      />
+                    </label>
+                    <label>
+                      Start date
+                      <input
+                        required
+                        type="date"
+                        min="1990-01-01"
+                        max={end}
+                        value={start}
+                        onChange={(e) => setStart(e.target.value)}
+                      />
+                    </label>
+                    <label>
+                      End date
+                      <input
+                        required
+                        type="date"
+                        min={start}
+                        max={latestCompletedDate}
+                        value={end}
+                        onChange={(e) => setEnd(e.target.value)}
+                      />
+                    </label>
+                  </div>
+                  <p className="subtle">
+                    Download through {latestCompletedDate}. Today and future
+                    dates are unavailable; weekends and exchange holidays have
+                    no bars.
+                  </p>
+                  <label className="workflow-check">
+                    <input
+                      type="checkbox"
+                      checked={refresh}
+                      onChange={(e) => setRefresh(e.target.checked)}
+                    />
+                    Fetch a fresh version instead of reusing an exact cached
+                    request
+                  </label>
+                  <p className="subtle">
+                    Raw minute bars aggregated over regular XNYS sessions. Up to
+                    12 symbols; Alpaca permits ten years per request, Databento
+                    31 calendar days. Downloads are validated before immutable
+                    snapshots are saved. Existing versions are preserved.
+                  </p>
+                  {providers.error ? (
+                    <ErrorBox error={providers.error} />
+                  ) : (
+                    providers.data?.items
+                      ?.filter((p) => p.id === provider)
+                      .map((p) => (
+                        <p key={p.id} className="subtle">
+                          {p.configured
+                            ? "Server credentials configured; access and entitlements are verified when downloading."
+                            : `API keys required: ${p.required_secrets.join(", ")}.`}{" "}
+                          Data host: {p.host}.{" "}
+                          <Link
+                            to="/provider-settings"
+                            className="provider-settings-link"
+                          >
+                            Manage API keys
+                          </Link>
+                        </p>
+                      ))
+                  )}
+                  {provider === "databento" && (
+                    <p className="warning-line">
+                      The cost limit applies across all symbols in this job.
+                      Zero permits only zero-cost estimates. Estimates are
+                      checked before each stream; final vendor billing may
+                      differ. Dataset dates must be completed historical dates.
+                    </p>
+                  )}
+                  <button type="submit" disabled={pending}>
+                    {pending ? "Submitting…" : "Download & create snapshots"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  {mode === "training" && (
+                    <label>
+                      Research mode
+                      <select
+                        value={researchMode}
+                        onChange={(e) => {
+                          setResearchMode(e.target.value);
+                          setSelected([]);
+                        }}
+                      >
+                        <option value="strict">Strict research</option>
+                        <option value="exploratory">
+                          Exploratory ML — prediction only
                         </option>
                       </select>
                     </label>
+                  )}
+                  {exploratory && (
+                    <p className="warning-line">
+                      Exploratory ML accepts downloaded prices without
+                      corporate-action or historical-membership evidence. Splits
+                      and dividends can distort features and targets, and a
+                      fixed stock list can introduce selection bias. Reports
+                      contain prediction metrics only, with no portfolio
+                      backtest, strategy qualification or deployment approval.
+                    </p>
+                  )}
+                  <div className="workflow-fields">
                     <label>
-                      Maximum estimated download cost (USD)
+                      Run name
+                      <input
+                        required
+                        pattern="[a-zA-Z0-9 _-]+"
+                        minLength={3}
+                        maxLength={80}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </label>
+                    <label>
+                      Research start date
+                      <input
+                        type="date"
+                        required
+                        value={researchStart}
+                        max={researchEnd || latestCompletedDate}
+                        onChange={(e) => setResearchStart(e.target.value)}
+                      />
+                    </label>
+                    <label>
+                      Research end date
+                      <input
+                        type="date"
+                        required
+                        value={researchEnd}
+                        min={researchStart}
+                        max={latestCompletedDate}
+                        onChange={(e) => setResearchEnd(e.target.value)}
+                      />
+                    </label>
+                    <label>
+                      Prediction horizon
+                      <select
+                        value={horizon}
+                        onChange={(e) => setHorizon(Number(e.target.value))}
+                      >
+                        {[1, 5, 10].map((n) => (
+                          <option key={n} value={n}>
+                            {n} sessions
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      Training sessions
+                      <input
+                        type="number"
+                        min={60}
+                        max={1500}
+                        required
+                        value={train}
+                        onChange={(e) => setTrain(Number(e.target.value))}
+                      />
+                    </label>
+                    <label>
+                      Validation sessions
+                      <input
+                        type="number"
+                        min={20}
+                        max={252}
+                        required
+                        value={validation}
+                        onChange={(e) => setValidation(Number(e.target.value))}
+                      />
+                    </label>
+                    <label>
+                      Evaluation sessions per fold
+                      <input
+                        type="number"
+                        min={20}
+                        max={252}
+                        required
+                        value={test}
+                        onChange={(e) => setTest(Number(e.target.value))}
+                      />
+                    </label>
+                    {!exploratory && (
+                      <label>
+                        Top holdings
+                        <input
+                          type="number"
+                          min={1}
+                          max={10}
+                          required
+                          value={top}
+                          onChange={(e) => setTop(Number(e.target.value))}
+                        />
+                      </label>
+                    )}
+                    <label>
+                      Random seed
                       <input
                         type="number"
                         min={0}
-                        max={100}
-                        step="0.01"
+                        max={4294967295}
                         required
-                        value={cost}
-                        onChange={(e) => setCost(Number(e.target.value))}
+                        value={seed}
+                        onChange={(e) => setSeed(Number(e.target.value))}
                       />
                     </label>
-                  </>
-                )}
-                <label>
-                  US equity symbols
-                  <input
-                    required
-                    value={symbols}
-                    onChange={(e) => setSymbols(e.target.value)}
-                    placeholder={DEFAULT_EQUITY_SYMBOLS}
-                  />
-                </label>
-                <label>
-                  Start date
-                  <input
-                    required
-                    type="date"
-                    min="1990-01-01"
-                    max={end}
-                    value={start}
-                    onChange={(e) => setStart(e.target.value)}
-                  />
-                </label>
-                <label>
-                  End date
-                  <input
-                    required
-                    type="date"
-                    min={start}
-                    max={latestCompletedDate}
-                    value={end}
-                    onChange={(e) => setEnd(e.target.value)}
-                  />
-                </label>
-              </div>
-              <p className="subtle">
-                Download through {latestCompletedDate}. Today and future dates
-                are unavailable; weekends and exchange holidays have no bars.
-              </p>
-              <label className="workflow-check">
-                <input
-                  type="checkbox"
-                  checked={refresh}
-                  onChange={(e) => setRefresh(e.target.checked)}
-                />
-                Fetch a fresh version instead of reusing an exact cached request
-              </label>
-              <p className="subtle">
-                Raw minute bars aggregated over regular XNYS sessions. Up to 12
-                symbols; Alpaca permits ten years per request, Databento 31
-                calendar days. Downloads are validated before immutable
-                snapshots are saved. Existing versions are preserved.
-              </p>
-              {providers.error ? (
-                <ErrorBox error={providers.error} />
-              ) : (
-                providers.data?.items
-                  ?.filter((p) => p.id === provider)
-                  .map((p) => (
-                    <p key={p.id} className="subtle">
-                      {p.configured
-                        ? "Server credentials configured; access and entitlements are verified when downloading."
-                        : `API keys required: ${p.required_secrets.join(", ")}.`}{" "}
-                      Data host: {p.host}.{" "}
-                      <Link
-                        to="/provider-settings"
-                        className="provider-settings-link"
-                      >
-                        Manage API keys
-                      </Link>
-                    </p>
-                  ))
-              )}
-              {provider === "databento" && (
-                <p className="warning-line">
-                  The cost limit applies across all symbols in this job. Zero
-                  permits only zero-cost estimates. Estimates are checked before
-                  each stream; final vendor billing may differ. Dataset dates
-                  must be completed historical dates.
-                </p>
-              )}
-              <button type="submit" disabled={pending}>
-                {pending ? "Submitting…" : "Download & create snapshots"}
-              </button>
-            </>
-          ) : (
-            <>
-              {mode === "training" && (
-                <label>
-                  Research mode
-                  <select
-                    value={researchMode}
-                    onChange={(e) => {
-                      setResearchMode(e.target.value);
-                      setSelected([]);
-                    }}
-                  >
-                    <option value="strict">Strict research</option>
-                    <option value="exploratory">
-                      Exploratory ML — prediction only
-                    </option>
-                  </select>
-                </label>
-              )}
-              {exploratory && (
-                <p className="warning-line">
-                  Exploratory ML accepts downloaded prices without
-                  corporate-action or historical-membership evidence. Splits and
-                  dividends can distort features and targets, and a fixed stock
-                  list can introduce selection bias. Reports contain prediction
-                  metrics only, with no portfolio backtest, strategy
-                  qualification or deployment approval.
-                </p>
-              )}
-              <div className="workflow-fields">
-                <label>
-                  Run name
-                  <input
-                    required
-                    pattern="[a-zA-Z0-9 _-]+"
-                    minLength={3}
-                    maxLength={80}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Research start date
-                  <input
-                    type="date"
-                    required
-                    value={researchStart}
-                    max={researchEnd || latestCompletedDate}
-                    onChange={(e) => setResearchStart(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Research end date
-                  <input
-                    type="date"
-                    required
-                    value={researchEnd}
-                    min={researchStart}
-                    max={latestCompletedDate}
-                    onChange={(e) => setResearchEnd(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Prediction horizon
-                  <select
-                    value={horizon}
-                    onChange={(e) => setHorizon(Number(e.target.value))}
-                  >
-                    {[1, 5, 10].map((n) => (
-                      <option key={n} value={n}>
-                        {n} sessions
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Training sessions
-                  <input
-                    type="number"
-                    min={60}
-                    max={1500}
-                    required
-                    value={train}
-                    onChange={(e) => setTrain(Number(e.target.value))}
-                  />
-                </label>
-                <label>
-                  Validation sessions
-                  <input
-                    type="number"
-                    min={20}
-                    max={252}
-                    required
-                    value={validation}
-                    onChange={(e) => setValidation(Number(e.target.value))}
-                  />
-                </label>
-                <label>
-                  Evaluation sessions per fold
-                  <input
-                    type="number"
-                    min={20}
-                    max={252}
-                    required
-                    value={test}
-                    onChange={(e) => setTest(Number(e.target.value))}
-                  />
-                </label>
-                {!exploratory && (
-                  <label>
-                    Top holdings
-                    <input
-                      type="number"
-                      min={1}
-                      max={10}
-                      required
-                      value={top}
-                      onChange={(e) => setTop(Number(e.target.value))}
-                    />
-                  </label>
-                )}
-                <label>
-                  Random seed
-                  <input
-                    type="number"
-                    min={0}
-                    max={4294967295}
-                    required
-                    value={seed}
-                    onChange={(e) => setSeed(Number(e.target.value))}
-                  />
-                </label>
-                {mode === "discovery" && (
-                  <label>
-                    Maximum search trials
-                    <input
-                      type="number"
-                      min={1}
-                      max={8}
-                      required
-                      value={trials}
-                      onChange={(e) => setTrials(Number(e.target.value))}
-                    />
-                  </label>
-                )}
-              </div>
-              <fieldset>
-                <legend>Models</legend>
-                <div className="workflow-models">
-                  {modelNames.map((model) => (
-                    <label key={model} className="workflow-check">
-                      <input
-                        type="checkbox"
-                        checked={models.includes(model)}
-                        onChange={() => setModels(toggle(models, model))}
-                      />
-                      {model.replaceAll("_", " ")}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-              <p>
-                Select one eligible snapshot per equity and a SPY benchmark
-                below, covering the research date range. Snapshots may contain
-                earlier or later dates; the dashboard extracts only the
-                requested range.
-              </p>
-              <p className="subtle">
-                Training, validation and evaluation folds stay inside the
-                research range. Later snapshot data is excluded from this run;
-                this does not certify an untouched holdout or release a Phase 12
-                holdout. Purged chronological folds · CPU only · at most eight
-                folds.
-                {!exploratory && (
-                  <>
-                    {" "}
-                    Fixed costs (0.5¢/share, 5 bps slippage, 2 bps spread).
-                    Discovery searches momentum/reversion features and bounded
-                    model parameters, including doubled-cost checks.
-                  </>
-                )}
-              </p>
-              <button
-                type="button"
-                onClick={() => void useTrainingSnapshots()}
-                disabled={pending || inventory.isFetching}
-              >
-                Use training snapshots
-              </button>
-              {inventory.isFetching && (
-                <p role="status">Checking snapshot eligibility…</p>
-              )}
-              {!!readinessProblems.length && (
-                <ul aria-label="Training requirements" className="warning-line">
-                  {readinessProblems.map((reason) => (
-                    <li key={reason}>{reason}</li>
-                  ))}
-                </ul>
-              )}
-              {!ready && !exploratory && (
-                <p className="warning-line">
-                  {exploratory
-                    ? "Select one downloaded snapshot per stock plus SPY, choose a covered research date range, and select a model. A declared price basis is required."
-                    : "Eligible raw-price snapshots with complete actions and point-in-time membership are required. Price downloads alone do not supply this evidence. For price-only experiments, use Exploratory ML in Machine learning."}
-                </p>
-              )}
-              <button
-                type="submit"
-                disabled={pending || !ready || !models.length}
-              >
-                {pending
-                  ? "Submitting…"
-                  : mode === "discovery"
-                    ? "Start bounded discovery"
-                    : exploratory
-                      ? "Start exploratory ML"
-                      : "Start ML training"}
-              </button>
-            </>
-          )}
-        </form>
-        <p role="status" aria-live="polite">
-          {message}
-        </p>
-      </section>
-      <section className="panel">
-        <div className="panel-title">
-          <h3>Historical snapshot library</h3>
-          <button onClick={() => void inventory.refetch()}>
-            Refresh snapshots
-          </button>
-        </div>
-        {inventory.error ? (
-          <ErrorBox error={inventory.error} />
-        ) : inventory.isPending ? (
-          <p>Loading snapshots…</p>
-        ) : (
-          <>
-            {!items.length && (
-              <p className="empty">
-                No historical snapshots yet. Download data from the Data library
-                to get started.
-              </p>
-            )}
-            {!!items.length && (
-              <div className="table-scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      {mode !== "download" && <th>Select</th>}
-                      <th>Symbol</th>
-                      <th>Coverage</th>
-                      <th>Rows</th>
-                      <th>Price basis</th>
-                      <th>Research eligibility</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((s) => (
-                      <tr key={s.id}>
-                        {mode !== "download" && (
-                          <td>
-                            <input
-                              type="checkbox"
-                              aria-label={`Select ${s.symbol} ${s.id.slice(0, 8)}`}
-                              disabled={!s.eligible}
-                              checked={selected.includes(s.id)}
-                              onChange={() => selectSnapshot(s.id)}
-                            />
-                          </td>
-                        )}
-                        <td>
-                          <strong>{s.symbol}</strong>
-                          {s.dataset_role && s.dataset_role !== "research" && (
-                            <small className="snapshot-id">
-                              {s.dataset_role === "protected_test"
-                                ? "Protected test · sealed"
-                                : "Training snapshot"}
-                            </small>
-                          )}
-                          <small className="snapshot-id" title={s.id}>
-                            {s.id.slice(0, 12)}…
-                          </small>
-                        </td>
-                        <td>
-                          {s.start} – {s.end}
-                        </td>
-                        <td>{s.rows.toLocaleString()}</td>
-                        <td>
-                          {s.price_basis}
-                          <small className="snapshot-id">{s.provider}</small>
-                        </td>
-                        <td>
-                          <Badge
-                            text={
-                              s.dataset_role === "protected_test"
-                                ? "PROTECTED TEST"
-                                : s.eligible
-                                  ? exploratory
-                                    ? "EXPLORATORY"
-                                    : "ELIGIBLE"
-                                  : "BLOCKED_DATA"
-                            }
+                    {mode === "discovery" && (
+                      <label>
+                        Maximum search trials
+                        <input
+                          type="number"
+                          min={1}
+                          max={8}
+                          required
+                          value={trials}
+                          onChange={(e) => setTrials(Number(e.target.value))}
+                        />
+                      </label>
+                    )}
+                  </div>
+                  <fieldset>
+                    <legend>Models</legend>
+                    <div className="workflow-models">
+                      {modelNames.map((model) => (
+                        <label key={model} className="workflow-check">
+                          <input
+                            type="checkbox"
+                            checked={models.includes(model)}
+                            onChange={() => setModels(toggle(models, model))}
                           />
-                          {exploratory &&
-                            s.eligible &&
-                            s.strict_blockers?.map((reason) => (
-                              <small
-                                className="snapshot-id"
-                                key={`limitation-${reason}`}
-                              >
-                                Strict research limitation: {reason}
+                          {model.replaceAll("_", " ")}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                  <p>
+                    Select one eligible snapshot per equity and a SPY benchmark
+                    below, covering the research date range. Snapshots may
+                    contain earlier or later dates; the dashboard extracts only
+                    the requested range.
+                  </p>
+                  <p className="subtle">
+                    Training, validation and evaluation folds stay inside the
+                    research range. Later snapshot data is excluded from this
+                    run; this does not certify an untouched holdout or release a
+                    Phase 12 holdout. Purged chronological folds · CPU only · at
+                    most eight folds.
+                    {!exploratory && (
+                      <>
+                        {" "}
+                        Fixed costs (0.5¢/share, 5 bps slippage, 2 bps spread).
+                        Discovery searches momentum/reversion features and
+                        bounded model parameters, including doubled-cost checks.
+                      </>
+                    )}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => void useTrainingSnapshots()}
+                    disabled={pending || inventory.isFetching}
+                  >
+                    Use training snapshots
+                  </button>
+                  {inventory.isFetching && (
+                    <p role="status">Checking snapshot eligibility…</p>
+                  )}
+                  {!!readinessProblems.length && (
+                    <ul
+                      aria-label="Training requirements"
+                      className="warning-line"
+                    >
+                      {readinessProblems.map((reason) => (
+                        <li key={reason}>{reason}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {!ready && !exploratory && (
+                    <p className="warning-line">
+                      {exploratory
+                        ? "Select one downloaded snapshot per stock plus SPY, choose a covered research date range, and select a model. A declared price basis is required."
+                        : "Eligible raw-price snapshots with complete actions and point-in-time membership are required. Price downloads alone do not supply this evidence. For price-only experiments, use Exploratory ML in Machine learning."}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={pending || !ready || !models.length}
+                  >
+                    {pending
+                      ? "Submitting…"
+                      : mode === "discovery"
+                        ? "Start bounded discovery"
+                        : exploratory
+                          ? "Start exploratory ML"
+                          : "Start ML training"}
+                  </button>
+                </>
+              )}
+            </form>
+            <p role="status" aria-live="polite">
+              {message}
+            </p>
+          </section>
+          <section className="panel">
+            <div className="panel-title">
+              <h3>Historical snapshot library</h3>
+              <button onClick={() => void inventory.refetch()}>
+                Refresh snapshots
+              </button>
+            </div>
+            {inventory.error ? (
+              <ErrorBox error={inventory.error} />
+            ) : inventory.isPending ? (
+              <p>Loading snapshots…</p>
+            ) : (
+              <>
+                {!items.length && (
+                  <p className="empty">
+                    No historical snapshots yet. Download data from the Data
+                    library to get started.
+                  </p>
+                )}
+                {!!items.length && (
+                  <div className="table-scroll">
+                    <table>
+                      <thead>
+                        <tr>
+                          {mode !== "download" && <th>Select</th>}
+                          <th>Symbol</th>
+                          <th>Coverage</th>
+                          <th>Rows</th>
+                          <th>Price basis</th>
+                          <th>Research eligibility</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.map((s) => (
+                          <tr key={s.id}>
+                            {mode !== "download" && (
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  aria-label={`Select ${s.symbol} ${s.id.slice(0, 8)}`}
+                                  disabled={!s.eligible}
+                                  checked={selected.includes(s.id)}
+                                  onChange={() => selectSnapshot(s.id)}
+                                />
+                              </td>
+                            )}
+                            <td>
+                              <strong>{s.symbol}</strong>
+                              {s.dataset_role &&
+                                s.dataset_role !== "research" && (
+                                  <small className="snapshot-id">
+                                    {s.dataset_role === "protected_test"
+                                      ? "Protected test · sealed"
+                                      : "Training snapshot"}
+                                  </small>
+                                )}
+                              <small className="snapshot-id" title={s.id}>
+                                {s.id.slice(0, 12)}…
                               </small>
-                            ))}
-                          {s.blockers.map((reason) => (
-                            <small className="snapshot-id" key={reason}>
-                              {reason}
-                            </small>
-                          ))}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                            </td>
+                            <td>
+                              {s.start} – {s.end}
+                            </td>
+                            <td>{s.rows.toLocaleString()}</td>
+                            <td>
+                              {s.price_basis}
+                              <small className="snapshot-id">
+                                {s.provider}
+                              </small>
+                            </td>
+                            <td>
+                              <Badge
+                                text={
+                                  s.dataset_role === "protected_test"
+                                    ? "PROTECTED TEST"
+                                    : s.eligible
+                                      ? exploratory
+                                        ? "EXPLORATORY"
+                                        : "ELIGIBLE"
+                                      : "BLOCKED_DATA"
+                                }
+                              />
+                              {exploratory &&
+                                s.eligible &&
+                                s.strict_blockers?.map((reason) => (
+                                  <small
+                                    className="snapshot-id"
+                                    key={`limitation-${reason}`}
+                                  >
+                                    Strict research limitation: {reason}
+                                  </small>
+                                ))}
+                              {s.blockers.map((reason) => (
+                                <small className="snapshot-id" key={reason}>
+                                  {reason}
+                                </small>
+                              ))}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {inventory.data?.errors?.map((e) => (
+                  <p className="warning-line" key={e.id}>
+                    {e.id.slice(0, 12)}: {e.error}
+                  </p>
+                ))}
+              </>
             )}
-            {inventory.data?.errors?.map((e) => (
-              <p className="warning-line" key={e.id}>
-                {e.id.slice(0, 12)}: {e.error}
-              </p>
-            ))}
+          </section>
+        </>
+      )}
+      <section className="panel">
+        <h3>
+          {mode === "backtest"
+            ? "ML strategy backtests"
+            : "Equity workflow jobs"}
+        </h3>
+        {mode === "backtest" && (
+          <>
+            <p>
+              Profitability evaluations are backtests of saved ML predictions,
+              including trading costs and benchmark comparisons. Start one from
+              a completed training report in{" "}
+              <Link to="/models">Machine learning</Link>.
+            </p>
+            <p role="status" aria-live="polite">
+              {message ||
+                (focusedJob &&
+                ["QUEUED", "RUNNING"].includes(
+                  jobs.data?.items.find((job) => job.id === focusedJob)
+                    ?.status ?? "",
+                )
+                  ? "Backtest in progress. You can cancel it below; the report opens when it finishes."
+                  : "")}
+            </p>
           </>
         )}
-      </section>
-      <section className="panel">
-        <h3>Equity workflow jobs</h3>
         {jobs.error ? (
           <ErrorBox error={jobs.error} />
         ) : !workflowJobs.length ? (
-          <p className="empty">No equity workflows submitted yet.</p>
+          <p className="empty">
+            {mode === "backtest"
+              ? "No ML strategy backtests submitted yet."
+              : "No equity workflows submitted yet."}
+          </p>
         ) : (
           <div className="table-scroll">
             <table>
@@ -859,7 +915,15 @@ export function EquityWorkflows({ page }: { page: string }) {
                       {["QUEUED", "RUNNING"].includes(job.status) ? (
                         <button onClick={() => void cancel(job)}>Cancel</button>
                       ) : (
-                        <button onClick={() => void inspect(job)}>
+                        <button
+                          onClick={() => {
+                            if (mode === "backtest")
+                              navigate(
+                                `/backtests?job=${encodeURIComponent(job.id)}`,
+                              );
+                            else void inspect(job);
+                          }}
+                        >
                           View report
                         </button>
                       )}
@@ -887,10 +951,8 @@ export function EquityWorkflows({ page }: { page: string }) {
                       sourceId={reportId}
                       source={report}
                       queued={(id) => {
-                        setMessage(
-                          `Queued ${id}. Follow its strategy evaluation below.`,
-                        );
                         void query.invalidateQueries({ queryKey: ["jobs"] });
+                        navigate(`/backtests?job=${encodeURIComponent(id)}`);
                       }}
                     />
                   )}
