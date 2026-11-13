@@ -121,10 +121,13 @@ There is no dashboard button that certifies or fills in missing evidence.
 An administrator must prepare a verified library following
 [the workflow documentation](dashboard-workflows.md#server-setup-and-verification).
 
-The download cutoff was removed, but the **training/discovery holdout gate remains**:
-snapshots ending after December 31, 2018 are currently blocked from these workflows.
-You can download and inspect their library metadata. For dashboard research, use
-eligible snapshots ending by that date, with identical coverage for every symbol.
+Snapshot dates alone no longer block training/discovery. Choose **Research start
+date** and **Research end date** in either form. The dashboard automatically extracts
+that range, so a 2020–2026 snapshot can supply a 2020–2024 research run without
+including 2025–2026 prices in fitting, features or labels. All selected snapshots
+must cover the requested range. Data-quality requirements still apply.
+Training, validation and evaluation folds stay within the selected range; choosing
+a range does not certify that later data is an untouched final holdout.
 
 If you want to try discovery before assembling a qualified library, use the
 archived-data demonstration in the next step.
@@ -156,7 +159,8 @@ Example results are saved on disk and are not automatically added to the dashboa
 ### Option B: search from the dashboard with eligible inputs
 
 Connect with the **researcher token**, open **Discovery**, and select one eligible
-snapshot per stock plus **SPY**. All selected snapshots must have identical dates.
+snapshot per stock plus **SPY**. Choose research start/end dates covered by every
+selected snapshot; the original snapshots may have different wider date ranges.
 Start with enough history for training, validation, feature warmup, and evaluation
 (several years, not the one-month connection check).
 
@@ -202,6 +206,6 @@ paper or live trading.
 | Key fields disabled | Connect as operator and use localhost or HTTPS. |
 | Download/research forbidden | Switch to researcher and click Connect. |
 | Alpaca access/entitlement error | Verify the key pair and the selected SIP/IEX feed with Alpaca. |
-| Data downloaded but cannot be selected | Read eligibility blockers; check holdout dates, actions, and historical membership. |
+| Data downloaded but cannot be selected | Set the research date range, then check actions and historical membership blockers. |
 | Missing dashboard build | Run `python build.py`, then `python start.py`. |
 | No candidates survive | Inspect reasons and evidence; do not bypass checks to force a winner. |

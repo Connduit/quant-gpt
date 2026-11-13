@@ -48,6 +48,8 @@ class ResearchRequest(BaseModel):
     name: str = Field(min_length=3, max_length=80, pattern=r"^[a-zA-Z0-9 _-]+$")
     snapshot_ids: list[str] = Field(min_length=2, max_length=12)
     models: list[MODEL_TYPES] = Field(min_length=1, max_length=5)
+    start: date | None = None
+    end: date | None = None
     horizon: Literal[1, 5, 10] = 5
     training_sessions: int = Field(default=504, ge=60, le=1500)
     validation_sessions: int = Field(default=126, ge=20, le=252)
@@ -59,6 +61,10 @@ class ResearchRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_request(self):
+        if (self.start is None) != (self.end is None):
+            raise ValueError("Supply both research start and end dates")
+        if self.start is not None:
+            DataRequest("SPY", self.start, self.end)
         if len(set(self.snapshot_ids)) != len(self.snapshot_ids):
             raise ValueError("Select each snapshot once")
         if any(not re.fullmatch(r"[a-f0-9]{64}", sid) for sid in self.snapshot_ids):
@@ -90,11 +96,11 @@ def safe_manifest(library: Path, sid: str, *, allow_holdout: bool = False) -> di
     return metadata
 
 
-def research_blockers(library: Path, sid: str, metadata: dict) -> list[str]:
-    if date.fromisoformat(metadata["request"]["end"]) > SAFE_END:
-        return [
-            "Snapshot overlaps or follows the reserved holdout; unavailable for training/discovery"
-        ]
+def research_blockers(
+    library: Path, sid: str, metadata: dict, *, start: date | None = None, end: date | None = None
+) -> list[str]:
+    start_bound = str(start) if start else metadata["request"]["start"]
+    end_bound = str(end) if end else metadata["request"]["end"]
     if metadata["synthetic"]:
         return ["Synthetic inputs are engineering fixtures, not eligible real research data"]
     reasons = []
@@ -116,23 +122,32 @@ def research_blockers(library: Path, sid: str, metadata: dict) -> list[str]:
                 reasons.append("Corporate-action ledger is incomplete")
             if (
                 actions.symbol != metadata["request"]["symbol"]
-                or str(actions.coverage_start) > metadata["request"]["start"]
-                or str(actions.coverage_end) < metadata["request"]["end"]
-                or actions.coverage_end > SAFE_END
+                or str(actions.coverage_start) > start_bound
+                or str(actions.coverage_end) < end_bound
             ):
-                reasons.append("Action coverage must match the snapshot and end before holdout")
+                reasons.append("Action coverage must include the selected research date range")
         except (ValueError, KeyError, TypeError):
             reasons.append("Corporate-action ledger failed validation")
     return reasons
 
 
-def snapshot_inventory(library: Path) -> dict:
+def snapshot_inventory(
+    library: Path, *, start: date | None = None, end: date | None = None
+) -> dict:
+    if (start is None) != (end is None):
+        raise ValueError("Supply both research start and end dates")
+    if start is not None:
+        DataRequest("SPY", start, end)
     items, errors = [], []
     for path in sorted((library / "snapshots").glob("*/manifest.json")):
         sid = path.parent.name
         try:
             metadata = safe_manifest(library, sid, allow_holdout=True)
-            reasons = research_blockers(library, sid, metadata)
+            reasons = research_blockers(library, sid, metadata, start=start, end=end)
+            if start is not None and (
+                str(start) < metadata["request"]["start"] or str(end) > metadata["request"]["end"]
+            ):
+                reasons.append("Snapshot does not cover the selected research date range")
             items.append(
                 {
                     "id": sid,
@@ -155,8 +170,13 @@ def snapshot_inventory(library: Path) -> dict:
 def selected_snapshots(library: Path, request: ResearchRequest) -> dict:
     snapshots = {}
     for sid in request.snapshot_ids:
-        metadata = safe_manifest(library, sid)
-        reasons = research_blockers(library, sid, metadata)
+        metadata = safe_manifest(library, sid, allow_holdout=request.start is not None)
+        if request.start is not None and (
+            str(request.start) < metadata["request"]["start"]
+            or str(request.end) > metadata["request"]["end"]
+        ):
+            raise ValueError("Research dates must be within every selected snapshot")
+        reasons = research_blockers(library, sid, metadata, start=request.start, end=request.end)
         if reasons:
             raise ValueError(f"{metadata['request']['symbol']}: " + "; ".join(reasons))
         symbol = metadata["request"]["symbol"]

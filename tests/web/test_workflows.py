@@ -3,6 +3,7 @@
 import json
 import time
 from datetime import date
+from pathlib import Path
 
 import exchange_calendars as xcals
 import httpx
@@ -172,6 +173,7 @@ def test_protected_manifest_rejected_before_payload_open(tmp_path):
     metadata = {
         "request": {"symbol": "AAPL", "start": "2018-01-01", "end": "2019-01-02"},
         "row_count": 250,
+        "synthetic": False,
         "provider": "alpaca",
         "price_basis": "unadjusted",
         "retrieved_at": "2025-01-01T00:00:00Z",
@@ -186,7 +188,8 @@ def test_protected_manifest_rejected_before_payload_open(tmp_path):
     inventory = snapshot_inventory(tmp_path)
     assert not inventory["errors"]
     assert not inventory["items"][0]["eligible"]
-    assert "reserved holdout" in inventory["items"][0]["blockers"][0]
+    assert "corporate-action" in " ".join(inventory["items"][0]["blockers"])
+    assert "reserved holdout" not in " ".join(inventory["items"][0]["blockers"])
 
 
 def test_real_subprocess_worker_retains_blocker_and_request(tmp_path):
@@ -319,3 +322,166 @@ def test_download_accepts_recent_dates_without_releasing_research_holdout():
         }
     )
     assert request.end == date(2024, 2, 1)
+
+
+def test_research_range_validation():
+    for change in (
+        {"start": "2020-01-01"},
+        {"end": "2021-01-01"},
+        {"start": "2021-01-01", "end": "2020-01-01"},
+        {"start": "2020-01-01", "end": "2999-01-01"},
+    ):
+        with pytest.raises(ValueError):
+            ResearchRequest.model_validate({**payload(), **change})
+
+
+@pytest.fixture
+def modern_library(tmp_path):
+    """Invented prices explicitly marked synthetic, never real market evidence."""
+    root = tmp_path / "modern-library"
+    days = xcals.get_calendar("XNYS", start="2020-01-01", end="2021-12-31").sessions
+    ids = {}
+    for index, symbol in enumerate(("AAA", "SPY")):
+        rng = np.random.default_rng(index + 42)
+        prices = 100 * np.exp(np.cumsum(rng.normal(0, 0.01, len(days))))
+        raw = (
+            "Date,Open,High,Low,Close,Volume\n"
+            + "\n".join(
+                f"{day.date()},{p},{p * 1.01},{p * 0.99},{p},1000000"
+                for day, p in zip(days, prices, strict=True)
+            )
+        ).encode()
+        bounds = DataRequest(symbol, days[0].date(), days[-1].date())
+        ids[symbol] = SnapshotStore(root).write(
+            "explicit-synthetic-test",
+            bounds,
+            Download(raw, "invented test prices", "synthetic", True),
+            normalize_daily(raw, bounds),
+        )
+    return root, ids
+
+
+@pytest.mark.parametrize("workflow", ["training", "discovery"])
+def test_automatic_range_reaches_engines_without_later_rows(
+    modern_library, tmp_path, monkeypatch, workflow
+):
+    from quantlab.backtesting.data import DailyData
+
+    root, ids = modern_library
+    originals = {
+        sid: (root / "snapshots" / sid / "source.csv").read_bytes() for sid in ids.values()
+    }
+    # Test-only synthetic fixture bypass; date selection and engines are real.
+    monkeypatch.setattr("quantlab.web.workflow_worker.selected_snapshots", lambda *args: ids)
+    original_read = DailyData.from_snapshot
+    observed = []
+
+    def bounded_read(store, sid, actions=None):
+        assert store.root != root / "snapshots"
+        feed = original_read(store, sid, actions)
+        assert all(date(2020, 1, 2) <= b.session_date <= date(2020, 12, 31) for b in feed.bars)
+        observed.append(feed)
+        return feed
+
+    monkeypatch.setattr(DailyData, "from_snapshot", bounded_read)
+    output = tmp_path / "ranged-run"
+    output.mkdir()
+    result = research(
+        {**payload(ids, workflow), "start": "2020-01-02", "end": "2020-12-31"}, root, output
+    )
+    assert result["status"] == "COMPLETED"
+    assert observed
+    assert result["research_range"] == {"start": "2020-01-02", "end": "2020-12-31"}
+    document = yaml.safe_load((output / "experiment.yaml").read_text())
+    assert document["data"]["holdout_start"] == "2021-01-01"
+    for sid in result["input_snapshot_ids"]:
+        metadata = SnapshotStore(output / "inputs").manifest(sid)
+        assert metadata["parent_snapshot"] in ids.values()
+        assert metadata["request"]["end"] == "2020-12-31"
+        assert b"2021-" not in (output / "inputs/snapshots" / sid / "source.csv").read_bytes()
+    for sid, raw in originals.items():
+        assert (root / "snapshots" / sid / "source.csv").read_bytes() == raw
+
+
+def test_range_eligibility_retains_quality_checks_and_clips_actions(modern_library, tmp_path):
+    from quantlab.web.research_inputs import prepare_research_inputs
+    from quantlab.web.workflows import selected_snapshots
+
+    root, synthetic_ids = modern_library
+    ids = {}
+    for symbol, sid in synthetic_ids.items():
+        store = SnapshotStore(root)
+        metadata = store.manifest(sid)
+        raw = (root / "snapshots" / sid / "source.csv").read_bytes()
+        bounds = metadata["request"]
+        ids[symbol] = store.write(
+            "explicit-unadjusted-test",
+            DataRequest(
+                symbol, date.fromisoformat(bounds["start"]), date.fromisoformat(bounds["end"])
+            ),
+            Download(raw, "invented fixture with test-only evidence", "unadjusted", False),
+            store.read(sid),
+            point_in_time=True,
+            universe_membership_included=True,
+        )
+    request = ResearchRequest.model_validate(
+        {**payload(ids), "start": "2020-01-02", "end": "2020-12-31"}
+    )
+    with pytest.raises(ValueError, match="corporate-action"):
+        selected_snapshots(root, request)
+    actions = root / "actions"
+    actions.mkdir()
+    for symbol, sid in ids.items():
+        (actions / f"{sid}.json").write_text(
+            json.dumps(
+                {
+                    "symbol": symbol,
+                    "coverage_start": "2020-01-02",
+                    "coverage_end": "2021-12-31",
+                    "source": "test-only invented ledger",
+                    "complete": True,
+                    "splits": [{"date": "2021-06-01", "ratio": "2"}],
+                    "dividends": [
+                        {"ex_date": "2020-06-01", "pay_date": "2020-06-15", "amount": "1"},
+                        {"ex_date": "2021-06-01", "pay_date": "2021-06-15", "amount": "1"},
+                    ],
+                }
+            )
+        )
+    # Snapshot date coverage alone no longer blocks data selection.
+    real_items = [s for s in snapshot_inventory(root)["items"] if s["id"] in ids.values()]
+    assert all(s["eligible"] for s in real_items)
+    assert set(selected_snapshots(root, request)) == {"AAA", "SPY"}
+    with pytest.raises(ValueError, match="within every"):
+        selected_snapshots(root, request.model_copy(update={"start": date(2019, 1, 1)}))
+    destination = tmp_path / "ranged-inputs"
+    derived = prepare_research_inputs(request, root, destination)
+    for symbol, entry in derived.items():
+        ledger = json.loads(Path(entry["actions"]).read_text())
+        assert ledger["coverage_end"] == "2020-12-31"
+        assert ledger["splits"] == []
+        assert len(ledger["dividends"]) == 1
+        metadata = SnapshotStore(destination).manifest(entry["snapshot_id"])
+        assert metadata["point_in_time"] and metadata["universe_membership_included"]
+        assert metadata["parent_snapshot"] == ids[symbol]
+
+
+def test_snapshot_inventory_range_filters_and_validates_dates(modern_library, tmp_path):
+    root, _ = modern_library
+    catalog = tmp_path / "range-catalog.yaml"
+    catalog.write_text("artifacts: []\n")
+    app = create_app(
+        Catalog(catalog, tmp_path), state_root=tmp_path / "range-state", workflow_library=root
+    )
+    with TestClient(app) as client:
+        response = client.get("/api/v1/workflows/snapshots?start=2020-01-02&end=2020-12-31")
+        assert response.status_code == 200
+        assert len(response.json()["items"]) == 2
+        assert all(
+            "reserved holdout" not in " ".join(s["blockers"]) for s in response.json()["items"]
+        )
+        assert client.get("/api/v1/workflows/snapshots?start=2020-01-02").status_code == 400
+        assert (
+            client.get("/api/v1/workflows/snapshots?start=2021-01-01&end=2020-01-01").status_code
+            == 400
+        )

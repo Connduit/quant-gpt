@@ -286,7 +286,8 @@ The **API keys** page accepts masked provider keys with operator authorization,
 stores them encrypted and applies changes to new downloads without a restart.
 Machine learning and Discovery include bounded equity research forms, snapshot
 selection, job cancellation and downloadable reports. These require researcher
-access and eligible pre-holdout inputs; Stooq-only snapshots do not satisfy the
+access and eligible inputs covering the selected research date range. Larger
+snapshots are automatically sliced before fitting; Stooq-only snapshots do not satisfy the
 raw-price/action/PIT research gate. See [guided workflows](docs/dashboard-workflows.md).
 
 ## Bounded research agent

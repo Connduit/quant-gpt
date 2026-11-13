@@ -29,7 +29,10 @@ function mount(page: string) {
     </QueryClientProvider>,
   );
 }
-function api(eligible = false) {
+function api(
+  eligible = false,
+  coverage = { start: "2014-01-02", end: "2018-12-31" },
+) {
   const post = vi.fn();
   vi.stubGlobal(
     "fetch",
@@ -40,8 +43,7 @@ function api(eligible = false) {
           items: ["AAA", "SPY"].map((symbol, index) => ({
             id: String(index + 1).repeat(64),
             symbol,
-            start: "2014-01-02",
-            end: "2018-12-31",
+            ...coverage,
             rows: 1200,
             provider: "test",
             price_basis: eligible
@@ -106,7 +108,9 @@ describe("equity dashboard workflows", () => {
     const latest = yesterday.toISOString().slice(0, 10);
     expect(screen.getByLabelText("End date")).toHaveValue(latest);
     expect(screen.getByLabelText("End date")).toHaveAttribute("max", latest);
-    expect(screen.getByText(/Downloads can include dates after 2018/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Downloads can include dates after 2018/),
+    ).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Start date"), {
       target: { value: "2024-01-02" },
     });
@@ -129,6 +133,35 @@ describe("equity dashboard workflows", () => {
       refresh: true,
       confirmed: true,
     });
+  });
+  it("submits only the chosen research range from larger modern snapshots", async () => {
+    const post = api(true, { start: "2020-01-02", end: "2025-12-31" });
+    mount("models");
+    const choices = await screen.findAllByRole("checkbox", {
+      name: /^Select /,
+    });
+    choices.forEach((choice) => fireEvent.click(choice));
+    expect(screen.getByLabelText("Research start date")).toHaveValue(
+      "2020-01-02",
+    );
+    expect(screen.getByLabelText("Research end date")).toHaveValue(
+      "2025-12-31",
+    );
+    fireEvent.change(screen.getByLabelText("Research end date"), {
+      target: { value: "2024-12-31" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Start ML training" }));
+    await screen.findByText(/Queued test-job/);
+    expect(post.mock.calls[0][1]).toMatchObject({
+      start: "2020-01-02",
+      end: "2024-12-31",
+    });
+    fireEvent.change(screen.getByLabelText("Research end date"), {
+      target: { value: "2019-12-31" },
+    });
+    expect(
+      screen.getByRole("button", { name: "Start ML training" }),
+    ).toBeDisabled();
   });
   it("keeps unverified Stooq inputs ineligible for trading research", async () => {
     api();

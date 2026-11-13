@@ -38,8 +38,8 @@ test("eligible selection reaches the training request without a command line", a
         items: ["AAA", "SPY"].map((symbol, i) => ({
           id: String(i + 1).repeat(64),
           symbol,
-          start: "2014-01-02",
-          end: "2018-12-31",
+          start: "2020-01-02",
+          end: "2025-12-31",
           rows: 1200,
           eligible: true,
           price_basis: "unadjusted",
@@ -64,6 +64,7 @@ test("eligible selection reaches the training request without a command line", a
   ).toBeDisabled();
   await page.getByRole("checkbox", { name: /^Select AAA/ }).check();
   await page.getByRole("checkbox", { name: /^Select SPY/ }).check();
+  await page.getByLabel("Research end date").fill("2024-12-31");
   await page
     .getByRole("button", { name: "Start ML training", exact: true })
     .click();
@@ -73,6 +74,8 @@ test("eligible selection reaches the training request without a command line", a
       .filter({ hasText: "Queued browser-training-check" }),
   ).toBeVisible();
   expect(submitted?.workflow).toBe("training");
+  expect(submitted?.start).toBe("2020-01-02");
+  expect(submitted?.end).toBe("2024-12-31");
   expect(submitted?.snapshot_ids).toEqual(["1".repeat(64), "2".repeat(64)]);
 });
 

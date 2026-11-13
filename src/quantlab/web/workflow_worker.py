@@ -4,7 +4,7 @@ import argparse
 import hashlib
 import json
 import math
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from quantlab.web.workflows import (
@@ -104,7 +104,7 @@ def experiment_document(request, library, snapshots):
             "benchmark": "SPY",
             "universe": [s for s in snapshots if s != "SPY"],
             "prediction_horizon": request.horizon,
-            "holdout_start": str(HOLDOUT_START),
+            "holdout_start": str(request.end + timedelta(days=1) if request.end else HOLDOUT_START),
         },
         "models": [
             {
@@ -145,7 +145,20 @@ def research(payload, library, output):
 
     request = ResearchRequest.model_validate(payload)
     snapshots = selected_snapshots(library, request)  # Bounds first; no source payload reads.
-    manifests = [safe_manifest(library, sid) for sid in request.snapshot_ids]
+    input_library = library
+    if request.start is not None:
+        from quantlab.web.research_inputs import prepare_research_inputs
+
+        input_library = output / "inputs"
+        snapshots = prepare_research_inputs(request, library, input_library)
+    manifests = [
+        safe_manifest(
+            input_library,
+            entry["snapshot_id"] if isinstance(entry, dict) else entry,
+            allow_holdout=request.start is not None,
+        )
+        for entry in snapshots.values()
+    ]
     if len({(m["request"]["start"], m["request"]["end"]) for m in manifests}) != 1:
         raise ValueError("Select snapshots with identical date coverage")
     rows = max(m["row_count"] for m in manifests)
@@ -160,7 +173,7 @@ def research(payload, library, output):
     if rows < request.training_sessions + request.validation_sessions + 80:
         raise ValueError("Insufficient sessions for feature warmup, purge and evaluation windows")
     experiment = output / "experiment.yaml"
-    experiment.write_text(yaml.safe_dump(experiment_document(request, library, snapshots)))
+    experiment.write_text(yaml.safe_dump(experiment_document(request, input_library, snapshots)))
     if request.workflow == "training":
         from quantlab.research.runner import run_experiment
 
@@ -224,6 +237,12 @@ def research(payload, library, output):
         "research_status": "DEVELOPMENT_ONLY",
         "report": report,
         "snapshot_ids": request.snapshot_ids,
+        "research_range": {"start": str(request.start), "end": str(request.end)}
+        if request.start is not None
+        else None,
+        "input_snapshot_ids": [
+            e["snapshot_id"] if isinstance(e, dict) else e for e in snapshots.values()
+        ],
         "note": "Development research; no Phase 12 qualification or deployment approval.",
     }
 
@@ -250,6 +269,8 @@ def execute(specification, output):
                 json.dumps(specification, sort_keys=True).encode()
             ).hexdigest(),
             "holdout_accessed": False,
+            "source_archive_read_for_slicing": payload.get("start") is not None
+            and specification["workflow"] in ("training", "discovery"),
             "live_enabled": False,
         }
     )

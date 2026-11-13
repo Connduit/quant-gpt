@@ -49,11 +49,18 @@ export function EquityWorkflows({ page }: { page: string }) {
   const [feed, setFeed] = useState("sip");
   const [dataset, setDataset] = useState("XNAS.ITCH");
   const [cost, setCost] = useState(0);
-  const latestCompletedDate = daysBefore(new Date().toISOString().slice(0, 10), 1);
-  const [start, setStart] = useState(() => daysBefore(latestCompletedDate, 365));
+  const latestCompletedDate = daysBefore(
+    new Date().toISOString().slice(0, 10),
+    1,
+  );
+  const [start, setStart] = useState(() =>
+    daysBefore(latestCompletedDate, 365),
+  );
   const [end, setEnd] = useState(latestCompletedDate);
   const [refresh, setRefresh] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [researchStart, setResearchStart] = useState("");
+  const [researchEnd, setResearchEnd] = useState("");
   const [models, setModels] = useState(["ridge"]);
   const [name, setName] = useState("Equity research");
   const [horizon, setHorizon] = useState(5);
@@ -80,11 +87,19 @@ export function EquityWorkflows({ page }: { page: string }) {
       }>("/workflows/providers"),
     refetchInterval: 15000,
   });
+  const rangeQuery =
+    mode !== "download" &&
+    researchStart &&
+    researchEnd &&
+    researchStart <= researchEnd
+      ? `?start=${researchStart}&end=${researchEnd}`
+      : "";
   const inventory = useQuery({
-    queryKey: ["workflow-snapshots"],
+    queryKey: ["workflow-snapshots", rangeQuery],
+    placeholderData: (previous) => previous,
     queryFn: () =>
       request<{ items: Snapshot[]; errors: { id: string; error: string }[] }>(
-        "/workflows/snapshots",
+        `/workflows/snapshots${rangeQuery}`,
       ),
     refetchInterval: 5000,
   });
@@ -99,11 +114,33 @@ export function EquityWorkflows({ page }: { page: string }) {
     chosen.length >= 2 &&
     chosen.every((s) => s.eligible) &&
     chosen.some((s) => s.symbol === "SPY") &&
-    new Set(chosen.map((s) => s.symbol)).size === chosen.length;
+    new Set(chosen.map((s) => s.symbol)).size === chosen.length &&
+    !!researchStart &&
+    !!researchEnd &&
+    researchStart <= researchEnd &&
+    chosen.every((s) => researchStart >= s.start && researchEnd <= s.end);
   const toggle = (values: string[], value: string) =>
     values.includes(value)
       ? values.filter((v) => v !== value)
       : [...values, value];
+
+  function selectSnapshot(id: string) {
+    const next = toggle(selected, id);
+    setSelected(next);
+    const snapshots = items.filter((s) => next.includes(s.id));
+    if (!snapshots.length) return;
+    const first = snapshots
+      .map((s) => s.start)
+      .sort()
+      .at(-1)!;
+    const last = snapshots.map((s) => s.end).sort()[0];
+    setResearchStart((current) =>
+      current && current >= first && current <= last ? current : first,
+    );
+    setResearchEnd((current) =>
+      current && current <= last && current >= first ? current : last,
+    );
+  }
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -127,6 +164,8 @@ export function EquityWorkflows({ page }: { page: string }) {
               workflow: mode,
               name,
               snapshot_ids: selected,
+              start: researchStart,
+              end: researchEnd,
               models,
               horizon,
               training_sessions: train,
@@ -203,10 +242,10 @@ export function EquityWorkflows({ page }: { page: string }) {
               : "Train equity ML models"}
         </h3>
         <p className="subtle">
-          Researcher access required. Downloads support completed historical dates.
-          Downloads can include dates after 2018. Training and discovery currently
-          require snapshots ending by December 31, 2018 to preserve the reserved
-          holdout.
+          Researcher access required. Downloads support completed historical
+          dates. Downloads can include dates after 2018. Training and discovery
+          use only the selected research date range; dates outside it are
+          excluded before features, labels or models are computed.
         </p>
         <form onSubmit={(event) => void submit(event)}>
           {mode === "download" ? (
@@ -367,6 +406,27 @@ export function EquityWorkflows({ page }: { page: string }) {
                   />
                 </label>
                 <label>
+                  Research start date
+                  <input
+                    type="date"
+                    required
+                    value={researchStart}
+                    max={researchEnd || latestCompletedDate}
+                    onChange={(e) => setResearchStart(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Research end date
+                  <input
+                    type="date"
+                    required
+                    value={researchEnd}
+                    min={researchStart}
+                    max={latestCompletedDate}
+                    onChange={(e) => setResearchEnd(e.target.value)}
+                  />
+                </label>
+                <label>
                   Prediction horizon
                   <select
                     value={horizon}
@@ -465,11 +525,16 @@ export function EquityWorkflows({ page }: { page: string }) {
               </fieldset>
               <p>
                 Select one eligible snapshot per equity and a SPY benchmark
-                below, with identical date coverage.
+                below, covering the research date range. Snapshots may contain
+                earlier or later dates; the dashboard extracts only the
+                requested range.
               </p>
               <p className="subtle">
-                Purged chronological folds · fixed costs (0.5¢/share, 5 bps
-                slippage, 2 bps spread) · CPU only · at most eight folds.
+                Training, validation and evaluation folds stay inside the
+                research range. Later snapshot data is excluded from this run;
+                this does not certify an untouched holdout or release a Phase 12
+                holdout. Purged chronological folds · fixed costs (0.5¢/share, 5
+                bps slippage, 2 bps spread) · CPU only · at most eight folds.
                 Discovery searches momentum/reversion features and bounded model
                 parameters, including doubled-cost checks.
               </p>
@@ -539,9 +604,7 @@ export function EquityWorkflows({ page }: { page: string }) {
                               aria-label={`Select ${s.symbol} ${s.id.slice(0, 8)}`}
                               disabled={!s.eligible}
                               checked={selected.includes(s.id)}
-                              onChange={() =>
-                                setSelected(toggle(selected, s.id))
-                              }
+                              onChange={() => selectSnapshot(s.id)}
                             />
                           </td>
                         )}

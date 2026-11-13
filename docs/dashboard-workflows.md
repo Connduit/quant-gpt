@@ -9,13 +9,13 @@ Open **Data library**, enter US symbols (include SPY for benchmark research),
 choose dates and click **Download & create snapshots**. The form defaults to
 one year ending yesterday (UTC), with the end-date picker allowing completed dates
 after 2018. Switching to Databento selects a 31-calendar-day window ending on the
-chosen end date. The separate training/discovery cutoff remains December 31, 2018. At most 12 symbols and
+chosen end date. At most 12 symbols and
 ten years for Alpaca (31 calendar days for Databento) are accepted per request.
 Select Alpaca/SIP or IEX, or Databento/dataset and estimated cost cap. See
 [provider setup](market-data-setup.md) for secrets, allowlist and entitlement details.
 Downloads support completed historical dates, including dates after 2018.
-Newer snapshots appear in the library, but reserved holdout data remains
-unavailable for training/discovery.
+Snapshot dates alone do not block training/discovery. Choose the research date
+range in those forms; the worker automatically extracts just that range.
 
 Add or replace provider credentials through **API keys** in the sidebar, using an
 operator token. The Data library's **Manage API keys** link opens the same page.
@@ -34,7 +34,9 @@ storage/DuckDB read-back. HTML verification pages and HTTP errors fail the job.
 ## ML training and discovery
 
 1. Open **Machine learning** / **Research**, or **Discovery**.
-2. Select one eligible snapshot per equity plus SPY with identical date coverage.
+2. Select one eligible snapshot per equity plus SPY. Set **Research start date**
+   and **Research end date**; all snapshots must cover that range, but may contain
+   additional dates outside it. Eligibility is checked for the requested range.
 3. Set run name, models, horizon, training/validation/evaluation windows, top
    holdings and seed. For discovery, also set the maximum trial count.
 4. Click **Start ML training** or **Start bounded discovery**.
@@ -80,12 +82,18 @@ group including trial descendants. Uncertain jobs after restart become
 `RECOVERY_REQUIRED` and block new launches until operator reconciliation. Requests,
 checksums, configurations, reports and failures are retained.
 
-Research limits: 3,000 source sessions, eight folds, five models per training run,
+Research limits: 3,000 selected research sessions, eight folds, five models per training run,
 eight discovery trials, one CPU thread, 4 GiB address space, 900 CPU seconds and a
 20-minute outer wall limit. Discovery also has per-trial CPU/time limits.
-Insufficient history/windows fail with a reason. Reserved holdout archives are
-excluded before payload reads through the new prefix-only paths. No job enables
-live trading or releases a holdout.
+Insufficient history/windows fail with a reason. For date-bounded requests, the
+worker verifies the source archives, then writes job-local immutable inputs and
+clipped action ledgers containing only the requested dates. Training, validation,
+feature warmup, labels and per-fold evaluation all use those inputs. No fitting
+engine opens the original archives or prices after the selected end date. The
+original library is unchanged; reports retain parent and derived snapshot IDs.
+Legacy API requests without dates retain the previous pre-2019 guard.
+This is development research, not certification of an untouched holdout. No job
+enables live trading or releases a Phase 12 holdout.
 
 ## Server setup and verification
 

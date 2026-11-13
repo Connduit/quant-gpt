@@ -8,7 +8,7 @@ import os
 import sqlite3
 import uuid
 from contextlib import asynccontextmanager
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -346,8 +346,8 @@ def create_app(
         }
 
     @app.get("/api/v1/workflows/snapshots")
-    def workflow_snapshots(assigned=access):
-        return snapshot_inventory(library)
+    def workflow_snapshots(start: date | None = None, end: date | None = None, assigned=access):
+        return snapshot_inventory(library, start=start, end=end)
 
     @app.get("/api/v1/workflows/providers")
     def workflow_providers(assigned=access):

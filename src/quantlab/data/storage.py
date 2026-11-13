@@ -65,6 +65,9 @@ class SnapshotStore:
         download: Download,
         frame: pl.DataFrame,
         parent: str | None = None,
+        *,
+        point_in_time: bool = False,
+        universe_membership_included: bool = False,
     ) -> str:
         self.root.mkdir(parents=True, exist_ok=True)
         temporary = Path(tempfile.mkdtemp(prefix=".pending-", dir=self.root))
@@ -96,9 +99,9 @@ class SnapshotStore:
                 "parquet_sha256": digest((temporary / "bars.parquet").read_bytes()),
                 "parent_snapshot": parent,
                 "availability_policy": "following_calendar_day_midnight_New_York_bound",
-                "point_in_time": False,
+                "point_in_time": point_in_time,
                 "corporate_actions_included": False,
-                "universe_membership_included": False,
+                "universe_membership_included": universe_membership_included,
             }
             serialized = json.dumps(metadata, sort_keys=True)
             snapshot_id = digest(serialized.encode())
