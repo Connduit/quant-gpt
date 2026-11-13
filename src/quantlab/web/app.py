@@ -223,9 +223,45 @@ def create_app(
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request, exc):
+        message = "Invalid request schema"
+        # Return schema explanations for the non-secret strategy form, never submitted
+        # values/exception contexts. Credential and other routes retain generic errors.
+        if request.url.path == "/api/v1/workflows/profitability":
+            explanations = []
+            for error in exc.errors()[:8]:
+                location = error.get("loc", ())
+                kind = error.get("type", "")
+                field = str(location[-1]) if location else ""
+                if kind == "value_error" and location == ("body",):
+                    reason = str(error.get("ctx", {}).get("error", ""))
+                    if reason.startswith("Phase 12C cannot"):
+                        explanations.append(
+                            "The evaluation includes the protected 2019 equity holdout. "
+                            "Use a separately downloaded snapshot and training run ending by "
+                            "2018-12-31 or starting on/after "
+                            "2020-01-01. Changing only the backtest dates cannot make a "
+                            "source run containing protected data eligible."
+                        )
+                    elif reason in (
+                        "start must be on or before end (both dates are inclusive)",
+                        "Only completed historical dates before today are supported",
+                        "Profitability evaluation permits at most ten years",
+                    ):
+                        explanations.append(reason)
+                    else:
+                        explanations.append("Check the evaluation start and end dates.")
+                elif field in ProfitabilityRequest.model_fields and kind != "extra_forbidden":
+                    label = field.replace("_", " ")
+                    if field == "source_job_id":
+                        explanations.append("Select a saved ML report from the workflow job list.")
+                    else:
+                        explanations.append(f"{label}: {error.get('msg', 'Invalid field')}")
+                else:
+                    explanations.append("The evaluation request contains unsupported fields.")
+            message = " ".join(dict.fromkeys(explanations)) or message
         return JSONResponse(
             status_code=422,
-            content={"error": {"code": "validation", "message": "Invalid request schema"}},
+            content={"error": {"code": "validation", "message": message}},
         )
 
     @app.exception_handler(ValueError)

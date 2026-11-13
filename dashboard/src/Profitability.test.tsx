@@ -90,4 +90,72 @@ describe("profitability-first workflow", () => {
       screen.getByText(/Saved runs containing protected 2019 data/),
     ).toBeInTheDocument();
   });
+  it("explains a protected source run before submission", () => {
+    const fetcher = vi.fn();
+    vi.stubGlobal("fetch", fetcher);
+    render(
+      <StrategyEvaluation
+        sourceId={"a".repeat(32)}
+        source={{
+          research_range: { start: "2016-01-01", end: "2019-12-31" },
+          report: {
+            research_mode: "exploratory",
+            predictive_performance: { ridge: {} },
+          },
+        }}
+        queued={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "protected 2019 holdout",
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Changing only the backtest dates",
+    );
+    expect(
+      screen.getByRole("button", { name: "Evaluate strategy" }),
+    ).toBeDisabled();
+    fireEvent.change(screen.getByLabelText("Backtest end date"), {
+      target: { value: "2018-12-31" },
+    });
+    expect(
+      screen.getByRole("button", { name: "Evaluate strategy" }),
+    ).toBeDisabled();
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+  it("displays the server's specific validation message", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              error: {
+                code: "validation",
+                message:
+                  "holding sessions: Input should be greater than or equal to 1",
+              },
+            }),
+            { status: 422 },
+          ),
+      ),
+    );
+    render(
+      <StrategyEvaluation
+        sourceId={"a".repeat(32)}
+        source={{
+          research_range: { start: "2020-01-01", end: "2024-12-31" },
+          report: {
+            research_mode: "exploratory",
+            predictive_performance: { ridge: {} },
+          },
+        }}
+        queued={vi.fn()}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Evaluate strategy" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "holding sessions",
+    );
+  });
 });

@@ -111,3 +111,65 @@ test("saved ML report launches strategy evaluation and presents net profitabilit
     .locator(".workflow-report")
     .screenshot({ path: "/workspace/work/phase12c-profitability-desktop.png" });
 });
+
+test("protected source explains rejection before an evaluation request", async ({
+  page,
+}) => {
+  const identity = "e".repeat(32);
+  let submissions = 0;
+  await page.route("**/api/v1/jobs", (route) =>
+    route.fulfill({
+      json: {
+        items: [
+          {
+            id: identity,
+            name: "training-protected",
+            status: "COMPLETED",
+            detail: "Completed",
+            created: "2026-11-13",
+          },
+        ],
+        approved: [],
+      },
+    }),
+  );
+  await page.route(`**/api/v1/workflows/jobs/${identity}`, (route) =>
+    route.fulfill({
+      json: {
+        result: {
+          status: "COMPLETED",
+          workflow: "training",
+          research_range: { start: "2016-01-01", end: "2019-12-31" },
+          report: {
+            name: "Source fixture",
+            research_mode: "exploratory",
+            predictive_performance: { ridge: {} },
+          },
+        },
+      },
+    }),
+  );
+  await page.route("**/api/v1/workflows/profitability", async (route) => {
+    submissions += 1;
+    await route.fulfill({
+      status: 422,
+      json: { error: { message: "Should never submit this source" } },
+    });
+  });
+  await page.goto("/models");
+  await page.getByRole("button", { name: "View report", exact: true }).click();
+  const evaluation = page.getByRole("region", {
+    name: "Evaluate saved ML strategy",
+  });
+  await expect(evaluation.getByRole("alert")).toContainText(
+    "protected 2019 holdout",
+  );
+  await expect(evaluation.getByRole("alert")).toContainText(
+    "separately downloaded snapshot",
+  );
+  await evaluation.getByLabel("Backtest end date").fill("2018-12-31");
+  await expect(
+    evaluation.getByRole("button", { name: "Evaluate strategy", exact: true }),
+  ).toBeDisabled();
+  expect(submissions).toBe(0);
+});

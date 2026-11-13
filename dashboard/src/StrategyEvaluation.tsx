@@ -40,6 +40,13 @@ export function StrategyEvaluation({
     slippage_bps: 5,
     market_impact_bps: 1,
   });
+  const sourceBlocked =
+    !!range.start &&
+    !!range.end &&
+    range.start <= "2019-12-31" &&
+    range.end >= "2019-01-02";
+  const blockedMessage =
+    "This saved training run includes the protected 2019 holdout. Create a new training run from a separately downloaded snapshot ending by 2018-12-31 or starting on/after 2020-01-01. Changing only the backtest dates cannot make this source run eligible.";
   const [pending, setPending] = useState(false),
     [error, setError] = useState("");
   const numeric = (
@@ -66,6 +73,10 @@ export function StrategyEvaluation({
   );
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    if (sourceBlocked) {
+      setError(blockedMessage);
+      return;
+    }
     setPending(true);
     setError("");
     try {
@@ -92,6 +103,11 @@ export function StrategyEvaluation({
         reversion and cash. Low and high costs are 0.5× and 2× your baseline
         assumptions. Final liquidation costs are included.
       </p>
+      {sourceBlocked && (
+        <p role="alert" className="warning-line" id="strategy-source-blocker">
+          {blockedMessage}
+        </p>
+      )}
       <form onSubmit={(event) => void submit(event)}>
         <div className="workflow-fields">
           <label>
@@ -250,7 +266,13 @@ export function StrategyEvaluation({
           prices are required. Saved runs containing protected 2019 data cannot
           be evaluated; train a physically separate permitted-date run.
         </p>
-        <button disabled={pending || !models.length} type="submit">
+        <button
+          disabled={pending || !models.length || sourceBlocked}
+          aria-describedby={
+            sourceBlocked ? "strategy-source-blocker" : undefined
+          }
+          type="submit"
+        >
           {pending ? "Submitting…" : "Evaluate strategy"}
         </button>
         {error && <p role="alert">{error}</p>}
