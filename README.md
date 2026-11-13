@@ -43,20 +43,24 @@ generate distinct dashboard tokens with
 `python -c "import secrets; print(secrets.token_urlsafe(32))"` for each role.
 Use at least 24 characters per token. Keep the file private.
 
-Build the dashboard once (requires Node.js and npm):
+Install dependencies and build everything with one command (requires Python 3.12+,
+uv, and Node.js with npm):
 
 ```bash
-cd dashboard
-npm ci
-npm run build
-cd ..
+python build.py
 ```
+
+Use `python3 build.py` if your system names Python `python3`. Rerun this command
+after pulling updates. It stops if any installation or build step fails.
 
 Start the local dashboard from the repository root:
 
 ```bash
-uv run --env-file .env --frozen --all-extras quantlab dashboard
+python start.py
 ```
+
+The start script loads the project's `.env` and binds to localhost. Stop it with
+Ctrl+C. Use `python start.py --port 8001` to choose a different port.
 
 Enter the matching viewer, operator, or researcher token from `.env` when the
 dashboard requests access. Other CLI commands can use the same
@@ -265,9 +269,8 @@ no live streaming is verified. See [operation](docs/paper-trading.md) and
 ## Research dashboard
 
 ```bash
-npm --prefix dashboard ci
-npm --prefix dashboard run build
-uv run --frozen --all-extras quantlab dashboard
+python build.py
+python start.py
 ```
 
 Open `http://127.0.0.1:8000`. The dashboard inspects curated research, models,
@@ -314,7 +317,8 @@ execution remains disabled.** See the [readiness report](docs/go-live-readiness.
 ## What needs to be rebuilt after a change?
 
 Run commands from the repository root. For the dashboard, install dependencies
-with `cd dashboard && npm ci`, then run `npm run build` in that directory.
+with `python build.py`, which installs locked Python and frontend dependencies
+and builds the dashboard.
 Use the installation commands above for the Python application.
 
 | Change | Required action |

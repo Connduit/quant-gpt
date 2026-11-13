@@ -1,16 +1,49 @@
-# Set secrets outside Git in managed settings or a protected environment file.
-# Only the viewer token is required for the default monitoring deployment.
+# Local settings: keep .env private and out of Git. Restart the app after changes.
+# Launch: uv run --env-file .env --frozen --all-extras quantlab dashboard
+# The three dashboard tokens are passwords you create, not tokens from Alpaca.
+# Generate a DIFFERENT random value for each role (minimum 24 characters):
+# python -c "import secrets; print(secrets.token_urlsafe(32))"
+# Roles are separate: operator manages keys; researcher runs jobs; viewer reads.
+
+# Dashboard read-only access: view reports, status, and results. Cannot edit keys or start jobs.
 QUANTLAB_VIEWER_TOKEN=
+
+# Dashboard operator access: save/remove provider API keys and control simulated paper accounts.
+# Paste this token into the dashboard top bar when managing keys. Does not authorize research jobs.
 QUANTLAB_OPERATOR_TOKEN=
+
+# Dashboard research access: start historical downloads/research jobs and cancel jobs.
+# Does not allow editing API keys. Switch to the operator token for that.
 QUANTLAB_RESEARCHER_TOKEN=
-# Broker sandbox profile only; use PAPER credentials, never real-money keys.
+
+# Optional Alpaca PAPER broker key ID, obtained from your Alpaca paper account.
+# Used by the separate controlled broker sandbox; leave blank for dashboard/data-only use.
 QUANTLAB_ALPACA_PAPER_KEY=
+
+# Matching Alpaca PAPER broker secret. This is not a dashboard login token.
+# Leave blank unless configuring the separate broker sandbox.
 QUANTLAB_ALPACA_PAPER_SECRET=
+
+# Private signing secret for bounded PAPER sandbox approvals and control authorizations.
+# Generate a random value of at least 32 characters; not an Alpaca key or dashboard token.
+# Unused by the dashboard; required only for the controlled sandbox.
 QUANTLAB_SANDBOX_AUTHORIZATION_KEY=
+
+# Alpaca key ID for historical market-data downloads; obtain it from Alpaca.
+# Requires matching secret below and the appropriate data entitlements.
 APCA_API_KEY_ID=
+
+# Matching Alpaca market-data secret. Enter both values together.
+# Dashboard-saved Alpaca keys override this pair for new downloads.
 APCA_API_SECRET_KEY=
+
+# Databento API key for historical market-data downloads; obtain it from Databento.
+# Leave blank if unused. Downloads may incur provider charges, subject to the job cost cap.
 DATABENTO_API_KEY=
-# Optional Fernet key for dashboard credential encryption; otherwise a private local key is created.
+
+# Optional Fernet encryption key protecting provider keys saved from the dashboard.
+# Leave blank to let the app create a private local master.key automatically.
+# If setting explicitly, generate with:
+# python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+# Keep the original key: changing/losing it makes previously saved API keys unreadable.
 QUANTLAB_CREDENTIALS_MASTER_KEY=
-# Alpaca market data: data.alpaca.markets (no broker host required).
-# Databento historical data: hist.databento.com. Enter secrets outside Git.

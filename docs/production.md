@@ -28,12 +28,8 @@ tokens. Generated code is quarantined text, never executed.
 Install Python 3.12+, uv, and Node.js with npm. From the repository root:
 
 ```bash
-uv sync --frozen --all-extras
-cd dashboard
-npm ci
-npm run build
-cd ..
-uv run --env-file .env --frozen --all-extras quantlab dashboard
+python build.py
+python start.py
 ```
 
 Create `.env` using `.env.example` as a template and set distinct
