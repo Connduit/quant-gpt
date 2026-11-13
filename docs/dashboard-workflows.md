@@ -1,7 +1,11 @@
 # Historical data and equity research in the dashboard
 
-Once the server is running and a researcher is connected, these workflows require
-no command-line input. Existing curated result panels remain below the new forms.
+Localhost development connects automatically without entering Quantlab tokens.
+`python start.py` loads `.env`; provider keys remain server-side. Set
+`QUANTLAB_LOCAL_DEV_AUTH=0` to restore separate role authentication locally.
+Nonlocal hosting requires tokens and rejects local development access.
+
+Once the server is running, these workflows require no command-line input. Existing curated result panels remain below the new forms.
 
 ## Download and create snapshots
 

@@ -30,8 +30,11 @@ Copy the template once; do not overwrite an existing `.env`:
 cp -n .env.example .env
 ```
 
-Open `.env` in your editor. Generate three separate dashboard passwords by running
-this command three times:
+Open `.env` in your editor. Keep `QUANTLAB_LOCAL_DEV_AUTH=1` for local development;
+leave all three Quantlab role tokens blank. Access is automatic on localhost.
+
+Only for strict role mode (`QUANTLAB_LOCAL_DEV_AUTH=0`), generate three separate
+dashboard passwords by running this command three times:
 
 ```bash
 python -c "import secrets; print(secrets.token_urlsafe(32))"
@@ -76,15 +79,23 @@ After editing `.env`, restart the app. No rebuild is needed for token changes.
 
 ## 4. Connect your data provider
 
-1. Open the dashboard. Paste your **operator token** into the top bar and click **Connect**.
+1. Open the dashboard. Local development connects automatically. In strict role mode only, paste your **operator token** into the top bar and click **Connect**.
 2. Open **API keys** in the sidebar.
 3. Enter your Alpaca key ID and matching secret, then save. Alternatively, enter a Databento key.
-4. Switch the top-bar token to your **researcher token** and click **Connect** before downloading.
+4. Local development connects automatically. With `QUANTLAB_LOCAL_DEV_AUTH=0`, switch the top-bar token to your **researcher token** and click **Connect** before downloading.
 
 Saved key fields clear intentionally; the app never displays stored secrets again.
 “Configured” means keys are present, not that provider access has been verified.
 For Alpaca, use SIP only if your account has the required entitlement; select IEX
 explicitly if that is your intended available feed. The app does not switch feeds automatically.
+
+
+Local development needs no Quantlab tokens. `python start.py` loads `.env`, and
+localhost defaults to automatic operator/researcher access. The top bar shows
+**Local development · automatic access**, with no token form. Provider API keys
+still come from `.env` or **API keys**. Role-token instructions in this guide apply only
+if you set `QUANTLAB_LOCAL_DEV_AUTH=0`; do not paste tokens during normal development.
+Remote hosting requires token authentication and cannot enable local dev access.
 
 ## 5. Download your first snapshots
 
@@ -178,7 +189,7 @@ Example results are saved on disk and are not automatically added to the dashboa
 
 ### Option B: search from the dashboard with eligible inputs
 
-Connect with the **researcher token**, open **Discovery**, and select one eligible
+With automatic local access (or the **researcher token** in strict mode), open **Discovery**, and select one eligible
 snapshot per stock plus **SPY**. Choose research start/end dates covered by every
 selected snapshot; the original snapshots may have different wider date ranges.
 Start with enough history for training, validation, feature warmup, and evaluation
@@ -223,8 +234,8 @@ paper or live trading.
 | --- | --- |
 | `Invalid access token` | Use `python start.py`; copy only the matching value from `.env`; restart after edits. Old exported shell variables take precedence over `.env`. |
 | `Role tokens must be distinct` | Give viewer, operator, and researcher three different values. |
-| Key fields disabled | Connect as operator and use localhost or HTTPS. |
-| Download/research forbidden | Switch to researcher and click Connect. |
+| Key fields disabled | Use localhost automatic access, or connect as operator in strict mode. |
+| Download/research forbidden | Restart on localhost for automatic access, or connect as researcher in strict mode. |
 | Alpaca access/entitlement error | Verify the key pair and the selected SIP/IEX feed with Alpaca. |
 | Data downloaded but cannot be selected | Set the research date range, then check actions and historical membership blockers. |
 | Missing dashboard build | Run `python build.py`, then `python start.py`. |

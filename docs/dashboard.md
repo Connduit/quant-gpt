@@ -2,7 +2,8 @@
 
 The [guided historical-data and equity workflows](dashboard-workflows.md) add
 download/snapshot forms, ML training, bounded discovery, cancellation and job reports.
-They retain researcher authorization, data eligibility and holdout protections.
+Local development grants dashboard role access automatically; data eligibility
+and holdout protections remain in force.
 
 The [full request](milestone-9-instructions.md) and [architecture plan](dashboard-architecture.md)
 are saved. The dashboard uses React/TypeScript/Vite, React Router, TanStack Query,
@@ -61,7 +62,15 @@ These are monitoring refresh notices, not claims of live market observations.
 
 ## Authentication and writes
 
-Default loopback access is read-only. Nonlocal hosting requires configured tokens:
+Default loopback hosting enables automatic local development access, including
+researcher and operator operations, without exposing role tokens to the browser.
+`python start.py` loads the repository `.env`; provider API credentials still come
+from that file or the encrypted provider settings. Set `QUANTLAB_LOCAL_DEV_AUTH=0`
+to restore read-only unauthenticated loopback access and separate role tokens.
+Local development access requires both a loopback client and hostname and rejects
+foreign browser origins. Explicitly enabling it on a nonlocal bind fails startup.
+
+Nonlocal hosting requires configured tokens:
 `QUANTLAB_VIEWER_TOKEN`, `QUANTLAB_OPERATOR_TOKEN`, and/or
 `QUANTLAB_RESEARCHER_TOKEN`. Each must be distinct and at least 24 characters;
 store values in environment settings/managed secrets, never in Git or frontend

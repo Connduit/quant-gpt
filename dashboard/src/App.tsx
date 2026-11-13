@@ -52,6 +52,11 @@ export function App() {
   const [token, setAuth] = useState("");
   const [connection, setConnection] = useState(0);
   const q = useQueryClient();
+  const session = useQuery({
+    queryKey: ["session"],
+    queryFn: () => request<{ local_development: boolean }>("/session"),
+    retry: false,
+  });
   useEffect(() => {
     const abort = new AbortController();
     void monitorUpdates(() => {
@@ -110,24 +115,28 @@ export function App() {
           <span className="breadcrumb">
             WORKSPACE <span>/</span> QUANT RESEARCH LAB
           </span>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setToken(token);
-              setConnection((c) => c + 1);
-              void q.invalidateQueries();
-            }}
-          >
-            <input
-              type="password"
-              aria-label="API access token"
-              value={token}
-              onChange={(e) => setAuth(e.target.value)}
-              placeholder="Access token (optional locally)"
-              autoComplete="off"
-            />
-            <button type="submit">Connect</button>
-          </form>
+          {session.data?.local_development ? (
+            <span role="status">Local development · automatic access</span>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setToken(token);
+                setConnection((c) => c + 1);
+                void q.invalidateQueries();
+              }}
+            >
+              <input
+                type="password"
+                aria-label="API access token"
+                value={token}
+                onChange={(e) => setAuth(e.target.value)}
+                placeholder="Access token (optional locally)"
+                autoComplete="off"
+              />
+              <button type="submit">Connect</button>
+            </form>
+          )}
         </header>
         <main>
           <Routes>

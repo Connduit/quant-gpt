@@ -116,6 +116,33 @@ describe("dashboard evidence boundaries", () => {
       "Authentication required",
     );
   });
+  it("hides manual token entry when local development access is active", async () => {
+    mockApi();
+    const normalFetch = globalThis.fetch;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: string, options?: RequestInit) =>
+        input.endsWith("/session")
+          ? Promise.resolve(
+              new Response(
+                JSON.stringify({
+                  local_development: true,
+                  role: "local_developer",
+                }),
+              ),
+            )
+          : normalFetch(input, options),
+      ),
+    );
+    mount();
+    expect(
+      await screen.findByText("Local development · automatic access"),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText("API access token")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Connect" }),
+    ).not.toBeInTheDocument();
+  });
   it("never puts bearer tokens in URLs", async () => {
     const fetcher = vi.fn(async () => new Response("{}"));
     vi.stubGlobal("fetch", fetcher);

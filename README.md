@@ -39,10 +39,9 @@ automatically; the earlier onboarding research sandbox is separate.
 
 Keep local settings in `.env` at the repository root. This file is excluded
 from Git. To set up another computer, copy
-`.env.example` to `.env`, fill in your provider credentials, and
-generate distinct dashboard tokens with
-`python -c "import secrets; print(secrets.token_urlsafe(32))"` for each role.
-Use at least 24 characters per token. Keep the file private.
+`.env.example` to `.env` and fill in your provider credentials. Localhost
+development connects automatically; leave the Quantlab role tokens blank.
+Keep the file private.
 
 Install dependencies and build everything with one command (requires Python 3.12+,
 uv, and Node.js with npm):
@@ -63,8 +62,10 @@ python start.py
 The start script loads the project's `.env` and binds to localhost. Stop it with
 Ctrl+C. Use `python start.py --port 8001` to choose a different port.
 
-Enter the matching viewer, operator, or researcher token from `.env` when the
-dashboard requests access. Other CLI commands can use the same
+Local development needs no pasted tokens: the top bar shows automatic access.
+Set `QUANTLAB_LOCAL_DEV_AUTH=0` to require separate role tokens locally. Nonlocal
+hosting requires tokens and cannot enable local development access.
+Other CLI commands can use the same
 `uv run --env-file .env` prefix. Existing shell variables take precedence;
 unset an old value if you want the file's value to apply. Restart the dashboard
 after editing `.env`.
@@ -276,7 +277,7 @@ python start.py
 
 Open `http://127.0.0.1:8000`. The dashboard inspects curated research, models,
 validation, backtests, portfolios and journaled paper state. Default local access
-is read-only; confirmed writes require role tokens. See [operation](docs/dashboard.md),
+uses automatic local development access; remote confirmed writes require role tokens. See [operation](docs/dashboard.md),
 [verification](docs/milestone-9-results.md), and [screenshot](docs/dashboard-overview.png).
 
 The Data library now includes historical-download and immutable-snapshot forms.

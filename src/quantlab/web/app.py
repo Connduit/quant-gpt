@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any, Literal
+from urllib.parse import urlsplit
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
@@ -131,6 +132,7 @@ def create_app(
     state_root,
     tokens=None,
     local_reads=True,
+    local_development=False,
     approved_jobs=None,
     frontend=None,
     workflow_library=None,
@@ -178,6 +180,25 @@ def create_app(
         if auth:
             raise HTTPException(401, "Invalid access token")
         if (
+            local_development
+            and request.client
+            and request.client.host in ("127.0.0.1", "::1", "testclient")
+            and request.url.hostname in ("localhost", "127.0.0.1", "::1", "testserver")
+        ):
+            origin = request.headers.get("origin")
+            if origin:
+                parsed = urlsplit(origin)
+                if parsed.scheme not in ("http", "https") or parsed.hostname not in (
+                    "localhost",
+                    "127.0.0.1",
+                    "::1",
+                    "testserver",
+                ):
+                    raise HTTPException(403, "Local development access requires a local origin")
+            elif request.headers.get("sec-fetch-site") == "cross-site":
+                raise HTTPException(403, "Local development access requires a local origin")
+            return "local_developer"
+        if (
             local_reads
             and request.client
             and request.client.host in ("127.0.0.1", "::1", "testclient")
@@ -188,7 +209,7 @@ def create_app(
     access = Depends(role)
 
     def require(assigned, allowed):
-        if assigned not in allowed:
+        if assigned != "local_developer" and assigned not in allowed:
             raise HTTPException(403, "Role does not authorize this operation")
 
     def credential_access(request, assigned):
@@ -343,6 +364,10 @@ def create_app(
             "catalog_errors": list(catalog.errors),
         }
 
+    @app.get("/api/v1/session")
+    def session(assigned=access):
+        return {"local_development": assigned == "local_developer", "role": assigned}
+
     @app.get("/api/v1/health", response_model=Health)
     def get_health(assigned=access):
         return health()
@@ -409,7 +434,7 @@ def create_app(
 
     @app.get("/api/v1/settings/providers")
     def credential_status(assigned=access):
-        return {**key_store.status(), "editable": assigned == "operator"}
+        return {**key_store.status(), "editable": assigned in ("operator", "local_developer")}
 
     @app.put("/api/v1/settings/providers/alpaca")
     def save_alpaca_keys(body: AlpacaKeys, request: Request, assigned=access):
@@ -684,15 +709,23 @@ def from_environment():
     catalog = Catalog(
         os.environ.get("QUANTLAB_CATALOG", workspace / "configs/dashboard.catalog.yaml"), workspace
     )
-    tokens = {}
-    for role in ("viewer", "operator", "researcher"):
-        token = os.environ.get("QUANTLAB_" + role.upper() + "_TOKEN")
-        if token:
-            if token in tokens:
-                raise ValueError("Role tokens must be distinct")
-            tokens[token] = role
     bind = os.environ.get("QUANTLAB_BIND_HOST", "127.0.0.1")
-    if bind not in ("127.0.0.1", "::1", "localhost") and not tokens:
+    loopback = bind in ("127.0.0.1", "::1", "localhost")
+    dev_setting = os.environ.get("QUANTLAB_LOCAL_DEV_AUTH", "1" if loopback else "0")
+    if dev_setting not in ("0", "1"):
+        raise ValueError("QUANTLAB_LOCAL_DEV_AUTH must be 0 or 1")
+    local_development = dev_setting == "1"
+    if local_development and not loopback:
+        raise ValueError("Local development access requires a loopback bind")
+    tokens = {}
+    if not local_development:
+        for role in ("viewer", "operator", "researcher"):
+            token = os.environ.get("QUANTLAB_" + role.upper() + "_TOKEN")
+            if token:
+                if token in tokens:
+                    raise ValueError("Role tokens must be distinct")
+                tokens[token] = role
+    if not loopback and not tokens:
         raise ValueError("Nonlocal hosting requires configured authentication")
     approved = {}
     configuration = workspace / "configs/futures-research.example.yaml"
@@ -725,6 +758,7 @@ def from_environment():
         catalog,
         state_root=workspace / "data/dashboard",
         tokens=tokens,
+        local_development=local_development,
         local_reads=bind in ("127.0.0.1", "::1", "localhost"),
         approved_jobs=approved,
         workflow_library=os.environ.get("QUANTLAB_WORKFLOW_LIBRARY"),

@@ -67,6 +67,32 @@ test("operator settings mask and clear keys after saving, including after reload
 test("read-only visitors see the operator requirement and network hosts", async ({
   page,
 }) => {
+  await page.route("**/api/v1/session", (route) =>
+    route.fulfill({ json: { local_development: false, role: "local_viewer" } }),
+  );
+  await page.route("**/api/v1/settings/providers", (route) =>
+    route.fulfill({
+      json: {
+        editable: false,
+        items: [
+          {
+            id: "alpaca",
+            configured: false,
+            saved: false,
+            source: "none",
+            host: "data.alpaca.markets",
+          },
+          {
+            id: "databento",
+            configured: false,
+            saved: false,
+            source: "none",
+            host: "hist.databento.com",
+          },
+        ],
+      },
+    }),
+  );
   await page.goto("/provider-settings");
   await expect(
     page.getByRole("button", { name: "Save Alpaca keys", exact: true }),
@@ -80,4 +106,37 @@ test("read-only visitors see the operator requirement and network hosts", async 
   await expect(
     page.getByText("hist.databento.com", { exact: true }),
   ).toBeVisible();
+});
+
+test("local development connects without a token and keeps access after reload", async ({
+  page,
+}) => {
+  await page.route("**/api/v1/session", (route) =>
+    route.fulfill({
+      json: { local_development: true, role: "local_developer" },
+    }),
+  );
+  await page.route("**/api/v1/settings/providers", (route) =>
+    route.fulfill({ json: { editable: true, items: [] } }),
+  );
+  await page.goto("/provider-settings");
+  await expect(
+    page.getByText("Local development · automatic access", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("API access token", { exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Connect", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByLabel("Alpaca API key ID", { exact: true }),
+  ).toBeEnabled();
+  await page.reload();
+  await expect(
+    page.getByText("Local development · automatic access", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Alpaca API key ID", { exact: true }),
+  ).toBeEnabled();
 });
