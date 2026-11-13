@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./api";
 import { Badge, ErrorBox, JsonView } from "./components";
 import { ResearchReport } from "./ResearchReport";
+import { QuickDatasetDownload } from "./QuickDatasetDownload";
+import { DEFAULT_EQUITY_SYMBOLS } from "./equityDefaults";
 import { StrategyEvaluation } from "./StrategyEvaluation";
 import { ProfitabilityReport } from "./ProfitabilityReport";
 
@@ -18,6 +20,7 @@ interface Snapshot {
   eligible: boolean;
   blockers: string[];
   strict_blockers?: string[];
+  dataset_role?: string;
 }
 interface Job {
   id: string;
@@ -48,7 +51,7 @@ export function EquityWorkflows({ page }: { page: string }) {
         ? "discovery"
         : "training";
   const query = useQueryClient();
-  const [symbols, setSymbols] = useState("AAPL, MSFT, SPY");
+  const [symbols, setSymbols] = useState(DEFAULT_EQUITY_SYMBOLS);
   const [provider, setProvider] = useState("alpaca");
   const [feed, setFeed] = useState("sip");
   const [dataset, setDataset] = useState("XNAS.ITCH");
@@ -238,10 +241,19 @@ export function EquityWorkflows({ page }: { page: string }) {
     URL.revokeObjectURL(url);
   }
   const workflowJobs = (jobs.data?.items ?? []).filter((j) =>
-    /^(download|training|discovery|profitability)-/.test(j.name),
+    /^(download|download_pair|training|discovery|profitability)-/.test(j.name),
   );
   return (
     <>
+      {mode === "download" && (
+        <QuickDatasetDownload
+          latest={latestCompletedDate}
+          queued={(id) => {
+            setMessage(`Queued ${id}. Follow both dataset downloads below.`);
+            void query.invalidateQueries({ queryKey: ["jobs"] });
+          }}
+        />
+      )}
       <section className="panel equity-workflow">
         <h3>
           {mode === "download"
@@ -324,7 +336,7 @@ export function EquityWorkflows({ page }: { page: string }) {
                     required
                     value={symbols}
                     onChange={(e) => setSymbols(e.target.value)}
-                    placeholder="AAPL, MSFT, SPY"
+                    placeholder={DEFAULT_EQUITY_SYMBOLS}
                   />
                 </label>
                 <label>
@@ -656,6 +668,13 @@ export function EquityWorkflows({ page }: { page: string }) {
                         )}
                         <td>
                           <strong>{s.symbol}</strong>
+                          {s.dataset_role && s.dataset_role !== "research" && (
+                            <small className="snapshot-id">
+                              {s.dataset_role === "protected_test"
+                                ? "Protected test · sealed"
+                                : "Training snapshot"}
+                            </small>
+                          )}
                           <small className="snapshot-id" title={s.id}>
                             {s.id.slice(0, 12)}…
                           </small>
@@ -671,11 +690,13 @@ export function EquityWorkflows({ page }: { page: string }) {
                         <td>
                           <Badge
                             text={
-                              s.eligible
-                                ? exploratory
-                                  ? "EXPLORATORY"
-                                  : "ELIGIBLE"
-                                : "BLOCKED_DATA"
+                              s.dataset_role === "protected_test"
+                                ? "PROTECTED TEST"
+                                : s.eligible
+                                  ? exploratory
+                                    ? "EXPLORATORY"
+                                    : "ELIGIBLE"
+                                  : "BLOCKED_DATA"
                             }
                           />
                           {exploratory &&

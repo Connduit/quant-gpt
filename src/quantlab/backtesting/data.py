@@ -71,6 +71,8 @@ class DailyData:
         *,
         allow_unverified_actions: bool = False,
     ) -> "DailyData":
+        if store.inspect(snapshot_id).get("dataset_role") == "protected_test":
+            raise ValueError("Protected test snapshots cannot be opened for routine simulation")
         metadata = store.manifest(snapshot_id)
         frame = store.read(snapshot_id)
         request = metadata["request"]

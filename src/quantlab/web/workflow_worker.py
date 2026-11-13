@@ -16,7 +16,7 @@ from quantlab.web.workflows import (
 )
 
 
-def acquire(payload, library, output):
+def acquire(payload, library, output, *, dataset_role="research"):
     import csv
     from datetime import date
     from io import StringIO
@@ -28,7 +28,23 @@ def acquire(payload, library, output):
     from quantlab.data.validation import ValidationError
 
     request = DownloadRequest.model_validate(payload)
-    store = SnapshotStore(library)
+    from quantlab.data.protection import protection_reasons
+
+    if dataset_role != "protected_test":
+        for symbol in request.symbols:
+            reasons = protection_reasons(
+                library,
+                {
+                    "request": {
+                        "symbol": symbol,
+                        "start": str(request.start),
+                        "end": str(request.end),
+                    }
+                },
+            )
+            if reasons:
+                raise ValueError("; ".join(reasons))
+    store = SnapshotStore(library, dataset_role=dataset_role)
 
     provider = create_provider(
         request.provider,
@@ -72,6 +88,7 @@ def acquire(payload, library, output):
             results.append(
                 {
                     "symbol": symbol,
+                    "dataset_role": dataset_role,
                     "status": "CACHED" if cached else "CREATED",
                     "snapshot_id": sid,
                     "rows": frame.height,
@@ -79,7 +96,14 @@ def acquire(payload, library, output):
                 }
             )
         except (ProviderError, ValidationError) as exc:
-            results.append({"symbol": symbol, "status": "FAILED", "reason": str(exc)})
+            results.append(
+                {
+                    "symbol": symbol,
+                    "dataset_role": dataset_role,
+                    "status": "FAILED",
+                    "reason": str(exc),
+                }
+            )
     failures = sum(r["status"] == "FAILED" for r in results)
     report = {
         "status": "FAILED" if failures == len(results) else "PARTIAL" if failures else "COMPLETED",
@@ -93,6 +117,48 @@ def acquire(payload, library, output):
             f"{row['symbol']}: {row['reason']}" for row in results if row["status"] == "FAILED"
         )
     return report
+
+
+def acquire_pair(payload, library, output):
+    from quantlab.data.protection import reserve_plan
+    from quantlab.web.workflows import PairedDownloadRequest
+
+    request = PairedDownloadRequest.model_validate(payload)
+    plan = reserve_plan(library, request)
+    base = request.model_dump(mode="json", exclude={"split_date"})
+    training = acquire(
+        {**base, "end": str(request.split_date - timedelta(days=1))},
+        library,
+        output,
+        dataset_role="training",
+    )
+    protected = acquire(
+        {**base, "start": str(request.split_date)},
+        library / "protected",
+        output,
+        dataset_role="protected_test",
+    )
+    snapshots = training["snapshots"] + protected["snapshots"]
+    failures = sum(s["status"] == "FAILED" for s in snapshots)
+    return {
+        "status": "FAILED"
+        if failures == len(snapshots)
+        else "PARTIAL"
+        if failures
+        else "COMPLETED",
+        "snapshots": snapshots,
+        "dataset_plan": plan,
+        "training_range": {
+            "start": str(request.start),
+            "end": str(request.split_date - timedelta(days=1)),
+        },
+        "protected_test_range": {"start": str(request.split_date), "end": str(request.end)},
+        "protected_data_downloaded": True,
+        "holdout_evaluated": False,
+        "note": "Separate training and SEALED protected-test snapshots. Download validation is not "
+        "model fitting or holdout evaluation. Previously viewed data is not made unseen; "
+        "strict corporate-action/PIT requirements remain.",
+    }
 
 
 def experiment_document(request, library, snapshots):
@@ -268,6 +334,8 @@ def execute(specification, output):
     try:
         if specification["workflow"] == "download":
             result = acquire(payload, library, output)
+        elif specification["workflow"] == "download_pair":
+            result = acquire_pair(payload, library, output)
         elif specification["workflow"] == "profitability":
             import zipfile
 
@@ -275,6 +343,9 @@ def execute(specification, output):
             from quantlab.web.workflows import ProfitabilityRequest
 
             checked = ProfitabilityRequest.model_validate(payload)
+            from quantlab.data.protection import check_saved_job
+
+            check_saved_job(Path(specification["source_artifacts"]), library)
             report = run_profitability(
                 Path(specification["source_artifacts"]),
                 checked,
@@ -307,7 +378,7 @@ def execute(specification, output):
             "specification_sha256": hashlib.sha256(
                 json.dumps(specification, sort_keys=True).encode()
             ).hexdigest(),
-            "holdout_accessed": False,
+            "holdout_accessed": specification["workflow"] == "download_pair",
             "source_archive_read_for_slicing": payload.get("start") is not None
             and specification["workflow"] in ("training", "discovery"),
             "live_enabled": False,

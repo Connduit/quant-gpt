@@ -75,6 +75,14 @@ function api(
   return post;
 }
 describe("equity dashboard workflows", () => {
+  it("defaults the standard download form to SPY and the Magnificent Seven", async () => {
+    api();
+    mount("datasets");
+    expect(screen.getByLabelText("US equity symbols")).toHaveValue(
+      "SPY, AAPL, MSFT, AMZN, GOOGL, META, NVDA, TSLA",
+    );
+  });
+
   it("submits Databento dataset and explicit cost budget without credentials", async () => {
     const post = api();
     mount("datasets");

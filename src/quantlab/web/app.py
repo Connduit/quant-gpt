@@ -26,6 +26,7 @@ from quantlab.web.credentials import ProviderKeyStore
 from quantlab.web.jobs import JobManager
 from quantlab.web.workflows import (
     DownloadRequest,
+    PairedDownloadRequest,
     ProfitabilityRequest,
     ResearchRequest,
     selected_snapshots,
@@ -226,7 +227,15 @@ def create_app(
         message = "Invalid request schema"
         # Return schema explanations for the non-secret strategy form, never submitted
         # values/exception contexts. Credential and other routes retain generic errors.
-        if request.url.path == "/api/v1/workflows/profitability":
+        if request.url.path in (
+            "/api/v1/workflows/profitability",
+            "/api/v1/workflows/download-pair",
+        ):
+            fields = (
+                ProfitabilityRequest
+                if request.url.path.endswith("profitability")
+                else PairedDownloadRequest
+            ).model_fields
             explanations = []
             for error in exc.errors()[:8]:
                 location = error.get("loc", ())
@@ -246,11 +255,14 @@ def create_app(
                         "start must be on or before end (both dates are inclusive)",
                         "Only completed historical dates before today are supported",
                         "Profitability evaluation permits at most ten years",
+                        "Protected test start must follow training start and be within the range",
+                        "Downloads must start on or after 1990-01-01",
+                        "Download at most ten years per snapshot",
                     ):
                         explanations.append(reason)
                     else:
                         explanations.append("Check the evaluation start and end dates.")
-                elif field in ProfitabilityRequest.model_fields and kind != "extra_forbidden":
+                elif field in fields and kind != "extra_forbidden":
                     label = field.replace("_", " ")
                     if field == "source_job_id":
                         explanations.append("Select a saved ML report from the workflow job list.")
@@ -439,6 +451,19 @@ def create_app(
         )
         log(
             "historical_download",
+            assigned,
+            {"id": identity, "request": body.model_dump(mode="json")},
+        )
+        return {"id": identity, "status": "QUEUED"}
+
+    @app.post("/api/v1/workflows/download-pair", status_code=202)
+    def workflow_download_pair(body: PairedDownloadRequest, assigned=access):
+        require(assigned, ("researcher",))
+        identity = jobs.submit_workflow(
+            "download_pair", body.model_dump(mode="json"), library, catalog.workspace
+        )
+        log(
+            "training_test_download",
             assigned,
             {"id": identity, "request": body.model_dump(mode="json")},
         )

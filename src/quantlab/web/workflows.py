@@ -42,6 +42,21 @@ class DownloadRequest(BaseModel):
         return self
 
 
+class PairedDownloadRequest(DownloadRequest):
+    """Two physically separate bounded archives, never one archive sliced after fitting."""
+
+    provider: Literal["alpaca"] = "alpaca"
+    split_date: date
+
+    @model_validator(mode="after")
+    def validate_split(self):
+        if not self.start < self.split_date <= self.end:
+            raise ValueError(
+                "Protected test start must follow training start and be within the range"
+            )
+        return self
+
+
 class ResearchRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     workflow: Literal["training", "discovery"]
@@ -104,6 +119,11 @@ def safe_manifest(library: Path, sid: str, *, allow_holdout: bool = False) -> di
 def research_blockers(
     library: Path, sid: str, metadata: dict, *, start: date | None = None, end: date | None = None
 ) -> list[str]:
+    from quantlab.data.protection import protection_reasons
+
+    protected = protection_reasons(library, metadata)
+    if protected:
+        return protected
     start_bound = str(start) if start else metadata["request"]["start"]
     end_bound = str(end) if end else metadata["request"]["end"]
     if metadata["synthetic"]:
@@ -137,6 +157,8 @@ def research_blockers(
 
 
 def exploratory_blockers(metadata: dict) -> list[str]:
+    if metadata.get("dataset_role") == "protected_test":
+        return ["Protected test snapshot: sealed and unavailable for exploratory training"]
     reasons = []
     if metadata["synthetic"]:
         reasons.append("Synthetic inputs are engineering fixtures, not eligible real research data")
@@ -157,12 +179,22 @@ def snapshot_inventory(
     if start is not None:
         DataRequest("SPY", start, end)
     items, errors = [], []
-    for path in sorted((library / "snapshots").glob("*/manifest.json")):
+    sources = [(library, path) for path in (library / "snapshots").glob("*/manifest.json")]
+    sources += [
+        (library / "protected", path)
+        for path in (library / "protected/snapshots").glob("*/manifest.json")
+    ]
+    for source_library, path in sorted(
+        sources, key=lambda item: (item[0] != library, str(item[1]))
+    ):
         sid = path.parent.name
         try:
-            metadata = safe_manifest(library, sid, allow_holdout=True)
+            metadata = safe_manifest(source_library, sid, allow_holdout=True)
             strict_reasons = research_blockers(library, sid, metadata, start=start, end=end)
-            reasons = (
+            from quantlab.data.protection import protection_reasons
+
+            protected = protection_reasons(library, metadata)
+            reasons = protected or (
                 exploratory_blockers(metadata) if research_mode == "exploratory" else strict_reasons
             )
             if start is not None and (
@@ -183,6 +215,7 @@ def snapshot_inventory(
                     "blockers": reasons,
                     "strict_blockers": strict_reasons,
                     "research_mode": research_mode,
+                    "dataset_role": metadata.get("dataset_role", "research"),
                 }
             )
         except (ValueError, KeyError, TypeError, OSError) as exc:
@@ -200,7 +233,9 @@ def selected_snapshots(library: Path, request: ResearchRequest) -> dict:
             or str(request.end) > metadata["request"]["end"]
         ):
             raise ValueError("Research dates must be within every selected snapshot")
-        reasons = (
+        from quantlab.data.protection import protection_reasons
+
+        reasons = protection_reasons(library, metadata) or (
             exploratory_blockers(metadata)
             if request.research_mode == "exploratory"
             else (research_blockers(library, sid, metadata, start=request.start, end=request.end))

@@ -20,13 +20,24 @@ def digest(data: bytes) -> str:
 
 
 class SnapshotStore:
-    def __init__(self, root: Path) -> None:
+    def __init__(self, root: Path, *, dataset_role: str = "research") -> None:
+        if dataset_role not in ("research", "training", "protected_test"):
+            raise ValueError("Unsupported snapshot dataset role")
         self.root = root / "snapshots"
+        self.dataset_role = dataset_role
 
     def _path(self, snapshot_id: str) -> Path:
         if not re.fullmatch(r"[a-f0-9]{64}", snapshot_id):
             raise ValueError("snapshot_id must be a full SHA-256 identifier")
         return self.root / snapshot_id
+
+    def inspect(self, snapshot_id: str) -> dict:
+        """Verify metadata identity without opening prices (including sealed test payloads)."""
+        directory = self._path(snapshot_id)
+        metadata = json.loads((directory / "manifest.json").read_text())
+        if digest(json.dumps(metadata, sort_keys=True).encode()) != snapshot_id:
+            raise ValueError("Snapshot manifest checksum mismatch")
+        return metadata
 
     def manifest(self, snapshot_id: str) -> dict:
         directory = self._path(snapshot_id)
@@ -44,6 +55,8 @@ class SnapshotStore:
         metadata = json.loads((directory / "manifest.json").read_text())
         if digest(json.dumps(metadata, sort_keys=True).encode()) != snapshot_id:
             raise ValueError("Prefix manifest checksum mismatch")
+        if metadata.get("dataset_role") == "protected_test":
+            raise ValueError("Protected test snapshots cannot be used for prefix-only research")
         if metadata["request"]["end"] >= str(cutoff):
             raise ValueError("Prefix-only research cannot open a holdout archive")
         return metadata
@@ -53,8 +66,11 @@ class SnapshotStore:
         for path in self.root.glob("*/manifest.json"):
             if not re.fullmatch(r"[a-f0-9]{64}", path.parent.name):
                 continue
-            metadata = self.manifest(path.parent.name)
+            metadata = self.inspect(path.parent.name)
+            if metadata.get("dataset_role", "research") != self.dataset_role:
+                continue
             if metadata["provider"] == provider and metadata["request"] == request.as_dict():
+                metadata = self.manifest(path.parent.name)
                 candidates.append((metadata["retrieved_at"], path.parent.name))
         return max(candidates)[1] if candidates else None
 
@@ -76,6 +92,7 @@ class SnapshotStore:
             (temporary / "source.csv").write_bytes(download.raw)
             metadata = {
                 "schema_version": 1,
+                "dataset_role": self.dataset_role,
                 "software_versions": {
                     name: version(name)
                     for name in (

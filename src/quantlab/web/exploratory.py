@@ -26,6 +26,8 @@ def price_histories(library, snapshots):
     store = SnapshotStore(library)
     histories, provenance, jumps = {}, {}, {}
     for symbol, sid in snapshots.items():
+        if store.inspect(sid).get("dataset_role") == "protected_test":
+            raise ValueError("Protected test snapshots cannot be used for exploratory ML")
         metadata = store.manifest(sid)
         if metadata["synthetic"] or metadata["price_basis"] not in ("unadjusted", "adjusted"):
             raise ValueError("Exploratory ML requires real data with a declared price basis")

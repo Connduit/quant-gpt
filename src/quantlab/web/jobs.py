@@ -70,18 +70,27 @@ class JobManager:
 
     def submit_workflow(self, workflow, payload, library, workspace):
         """Persist a typed request before enqueueing; callers supply no command/path arguments."""
-        from quantlab.web.workflows import DownloadRequest, ProfitabilityRequest, ResearchRequest
-
-        if workflow not in ("download", "training", "discovery", "profitability"):
-            raise ValueError("Unsupported dashboard workflow")
-        model = {"download": DownloadRequest, "profitability": ProfitabilityRequest}.get(
-            workflow, ResearchRequest
+        from quantlab.web.workflows import (
+            DownloadRequest,
+            PairedDownloadRequest,
+            ProfitabilityRequest,
+            ResearchRequest,
         )
+
+        if workflow not in ("download", "download_pair", "training", "discovery", "profitability"):
+            raise ValueError("Unsupported dashboard workflow")
+        model = {
+            "download": DownloadRequest,
+            "download_pair": PairedDownloadRequest,
+            "profitability": ProfitabilityRequest,
+        }.get(workflow, ResearchRequest)
         checked = model.model_validate(payload)
         if workflow in ("training", "discovery") and checked.workflow != workflow:
             raise ValueError("Workflow does not match request")
         source = None
         if workflow == "profitability":
+            from quantlab.data.protection import check_saved_job
+
             with self.connection() as connection:
                 row = connection.execute(
                     "SELECT name,status FROM jobs WHERE id=?", (checked.source_job_id,)
@@ -91,6 +100,7 @@ class JobManager:
             source = (self.root / checked.source_job_id / "artifacts").resolve()
             if not source.is_relative_to(self.root.resolve()):
                 raise ValueError("Source job escaped its trusted directory")
+            check_saved_job(source, Path(library))
         name = f"{workflow}-{uuid.uuid4().hex}"
         directory = self.root / "requests"
         directory.mkdir(exist_ok=True)
@@ -188,13 +198,17 @@ class JobManager:
             allowed.add("QUANTLAB_LLM_API_KEY")
         if workflow:
             configuration = json.loads(Path(specification["configuration"]).read_text())
-            if configuration["workflow"] == "download":
+            if configuration["workflow"] in ("download", "download_pair"):
                 if configuration["payload"].get("provider", "alpaca") == "alpaca":
                     allowed.update(("APCA_API_KEY_ID", "APCA_API_SECRET_KEY"))
                 elif configuration["payload"]["provider"] == "databento":
                     allowed.add("DATABENTO_API_KEY")
         env = {k: v for k, v in os.environ.items() if k in allowed}
-        if workflow and configuration["workflow"] == "download" and self.provider_credentials:
+        if (
+            workflow
+            and configuration["workflow"] in ("download", "download_pair")
+            and self.provider_credentials
+        ):
             try:
                 env.update(
                     self.provider_credentials(configuration["payload"].get("provider", "alpaca"))

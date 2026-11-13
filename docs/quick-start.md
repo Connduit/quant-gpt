@@ -88,7 +88,16 @@ explicitly if that is your intended available feed. The app does not switch feed
 
 ## 5. Download your first snapshots
 
-Open **Data library**. For a small connectivity check, start with:
+Open **Data library**. Both download forms default to SPY plus the Mag 7
+(`SPY, AAPL, MSFT, AMZN, GOOGL, META, NVDA, TSLA`). For a full training/test pair,
+use **Quick download: training + protected test snapshots** with Alpaca. The
+default preset downloads 2020–2024 training data and 2025 through yesterday
+(UTC) protected test data in separate requests. A 2016–2018 / 2019 preset and
+custom split are also available. Protected snapshots are sealed against routine
+training and evaluation; downloading them does not evaluate a strategy. See
+[workflow details](dashboard-workflows.md#download-and-create-snapshots).
+
+For a small connectivity check in the single-range form, start with:
 
 | Field | Example |
 | --- | --- |

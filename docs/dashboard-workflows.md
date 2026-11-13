@@ -5,7 +5,27 @@ no command-line input. Existing curated result panels remain below the new forms
 
 ## Download and create snapshots
 
-Open **Data library**, enter US symbols (include SPY for benchmark research),
+Open **Data library**. Both download forms default to **SPY, AAPL, MSFT, AMZN,
+GOOGL, META, NVDA and TSLA** (SPY plus the Mag 7).
+
+Use **Quick download: training + protected test snapshots** to create both datasets
+in one job with Alpaca. The default preset uses 2020–2024 for training and 2025
+through yesterday (UTC) for protected testing. The legacy preset uses 2016–2018
+for training and 2019 for testing; **Custom split** lets you choose the boundary.
+The preview shows both ranges before submission. The worker sends separate bounded
+requests and stores protected snapshots under `library/protected`, with immutable
+`dataset_role` metadata. The report labels every outcome Training or Protected test.
+
+Test dates are reserved before downloading, including when a job partially fails.
+Repeat requests reuse caches for the same role. Reservations cannot be moved into
+training, and overlapping older archives or saved runs are blocked from routine
+research/evaluation. Protected rows remain visible but cannot be selected, including
+in exploratory mode. This shortcut downloads data; it does not run final test
+evaluation, make previously inspected data unseen, or supply missing corporate-action
+and historical-membership evidence. Custom training ranges must also respect the
+existing canonical 2019 holdout when evaluating strategies.
+
+For a single range or Databento, enter US symbols,
 choose dates and click **Download & create snapshots**. The form defaults to
 one year ending yesterday (UTC), with the end-date picker allowing completed dates
 after 2018. Switching to Databento selects a 31-calendar-day window ending on the
@@ -14,8 +34,9 @@ ten years for Alpaca (31 calendar days for Databento) are accepted per request.
 Select Alpaca/SIP or IEX, or Databento/dataset and estimated cost cap. See
 [provider setup](market-data-setup.md) for secrets, allowlist and entitlement details.
 Downloads support completed historical dates, including dates after 2018.
-Snapshot dates alone do not block training/discovery. Choose the research date
-range in those forms; the worker automatically extracts just that range.
+For unreserved research archives, choose the research date range in those forms;
+the worker automatically extracts just that range. Archives overlapping explicitly
+reserved protected dates must use the separately downloaded training snapshot.
 
 Add or replace provider credentials through **API keys** in the sidebar, using an
 operator token. The Data library's **Manage API keys** link opens the same page.

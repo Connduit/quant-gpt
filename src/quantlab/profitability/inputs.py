@@ -55,6 +55,10 @@ def load_saved_predictions(source: Path, request):
     input_library = checked_path(source, "inputs")
     for sid in input_ids:
         metadata = safe_manifest(input_library, sid, allow_holdout=True)
+        if metadata.get("dataset_role") == "protected_test":
+            raise ValueError(
+                "Protected test snapshots cannot be used for routine profitability evaluation"
+            )
         bounds = metadata["request"]
         permitted_dates(date.fromisoformat(bounds["start"]), date.fromisoformat(bounds["end"]))
         if metadata.get("parent_snapshot") not in result.get("snapshot_ids", []):

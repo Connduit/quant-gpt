@@ -513,6 +513,7 @@ export function ResearchReport({ data }: { data: unknown }) {
                 <tr>
                   <th>Symbol</th>
                   <th>Status</th>
+                  <th>Dataset</th>
                   <th>Rows</th>
                   <th>Details</th>
                 </tr>
@@ -523,6 +524,13 @@ export function ResearchReport({ data }: { data: unknown }) {
                     <td>{String(outcome.symbol ?? "Unknown")}</td>
                     <td>
                       <Badge text={String(outcome.status ?? "UNKNOWN")} />
+                    </td>
+                    <td>
+                      {outcome.dataset_role === "protected_test"
+                        ? "Protected test"
+                        : outcome.dataset_role === "training"
+                          ? "Training"
+                          : "Research"}
                     </td>
                     <td>{numeric(outcome.rows, 0)}</td>
                     <td>
