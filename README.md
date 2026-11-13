@@ -4,7 +4,8 @@ CPU-compatible quantitative research infrastructure through Milestones 1–11,
 including historical equities/futures, bounded ML discovery, statistical validation,
 portfolios, paper simulation, a dashboard and controlled broker sandbox engineering.
 
-Start with the [complete feature usage guide](docs/user-guide.md) and
+Start with the [setup-to-strategy quick start](docs/quick-start.md),
+the [complete feature usage guide](docs/user-guide.md) and
 [exhaustive CLI reference](docs/cli-reference.md). The
 [Phase 12 research audit](docs/phase12/README.md) records current data blockers;
 no strategy currently qualifies for paper/live deployment.
