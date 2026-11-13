@@ -1,0 +1,101 @@
+{
+  "status": "COMPLETED",
+  "workflow": "training",
+  "research_status": "EXPLORATORY_ML",
+  "research_range": { "start": "2016-01-01", "end": "2019-12-31" },
+  "report": {
+    "name": "Equity research",
+    "research_mode": "exploratory",
+    "qualified": false,
+    "trading_simulated": false,
+    "dataset": {
+      "start": "2016-01-01",
+      "end": "2019-12-31",
+      "samples": 3760,
+      "horizon": 5,
+      "snapshots": {
+        "NVDA": { "price_basis": "unadjusted" },
+        "SPY": { "price_basis": "unadjusted" },
+        "MSFT": { "price_basis": "unadjusted" },
+        "AAPL": { "price_basis": "unadjusted" },
+        "TSLA": { "price_basis": "unadjusted" }
+      },
+      "large_close_price_changes": {
+        "NVDA": 0,
+        "SPY": 0,
+        "MSFT": 0,
+        "AAPL": 0,
+        "TSLA": 0
+      },
+      "feature_definitions": { "return_3": "close / close[3 sessions ago] - 1" }
+    },
+    "predictive_performance": {
+      "ridge": {
+        "samples": 1240,
+        "mean_squared_error": 0.003042748,
+        "mean_absolute_error": 0.0371431897,
+        "directional_accuracy": 0.5379032258,
+        "rank_information_coefficient": -0.00645161,
+        "rank_ic_sessions": 310
+      }
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "test_start": "2018-09-28",
+        "test_end": "2019-04-01",
+        "test_rows": 504,
+        "models": {
+          "ridge": {
+            "validation": { "directional_accuracy": 0.610416 },
+            "out_of_sample": {
+              "samples": 504,
+              "directional_accuracy": 0.517857,
+              "mean_absolute_error": 0.04520549,
+              "rank_information_coefficient": 0.049206
+            }
+          }
+        }
+      },
+      {
+        "fold": 1,
+        "test_start": "2019-04-02",
+        "test_end": "2019-09-30",
+        "test_rows": 504,
+        "models": {
+          "ridge": {
+            "validation": { "directional_accuracy": 0.53125 },
+            "out_of_sample": {
+              "samples": 504,
+              "directional_accuracy": 0.565476,
+              "mean_absolute_error": 0.03229428,
+              "rank_information_coefficient": -0.006349
+            }
+          }
+        }
+      },
+      {
+        "fold": 2,
+        "test_start": "2019-10-01",
+        "test_end": "2019-12-20",
+        "test_rows": 232,
+        "models": {
+          "ridge": {
+            "validation": { "directional_accuracy": 0.4875 },
+            "out_of_sample": {
+              "samples": 232,
+              "directional_accuracy": 0.521551,
+              "mean_absolute_error": 0.03016235,
+              "rank_information_coefficient": -0.127586
+            },
+            "feature_importance": { "return_3": 0.05120859 }
+          }
+        }
+      }
+    ],
+    "limitations": [
+      "Raw splits and dividends can distort features and labels.",
+      "Fixed supplied stocks may introduce survivorship and selection bias."
+    ]
+  }
+}

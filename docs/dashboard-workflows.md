@@ -77,8 +77,16 @@ exploratory`, the training workflow and both research dates.
 3. Set run name, models, horizon, training/validation/evaluation windows, top
    holdings and seed. For discovery, also set the maximum trial count.
 4. Click **Start ML training** or **Start bounded discovery**.
-5. Inspect the job report for fold metrics, baseline comparisons, costs, rejected
-   attempts, provenance and limitations. Download its JSON if needed.
+5. Open **View report**. The readable results show research dates, stocks and
+   horizon; formatted accuracy, error, ranking and sample-count cards; model
+   comparison; validation/evaluation charts and a table by time period; and
+   data limitations. Expand the feature-importance section to inspect a period.
+   Classifier probability errors are distinguished from percentage-point return
+   errors, and missing metrics are displayed as unavailable rather than zero.
+   The original report remains under **Raw report JSON** and **Download report JSON**.
+   Existing reports use the new view without rerunning training. Prediction
+   accuracy is not presented as proof of profitability or superiority to a naive
+   baseline. Blocked jobs and partial downloads show their reasons and outcomes.
 
 Models: Ridge, logistic regression, Random Forest, LightGBM and XGBoost. Training
 uses the existing causal features and walk-forward ML/backtesting engine.

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./api";
 import { Badge, ErrorBox, JsonView } from "./components";
+import { ResearchReport } from "./ResearchReport";
 
 interface Snapshot {
   id: string;
@@ -755,7 +756,8 @@ export function EquityWorkflows({ page }: { page: string }) {
               <h4>Workflow report</h4>
               <button onClick={download}>Download report JSON</button>
             </div>
-            <JsonView data={report} />
+            <ResearchReport data={report} />
+            <JsonView data={report} label="Raw report JSON" />
           </div>
         )}
       </section>

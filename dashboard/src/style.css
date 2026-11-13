@@ -617,3 +617,100 @@ footer span {
   color: #9bc4ff;
   text-decoration: underline;
 }
+/* Human-readable workflow results. */
+.readable-report {
+  min-width: 0;
+}
+.result-intro,
+.result-context,
+.result-model-picker,
+.result-explanation,
+.result-section {
+  padding: 16px 20px;
+}
+.result-intro h3 {
+  margin: 12px 0;
+}
+.result-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.result-context {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 0;
+  background: #111b29;
+}
+.result-context dt {
+  color: #9aa8ba;
+  font-size: 12px;
+  margin-bottom: 7px;
+}
+.result-context dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.result-model-picker label,
+.result-section label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.result-model-picker p,
+.result-explanation p,
+.result-section p,
+.result-section li {
+  line-height: 1.65;
+}
+.result-metrics {
+  padding: 0 20px;
+}
+.result-metrics .metric {
+  min-width: 0;
+}
+.result-metrics .metric strong {
+  overflow-wrap: anywhere;
+}
+.result-metrics .metric small {
+  line-height: 1.6;
+  font-size: 12px;
+}
+.result-metrics .metric > span {
+  font-size: 12px;
+}
+.result-section table th {
+  font-size: 11px;
+}
+.result-section table td {
+  font-size: 12px;
+}
+.result-section {
+  border-top: 1px solid #293649;
+}
+.result-section h4,
+.result-explanation h4 {
+  margin: 0 0 12px;
+}
+.result-section li + li {
+  margin-top: 8px;
+}
+.result-chart {
+  min-width: 0;
+  width: 100%;
+  margin: 18px 0;
+}
+@media (max-width: 650px) {
+  .result-metrics {
+    grid-template-columns: 1fr;
+  }
+  .result-section .panel-title {
+    gap: 12px;
+  }
+  .result-section select {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
