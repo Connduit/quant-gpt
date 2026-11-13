@@ -58,7 +58,8 @@ was requested. See `provider-setup-connectivity.json` for the recorded probe res
 Open **Data library**, select **Historical data provider**, enter symbols/dates,
 then click **Download & create snapshots**. The existing job queue, cancellation,
 snapshot validation, immutable history and downloadable reports remain in use.
-The reserved equity holdout keeps end dates at or before 2018-12-31.
+Downloads accept completed historical dates after 2018. Reserved holdout
+snapshots can be downloaded and listed but remain blocked from training/discovery.
 
 **Alpaca:** select `sip` for consolidated US equities or explicitly select `iex`
 for IEX-only data. Authentication, feed entitlements and historical availability
@@ -76,9 +77,9 @@ this is a pre-download estimate guard, not a hard account billing limit. Downloa
 are bounded to 31 calendar days per job and $100 maximum estimated authorization.
 
 Databento's actual metadata determines coverage. Published documentation describes
-XNAS.ITCH history beginning in May 2018 and DBEQ.BASIC beginning in 2023; thus the
-latter does not fit the currently authorized pre-2019 period. Do not move the
-holdout boundary to make a dataset available. Dataset venue coverage is preserved
+XNAS.ITCH history beginning in May 2018 and DBEQ.BASIC beginning in 2023.
+Both can be downloaded within provider coverage; the research holdout boundary
+continues to govern eligibility for training/discovery. Dataset venue coverage is preserved
 in provenance and is not relabeled consolidated SIP. Multiple resolved instrument
 IDs for one request are rejected until a verified identifier-mapping workflow exists.
 

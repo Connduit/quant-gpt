@@ -10,8 +10,9 @@ choose dates and click **Download & create snapshots**. At most 12 symbols and
 ten years for Alpaca (31 calendar days for Databento) are accepted per request.
 Select Alpaca/SIP or IEX, or Databento/dataset and estimated cost cap. See
 [provider setup](market-data-setup.md) for secrets, allowlist and entitlement details.
-The reserved equity holdout keeps end dates
-at or before 2018-12-31.
+Downloads support completed historical dates, including dates after 2018.
+Newer snapshots appear in the library, but reserved holdout data remains
+unavailable for training/discovery.
 
 Add or replace provider credentials through **API keys** in the sidebar, using an
 operator token. The Data library's **Manage API keys** link opens the same page.

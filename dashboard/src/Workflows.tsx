@@ -196,8 +196,8 @@ export function EquityWorkflows({ page }: { page: string }) {
               : "Train equity ML models"}
         </h3>
         <p className="subtle">
-          Researcher access required. Dates end by December 31, 2018 to protect
-          the reserved holdout.
+          Researcher access required. Downloads support completed historical dates.
+          Reserved holdout snapshots cannot be used for training or discovery.
         </p>
         <form onSubmit={(event) => void submit(event)}>
           {mode === "download" ? (
@@ -276,7 +276,6 @@ export function EquityWorkflows({ page }: { page: string }) {
                     required
                     type="date"
                     min="1990-01-01"
-                    max="2018-12-31"
                     value={start}
                     onChange={(e) => setStart(e.target.value)}
                   />
@@ -287,7 +286,6 @@ export function EquityWorkflows({ page }: { page: string }) {
                     required
                     type="date"
                     min={start}
-                    max="2018-12-31"
                     value={end}
                     onChange={(e) => setEnd(e.target.value)}
                   />
@@ -332,7 +330,7 @@ export function EquityWorkflows({ page }: { page: string }) {
                   The cost limit applies across all symbols in this job. Zero
                   permits only zero-cost estimates. Estimates are checked before
                   each stream; final vendor billing may differ. Dataset dates
-                  must fit the pre-holdout range.
+                  must be completed historical dates.
                 </p>
               )}
               <button type="submit" disabled={pending}>

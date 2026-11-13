@@ -81,7 +81,7 @@ def test_api_roles_request_bounds_and_no_shell(tmp_path):
     with TestClient(app) as client:
         assert client.post("/api/v1/workflows/download", json=download).status_code == 403
         for change in (
-            {"end": "2019-01-02"},
+            {"end": "2017-12-31"},
             {"symbols": ["AAPL;touch /tmp/pwn"]},
             {"confirmed": False},
             {"command": "evil"},
@@ -169,7 +169,13 @@ def test_download_html_rejection_then_snapshot_cache(library, tmp_path, monkeypa
 
 
 def test_protected_manifest_rejected_before_payload_open(tmp_path):
-    metadata = {"request": {"symbol": "AAPL", "start": "2018-01-01", "end": "2019-01-02"}}
+    metadata = {
+        "request": {"symbol": "AAPL", "start": "2018-01-01", "end": "2019-01-02"},
+        "row_count": 250,
+        "provider": "alpaca",
+        "price_basis": "unadjusted",
+        "retrieved_at": "2025-01-01T00:00:00Z",
+    }
     sid = digest(json.dumps(metadata, sort_keys=True).encode())
     directory = tmp_path / "snapshots" / sid
     directory.mkdir(parents=True)
@@ -177,7 +183,10 @@ def test_protected_manifest_rejected_before_payload_open(tmp_path):
     # No source payload exists: a reader trying to open one would fail differently.
     with pytest.raises(ValueError, match="payload not opened"):
         safe_manifest(tmp_path, sid)
-    assert "reserved holdout" in snapshot_inventory(tmp_path)["errors"][0]["error"]
+    inventory = snapshot_inventory(tmp_path)
+    assert not inventory["errors"]
+    assert not inventory["items"][0]["eligible"]
+    assert "reserved holdout" in inventory["items"][0]["blockers"][0]
 
 
 def test_real_subprocess_worker_retains_blocker_and_request(tmp_path):
@@ -298,3 +307,15 @@ def test_download_worker_receives_only_selected_provider_keys(tmp_path, monkeypa
             assert "secret-value-must-not-be-persisted" not in path.read_text()
     finally:
         manager.close()
+
+
+def test_download_accepts_recent_dates_without_releasing_research_holdout():
+    request = DownloadRequest.model_validate(
+        {
+            "symbols": ["AAPL"],
+            "start": "2024-01-02",
+            "end": "2024-02-01",
+            "confirmed": True,
+        }
+    )
+    assert request.end == date(2024, 2, 1)

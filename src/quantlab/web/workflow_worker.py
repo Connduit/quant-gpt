@@ -63,7 +63,7 @@ def acquire(payload, library, output):
                 store,
                 refresh=request.refresh,
             )
-            metadata = safe_manifest(library, sid)
+            metadata = safe_manifest(library, sid, allow_holdout=True)
             frame = store.read(sid)
             if frame.height != metadata["row_count"]:
                 raise ValueError("Snapshot count mismatch")

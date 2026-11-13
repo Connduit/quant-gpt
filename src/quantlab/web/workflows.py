@@ -30,8 +30,8 @@ class DownloadRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_request(self):
-        if self.start < date(1990, 1, 1) or self.end > SAFE_END:
-            raise ValueError("Downloads must be within 1990-01-01–2018-12-31; holdout protected")
+        if self.start < date(1990, 1, 1):
+            raise ValueError("Downloads must start on or after 1990-01-01")
         if (self.end - self.start).days > 3653:
             raise ValueError("Download at most ten years per snapshot")
         if self.provider == "databento" and (self.end - self.start).days > 30:
@@ -68,7 +68,7 @@ class ResearchRequest(BaseModel):
         return self
 
 
-def safe_manifest(library: Path, sid: str) -> dict:
+def safe_manifest(library: Path, sid: str, *, allow_holdout: bool = False) -> dict:
     """Inspect bounds and identity BEFORE the storage reader opens price payloads."""
     if not re.fullmatch(r"[a-f0-9]{64}", sid):
         raise ValueError("Invalid snapshot ID")
@@ -79,7 +79,7 @@ def safe_manifest(library: Path, sid: str) -> dict:
     if digest(json.dumps(metadata, sort_keys=True).encode()) != sid:
         raise ValueError("Snapshot manifest checksum mismatch")
     request = metadata["request"]
-    if date.fromisoformat(request["end"]) > SAFE_END:
+    if not allow_holdout and date.fromisoformat(request["end"]) > SAFE_END:
         raise ValueError("Snapshot overlaps or follows the reserved holdout; payload not opened")
     DataRequest(
         request["symbol"], date.fromisoformat(request["start"]), date.fromisoformat(request["end"])
@@ -91,6 +91,10 @@ def safe_manifest(library: Path, sid: str) -> dict:
 
 
 def research_blockers(library: Path, sid: str, metadata: dict) -> list[str]:
+    if date.fromisoformat(metadata["request"]["end"]) > SAFE_END:
+        return [
+            "Snapshot overlaps or follows the reserved holdout; unavailable for training/discovery"
+        ]
     if metadata["synthetic"]:
         return ["Synthetic inputs are engineering fixtures, not eligible real research data"]
     reasons = []
@@ -127,7 +131,7 @@ def snapshot_inventory(library: Path) -> dict:
     for path in sorted((library / "snapshots").glob("*/manifest.json")):
         sid = path.parent.name
         try:
-            metadata = safe_manifest(library, sid)
+            metadata = safe_manifest(library, sid, allow_holdout=True)
             reasons = research_blockers(library, sid, metadata)
             items.append(
                 {

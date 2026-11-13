@@ -90,12 +90,19 @@ describe("equity dashboard workflows", () => {
     });
     expect(JSON.stringify(post.mock.calls[0][1])).not.toContain("api_key");
   });
-  it("submits typed downloads with bounded dates and refresh choice", async () => {
+  it("submits downloads after 2018 with refresh choice", async () => {
     const post = api();
     mount("datasets");
     await screen.findByText("AAA");
     fireEvent.change(screen.getByLabelText("US equity symbols"), {
       target: { value: "AAPL, SPY" },
+    });
+    expect(screen.getByLabelText("End date")).not.toHaveAttribute("max");
+    fireEvent.change(screen.getByLabelText("Start date"), {
+      target: { value: "2024-01-02" },
+    });
+    fireEvent.change(screen.getByLabelText("End date"), {
+      target: { value: "2024-02-01" },
     });
     fireEvent.click(screen.getByLabelText(/Fetch a fresh version/));
     fireEvent.click(
@@ -108,8 +115,8 @@ describe("equity dashboard workflows", () => {
       alpaca_feed: "sip",
       databento_dataset: "XNAS.ITCH",
       maximum_download_cost: 0,
-      start: "2016-01-04",
-      end: "2018-12-31",
+      start: "2024-01-02",
+      end: "2024-02-01",
       refresh: true,
       confirmed: true,
     });
