@@ -53,7 +53,7 @@ def test_alpaca_pagination_raw_feed_and_credential_redaction(monkeypatch):
         assert req.headers["APCA-API-KEY-ID"] == "private-test-key"
         assert req.url.host == "data.alpaca.markets"
         assert req.url.params["adjustment"] == "raw"
-        assert req.url.params["asof"] == "-"
+        assert req.url.params["asof"] == str(request().end)
         assert req.url.params["feed"] == "sip"
         assert req.url.params["timeframe"] == "1Min"
         if len(calls) > 1:
@@ -82,6 +82,8 @@ def test_alpaca_pagination_raw_feed_and_credential_redaction(monkeypatch):
     assert normalize_daily(download.raw, request())["volume"][0] == 200
     assert "private-test" not in download.source
     assert download.price_basis == "unadjusted"
+    assert json.loads(download.source)["asof"] == str(request().end)
+    assert "asof-end-v2" in provider.name
     assert create_provider("alpaca", alpaca_feed="iex").name != provider.name
 
 

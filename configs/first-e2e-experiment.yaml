@@ -1,0 +1,35 @@
+# Executed via examples/first_e2e_experiment.py; uses existing ingestion and dashboard workers.
+name: First exploratory ML trading experiment
+root: data/experiments/first-e2e-20261113
+symbols: [SPY, AAPL, MSFT, AMZN, GOOGL, META, NVDA, TSLA, JPM, XOM, UNH]
+history:
+  provider: alpaca
+  feed: sip
+  start: '2020-01-01'
+  end: '2024-12-31'
+training:
+  research_mode: exploratory
+  models: [lightgbm, ridge]
+  horizon: 5
+  training_sessions: 504
+  validation_sessions: 126
+  test_sessions: 126
+  top_n: 10
+  seed: 42
+backtest:
+  research_mode: exploratory
+  initial_cash: 100000
+  top_n: 10
+  minimum_prediction: 0
+  rebalance_sessions: 5
+  holding_sessions: 20
+  cash_allocation: 0.2
+  maximum_position_weight: 0.08
+  maximum_drawdown: 0.2
+  maximum_daily_loss: 0.05
+  minimum_dollar_volume: 1000000
+  whole_shares: true
+  commission_per_share: 0.005
+  spread_bps: 2
+  slippage_bps: 5
+  market_impact_bps: 1

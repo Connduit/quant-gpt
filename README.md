@@ -362,3 +362,13 @@ trading endpoint can verify authentication without placing orders. HTTP 200
 confirms authentication; a proxy connection denial does not establish whether
 the credentials are valid. Paper and live trading use different credentials
 and endpoints.
+
+## First end-to-end ML experiment
+
+The [executed exploratory experiment](docs/first-e2e/REPORT.md) uses real Alpaca
+2020–2024 data, LightGBM and Ridge, saved chronological predictions and costed
+backtests. It includes measured benchmark comparisons, equity/drawdown charts,
+trade logs, data limitations and exact rerun instructions. The thin recipe is
+`examples/first_e2e_experiment.py`, configured by
+`configs/first-e2e-experiment.yaml`; it reuses existing ingestion and dashboard
+workers. These results are exploratory, not validated profitability.

@@ -1,0 +1,340 @@
+{
+  "snapshots": [
+    {
+      "symbol": "JPM",
+      "snapshot_id": "0b2a449b4a0e9a8f14cc7bca7277ca502adbbaa10db13aa5d71fed904f39fbad",
+      "provider": "alpaca-sip-raw-rth-minute-asof-end-v2",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "JPM"
+      },
+      "retrieved_at": "2026-11-14T00:09:28.238478+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "a6b0f66449a88f2cff52019b163f9a54d10e28c9c75045f3675e1c76f0f57e75",
+      "parquet_sha256": "acaafff213d5475eefc823a6a8d7db5aa3ee191e329e5f4f8ca2afe5595d4028",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "2024-12-31",
+      "response_pages": 60,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": []
+    },
+    {
+      "symbol": "NVDA",
+      "snapshot_id": "3d7c3f1acf38f4883be35f916792e39bbf6ab4547ee67d170a6a2f2fecc615dd",
+      "provider": "alpaca-sip-raw-rth-minute-asof-end-v2",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "NVDA"
+      },
+      "retrieved_at": "2026-11-14T00:06:25.309548+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "7c615c05d42f565d783e41fc2e484528fdd11e03f0dfd7eea744662fb6b8b6d7",
+      "parquet_sha256": "06bb79c79c5bb85148b66c91d8037f83ef9b0730f11cf46f2e5d109efc3f2d53",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "2024-12-31",
+      "response_pages": 92,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": [
+        {
+          "session_date": "2021-07-20",
+          "overnight_gap": -0.7507022191456223
+        },
+        {
+          "session_date": "2024-06-10",
+          "overnight_gap": -0.9004260952302156
+        }
+      ]
+    },
+    {
+      "symbol": "TSLA",
+      "snapshot_id": "4d13ac0b12bb048e75ffc2288585af5d595ce056bc18138b3250aa13cdb58cc0",
+      "provider": "alpaca-sip-raw-rth-minute-asof-end-v2",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "TSLA"
+      },
+      "retrieved_at": "2026-11-14T00:08:01.506105+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "24932e393a5c9eeef76383d58e41579f7c504cd2922a7b22e518315d76d9953e",
+      "parquet_sha256": "e1c5561affd6ecbf3d861fb586d6f74c343d4495dd16cb7f478feb1ff9a8026d",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "2024-12-31",
+      "response_pages": 103,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": [
+        {
+          "session_date": "2020-08-31",
+          "overnight_gap": -0.7991660341898876
+        },
+        {
+          "session_date": "2022-08-25",
+          "overnight_gap": -0.660799820517135
+        }
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "snapshot_id": "65ac3ea4606d4145ed3ef9c7273cd8a3081941acf1c33dcb94639faab7084174",
+      "provider": "alpaca-sip-raw-rth-minute-v1",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "MSFT"
+      },
+      "retrieved_at": "2026-11-14T00:00:22.351409+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "49ccc64da7332ea8a1f81dc4d7d7d783a88e9e831e4a5a3dae031d9b90eb091b",
+      "parquet_sha256": "fbac7e8866a150f822500a4b72ef9a4e36b09c99e7b39274ff8a6f6d312e5fe0",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "-",
+      "response_pages": 79,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": []
+    },
+    {
+      "symbol": "AAPL",
+      "snapshot_id": "65e484f1054ab4d48a7983d03138dae5dfd0f8cda4c07678c17de271c05701de",
+      "provider": "alpaca-sip-raw-rth-minute-v1",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "AAPL"
+      },
+      "retrieved_at": "2026-11-14T00:00:53.995718+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "9e18983acba4f03a4151dc279535062d8ce5968f2636ff83bd7275b2cf13a8f2",
+      "parquet_sha256": "1dfca680e1c518d47cb435c28da6bc8c6e7fb18fa48ad4ffd7da41caabd8de47",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "-",
+      "response_pages": 98,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": [
+        {
+          "session_date": "2020-08-31",
+          "overnight_gap": -0.7441562086524197
+        }
+      ]
+    },
+    {
+      "symbol": "XOM",
+      "snapshot_id": "9cf2e1bff44d43e4435e530ec34e253c0d3bbd9f5177591244cf6815ef8ca08f",
+      "provider": "alpaca-sip-raw-rth-minute-asof-end-v2",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "XOM"
+      },
+      "retrieved_at": "2026-11-14T00:10:51.283290+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "3fe12946553a47951478602e93ac2a71295c1a4a38500913a1569605a8f69a13",
+      "parquet_sha256": "6f1453934b908ef51d3345ad0cbd9068de553f8ab100fca3b817fa0dab67e722",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "2024-12-31",
+      "response_pages": 66,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": []
+    },
+    {
+      "symbol": "AMZN",
+      "snapshot_id": "a207322bc14782b4829d496da018f9b0d9e55f2c54c49edcc21c1fbe94becc9d",
+      "provider": "alpaca-sip-raw-rth-minute-v1",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "AMZN"
+      },
+      "retrieved_at": "2026-11-14T00:00:55.300126+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "1102a45b9e298133d27aa09b5053e8e61bee766f59479c36a3084a5968850d7a",
+      "parquet_sha256": "d192e2944c8691b9b8954e788759332061780d146b77c805fae47c1d4d3f846c",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "-",
+      "response_pages": 78,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": [
+        {
+          "session_date": "2022-06-06",
+          "overnight_gap": -0.9488169186759297
+        }
+      ]
+    },
+    {
+      "symbol": "GOOGL",
+      "snapshot_id": "b9bf2f51c9a42f876741f058132e26bbe7fbf62609f8a1757a1233f4a7196f7a",
+      "provider": "alpaca-sip-raw-rth-minute-v1",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "GOOGL"
+      },
+      "retrieved_at": "2026-11-14T00:00:50.147122+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "dc2a47cc905dfb0d0824f7709e3f078fdb2769e56274a016fe2667507c37af64",
+      "parquet_sha256": "9e99d30c4624cf4dabc034e66d7588cc8d7086d19b1da81ed9d87fa6eb30a6f7",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "-",
+      "response_pages": 66,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": [
+        {
+          "session_date": "2022-07-18",
+          "overnight_gap": -0.9496327903460985
+        }
+      ]
+    },
+    {
+      "symbol": "META",
+      "snapshot_id": "bae1334a3052772801fa407c82d99a3f6538791c12448d7cb10c3dd5eaae7bc9",
+      "provider": "alpaca-sip-raw-rth-minute-asof-end-v2",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "META"
+      },
+      "retrieved_at": "2026-11-14T00:04:51.726713+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "012ad7dea76905fef47d68d9f758de22e0cfd0b8d38ecab88d1868197c2a55c7",
+      "parquet_sha256": "e4bf0a9188ef5a50b9ee3f5563557b9b1b7011e673b4f0066921ff2cbae6db77",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "2024-12-31",
+      "response_pages": 77,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": []
+    },
+    {
+      "symbol": "UNH",
+      "snapshot_id": "c1ffa42d9d3170d28ad1384782616fb5023f8cf76779bcdf2c7128ae380f3a1f",
+      "provider": "alpaca-sip-raw-rth-minute-asof-end-v2",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "UNH"
+      },
+      "retrieved_at": "2026-11-14T00:14:18.003972+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "4014f171d62191582f56f14d6fb9e4911a10a07197400952ac63a5c08b6dc353",
+      "parquet_sha256": "a6613f3a77b27e4b197eeca16bc4300ddb022c2ba61add5427982e2670851229",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "2024-12-31",
+      "response_pages": 51,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": []
+    },
+    {
+      "symbol": "SPY",
+      "snapshot_id": "fb3416201b1d50f19d78d8d3ef200f9a3f37750bf5a229ae57b1aaba17212598",
+      "provider": "alpaca-sip-raw-rth-minute-v1",
+      "request": {
+        "end": "2024-12-31",
+        "start": "2020-01-01",
+        "symbol": "SPY"
+      },
+      "retrieved_at": "2026-11-13T23:59:35.350684+00:00",
+      "sessions": 1258,
+      "first_session": "2020-01-02",
+      "last_session": "2024-12-31",
+      "price_basis": "unadjusted",
+      "synthetic": false,
+      "source_sha256": "1705a4ab50ac196fb93544898d0c929897e5ff17c96d3d81be59342e35b6b649",
+      "parquet_sha256": "2155a2eee1894d1c48002e95032c10d0b8a89253f8b529f2f5320e1d36d859fe",
+      "feed": "sip",
+      "adjustment": "raw",
+      "symbol_mapping_asof": "-",
+      "response_pages": 103,
+      "strict_blockers": [
+        "Certified point-in-time universe membership is missing",
+        "Complete corporate-action ledger is missing"
+      ],
+      "large_overnight_gaps": []
+    }
+  ],
+  "aligned_sessions_per_symbol": 1258,
+  "real_observations": 13838,
+  "source_equality_and_hashes_verified": true,
+  "protected_dates_requested_or_read": false,
+  "membership_certified": false,
+  "corporate_actions_complete": false
+}

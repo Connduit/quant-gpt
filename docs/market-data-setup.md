@@ -64,7 +64,8 @@ snapshots can be downloaded and listed but remain blocked from training/discover
 **Alpaca:** select `sip` for consolidated US equities or explicitly select `iex`
 for IEX-only data. Authentication, feed entitlements and historical availability
 are verified by the API, not inferred from key presence. Raw 1-minute bars are
-paginated with explicit bounds and `asof=-` to avoid current-day ticker remapping.
+paginated with explicit bounds and `asof=<request end date>` so historical ticker
+mappings are anchored to the requested period rather than today.
 There is no silent downgrade from SIP to IEX. Rate limits fail with a clear status;
 the integration does not retry automatically.
 
@@ -137,3 +138,13 @@ operator-only mutations, HTTPS enforcement, validation-error redaction, removal,
 environment fallback and immediate worker injection. A separate real-browser check
 saved dummy keys through the actual backend, reloaded the page to verify empty
 inputs, and removed them. No real API keys or paid downloads were used.
+
+### Historical ticker mappings
+
+Alpaca requests use `asof=<request end date>` with `adjustment=raw`. This keeps
+historical ticker mappings bounded to the requested period, including META's
+previous FB symbol. Disabling mappings with `asof=-` omits that earlier history;
+the completeness validator correctly rejects it. The mapping setting is recorded
+in source provenance, and the provider identity is versioned
+`raw-rth-minute-asof-end-v2` to avoid reusing earlier cache semantics. This is not
+point-in-time universe certification or corporate-action price adjustment.

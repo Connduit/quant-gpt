@@ -1,2 +1,3 @@
 # Preserve RFC 4180 CRLF in checksum-pinned simulation CSV exports.
 docs/phase12c/demo/*.csv whitespace=cr-at-eol
+docs/first-e2e/*.csv whitespace=cr-at-eol

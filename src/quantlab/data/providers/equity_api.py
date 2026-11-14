@@ -81,7 +81,7 @@ class AlpacaHistoricalProvider:
         if feed not in ("sip", "iex"):
             raise ValueError("Alpaca feed must be sip or iex")
         self.feed, self.transport, self.timeout = feed, transport, timeout
-        self.name = f"alpaca-{feed}-raw-rth-minute-v1"
+        self.name = f"alpaca-{feed}-raw-rth-minute-asof-end-v2"
 
     def fetch(self, request):
         key, secret = os.getenv("APCA_API_KEY_ID"), os.getenv("APCA_API_SECRET_KEY")
@@ -93,7 +93,7 @@ class AlpacaHistoricalProvider:
             "end": datetime.combine(request.end, time(23, 59, 59), local).isoformat(),
             "timeframe": "1Min",
             "adjustment": "raw",
-            "asof": "-",
+            "asof": str(request.end),
             "feed": self.feed,
             "sort": "asc",
             "limit": 10000,
@@ -149,7 +149,7 @@ class AlpacaHistoricalProvider:
                     "url": url,
                     "feed": self.feed,
                     "adjustment": "raw",
-                    "asof": "-",
+                    "asof": str(request.end),
                     "schema": "1Min",
                     "aggregation": "XNYS regular-session first/max/min/last/sum v1",
                     "response_sha256": hashes,
